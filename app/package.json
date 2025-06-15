@@ -3,7 +3,7 @@
 	"private": true,
 	"type": "module",
 	"scripts": {
-		"dev": "rsbuild dev --port 3000",
+		"dev": "rsbuild dev --port 8000",
 		"build": "rsbuild build && tsc --noEmit",
 		"preview": "rsbuild preview"
 	},
@@ -11,7 +11,8 @@
 		"@tanstack/react-router": "^1.121.12",
 		"@tanstack/react-router-devtools": "^1.121.12",
 		"react": "^19.0.0",
-		"react-dom": "^19.0.0"
+		"react-dom": "^19.0.0",
+		"tinybase": "^6.2.1"
 	},
 	"devDependencies": {
 		"@rsbuild/core": "1.2.4",

@@ -7,8 +7,7 @@
 		"defaultBranch": "main"
 	},
 	"files": {
-		"ignoreUnknown": true,
-		"ignore": ["routeTree.gen.ts"]
+		"ignoreUnknown": true
 	},
 	"formatter": {
 		"enabled": true,
@@ -19,6 +18,7 @@
 	},
 	"linter": {
 		"enabled": true,
+		"ignore": ["routeTree.gen.ts"],
 		"rules": {
 			"recommended": true
 		}
