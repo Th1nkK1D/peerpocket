@@ -20,7 +20,10 @@
 		"enabled": true,
 		"ignore": ["routeTree.gen.ts"],
 		"rules": {
-			"recommended": true
+			"recommended": true,
+			"suspicious": {
+				"noExplicitAny": "off"
+			}
 		}
 	},
 	"javascript": {

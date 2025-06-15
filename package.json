@@ -8,7 +8,7 @@
 		"biome": "./node_modules/@biomejs/cli-linux-x64-musl/biome",
 		"prepack": "lefthook install"
 	},
-	"workspaces": ["app"],
+	"workspaces": ["app", "server", "libs"],
 	"devDependencies": {
 		"@commitlint/cli": "^19.8.1",
 		"@commitlint/config-conventional": "^19.8.1",

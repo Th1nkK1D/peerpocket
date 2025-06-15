@@ -1,13 +1,13 @@
 import { createFileRoute } from '@tanstack/react-router';
-import { userStore, userUiReact } from '../stores/user';
+import { useUserStore } from '../stores/user';
 
 export const Route = createFileRoute('/')({
 	component: HomeComponent,
 });
 
 function HomeComponent() {
-	// @ts-expect-error
-	const table = userUiReact.useTable('groups', userStore);
+	const user = useUserStore();
+	const table = user.useTable('groups');
 
 	return (
 		<div className="p-2">
@@ -22,7 +22,7 @@ function HomeComponent() {
 			<button
 				type="submit"
 				onClick={() =>
-					userStore.setRow('groups', crypto.randomUUID(), {
+					user.store.setRow('groups', crypto.randomUUID(), {
 						name: Math.random().toString(36).substring(2, 10),
 					})
 				}

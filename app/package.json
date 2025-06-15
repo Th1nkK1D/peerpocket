@@ -8,6 +8,7 @@
 		"preview": "rsbuild preview"
 	},
 	"dependencies": {
+		"@peerpocket/libs": "workspace:*",
 		"@tanstack/react-router": "^1.121.12",
 		"@tanstack/react-router-devtools": "^1.121.12",
 		"react": "^19.0.0",
