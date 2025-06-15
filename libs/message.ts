@@ -5,13 +5,21 @@ interface SubscribeMessage {
 	storeId: string;
 }
 
+interface UnsubscribeMessage {
+	type: 'UNSUBSCRIBE';
+	storeId: string;
+}
+
 interface SyncMessage {
 	type: 'SYNC';
 	storeId: string;
 	payload: [any, any, any, any];
 }
 
-export type WebsocketMessage = SubscribeMessage | SyncMessage;
+export type WebsocketMessage =
+	| SubscribeMessage
+	| UnsubscribeMessage
+	| SyncMessage;
 
 export function formatMessage(message: WebsocketMessage) {
 	return encode(message);

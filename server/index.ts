@@ -14,6 +14,9 @@ const server = Bun.serve({
 				case 'SUBSCRIBE':
 					ws.subscribe(data.storeId);
 					return;
+				case 'UNSUBSCRIBE':
+					ws.unsubscribe(data.storeId);
+					return;
 				case 'SYNC':
 					server.publish(data.storeId, message);
 					return;
