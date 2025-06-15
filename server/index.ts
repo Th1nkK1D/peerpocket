@@ -2,15 +2,13 @@ import { parsedMessage } from '@peerpocket/libs/message';
 
 const server = Bun.serve({
 	fetch(req, server) {
-		const success = server.upgrade(req);
-
-		if (!success) {
-			new Response('Signaling server is running');
+		if (!server.upgrade(req)) {
+			return new Response('Signaling server is running');
 		}
 	},
 	websocket: {
-		message(ws, message) {
-			const data = parsedMessage(message as string);
+		async message(ws, message) {
+			const data = await parsedMessage(message as Buffer<ArrayBufferLike>);
 
 			switch (data.type) {
 				case 'SUBSCRIBE':

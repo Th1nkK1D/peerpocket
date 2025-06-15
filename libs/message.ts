@@ -1,3 +1,5 @@
+import { decode, decodeAsync, encode } from '@msgpack/msgpack';
+
 interface SubscribeMessage {
 	type: 'SUBSCRIBE';
 	storeId: string;
@@ -12,9 +14,13 @@ interface SyncMessage {
 export type WebsocketMessage = SubscribeMessage | SyncMessage;
 
 export function formatMessage(message: WebsocketMessage) {
-	return JSON.stringify(message);
+	return encode(message);
 }
 
-export function parsedMessage(message: string): WebsocketMessage {
-	return JSON.parse(message);
+export async function parsedMessage(message: Buffer<ArrayBufferLike> | Blob) {
+	if (message instanceof Blob) {
+		return decodeAsync(message.stream()) as Promise<WebsocketMessage>;
+	}
+
+	return decode(message) as WebsocketMessage;
 }

@@ -46,7 +46,7 @@ export function useUserStore() {
 			},
 			function registerReceive(receive: Receive) {
 				ws.addEventListener('message', async (event) => {
-					const data = parsedMessage(event.data);
+					const data = await parsedMessage(event.data);
 
 					if (data.type === 'SYNC') {
 						receive(...data.payload);
