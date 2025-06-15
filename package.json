@@ -4,9 +4,15 @@
 	"type": "module",
 	"private": true,
 	"scripts": {
-		"dev": "bun run --filter=\"@peerpocket/*\" dev"
+		"dev": "bun run --filter=\"@peerpocket/*\" dev",
+		"biome": "./node_modules/@biomejs/cli-linux-x64-musl/biome",
+		"prepack": "lefthook install"
 	},
-	"workspaces": [
-		"app"
-	]
+	"workspaces": ["app"],
+	"devDependencies": {
+		"@commitlint/cli": "^19.8.1",
+		"@commitlint/config-conventional": "^19.8.1",
+		"biome": "^0.3.3",
+		"lefthook": "^1.11.13"
+	}
 }
