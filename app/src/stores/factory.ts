@@ -2,15 +2,15 @@ import { formatMessage, parsedMessage } from '@peerpocket/libs/message';
 import { useEffect } from 'react';
 import { createLocalPersister } from 'tinybase/persisters/persister-browser';
 import {
+	createCustomSynchronizer,
 	type Message,
 	type Receive,
-	createCustomSynchronizer,
 } from 'tinybase/synchronizers/with-schemas';
 import * as UiReact from 'tinybase/ui-react/with-schemas';
 import {
+	createMergeableStore,
 	type TablesSchema,
 	type ValuesSchema,
-	createMergeableStore,
 } from 'tinybase/with-schemas';
 
 const ws = new WebSocket('ws://localhost:3000');
