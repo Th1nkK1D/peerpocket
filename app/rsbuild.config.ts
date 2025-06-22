@@ -9,4 +9,18 @@ export default defineConfig({
 			plugins: [tanstackRouter({ target: 'react', autoCodeSplitting: true })],
 		},
 	},
+	html: {
+		title: 'PeerPocket',
+		meta: {
+			name: 'viewport',
+			content: 'initial-scale=1, width=device-width',
+		},
+		tags: {
+			tag: 'link',
+			attrs: {
+				href: 'https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap',
+				rel: 'stylesheet',
+			},
+		},
+	},
 });
