@@ -1,3 +1,4 @@
+/** biome-ignore-all lint/correctness/useHookAtTopLevel: top-level function is not a hook */
 import { formatMessage, parsedMessage } from '@peerpocket/libs/message';
 import { useEffect } from 'react';
 import { createLocalPersister } from 'tinybase/persisters/persister-browser';
@@ -23,14 +24,19 @@ export function createSyncStore<
 		.setValuesSchema(valuesSchema)
 		.setTablesSchema(tablesSchema);
 
-	const { useTable } = UiReact as UiReact.WithSchemas<
-		[typeof tablesSchema, typeof valuesSchema]
-	>;
+	// @ts-expect-error https://tinybase.org/guides/persistence/an-intro-to-persistence/
+	const persistence = createLocalPersister(store, id);
 
-	return function useStore() {
+	function getStore() {
+		return { store, persistence };
+	}
+
+	function useStore() {
+		const { useTable, useValues } = UiReact as UiReact.WithSchemas<
+			[typeof tablesSchema, typeof valuesSchema]
+		>;
+
 		useEffect(() => {
-			// @ts-expect-error https://tinybase.org/guides/persistence/an-intro-to-persistence/
-			const persistence = createLocalPersister(store, id);
 			persistence.startAutoPersisting();
 
 			let messageHandler: (event: MessageEvent) => void;
@@ -108,7 +114,13 @@ export function createSyncStore<
 		return {
 			store,
 			useTable: (name: Exclude<keyof TS & string, number>) =>
-				useTable(name, store as any),
+				useTable(name, store),
+			useValues: () => useValues(store),
 		};
+	}
+
+	return {
+		getStore,
+		useStore,
 	};
 }

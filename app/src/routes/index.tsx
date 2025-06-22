@@ -1,36 +1,66 @@
-import Button from '@mui/material/Button';
-import { createFileRoute } from '@tanstack/react-router';
-import { useUserStore } from '../stores/user';
+import { createFileRoute, redirect, useNavigate } from '@tanstack/react-router';
+import * as z from 'zod';
+import { useMuiForm } from '../hooks/form';
+import { setupUserStore } from '../stores/user';
+import { activeUserStoreId } from '../utils/active-user';
 
 export const Route = createFileRoute('/')({
-	component: HomeComponent,
+	component: RouteComponent,
+	beforeLoad() {
+		if (activeUserStoreId.get()) {
+			throw redirect({
+				to: '/groups',
+				replace: true,
+			});
+		}
+	},
 });
 
-function HomeComponent() {
-	const user = useUserStore();
-	const table = user.useTable('groups');
+function RouteComponent() {
+	const formSchema = z.object({
+		name: z.string().nonempty(),
+	});
+
+	const navigate = useNavigate();
+
+	const form = useMuiForm({
+		defaultValues: {
+			name: '',
+		},
+		validators: {
+			onChange: formSchema,
+			onSubmit: formSchema,
+		},
+		onSubmit: async ({ value }) => {
+			const userStoreId = activeUserStoreId.assign();
+
+			const { store, persistence } = setupUserStore(userStoreId).getStore();
+
+			store.setValue('name', value.name);
+			await persistence.save();
+
+			navigate({ to: '/groups', replace: true });
+		},
+	});
 
 	return (
-		<div className="p-2">
-			<h3 className="typography-h3">Welcome Home!</h3>
-
-			<ol>
-				{Object.entries(table).map(([key, { name }]) => (
-					<li key={key}>{name}</li>
-				))}
-			</ol>
-
-			<Button
-				type="submit"
-				variant="contained"
-				onClick={() =>
-					user.store.setRow('groups', crypto.randomUUID(), {
-						name: Math.random().toString(36).substring(2, 10),
-					})
-				}
+		<div className="flex flex-col p-2 gap-4 justify-center items-center min-h-dvh h-full">
+			<h3>PeerPocket</h3>
+			<p>Your Peer-to-peer expense tracker</p>
+			<form
+				className="flex flex-col gap-2"
+				onSubmit={(e) => {
+					e.preventDefault();
+					form.handleSubmit();
+				}}
 			>
-				Add New Group
-			</Button>
+				<form.AppField name="name">
+					{(field) => <field.TextField label="Enter your name" />}
+				</form.AppField>
+				<form.AppForm>
+					<form.SubmitButton>Get started</form.SubmitButton>
+				</form.AppForm>
+			</form>
 		</div>
 	);
 }

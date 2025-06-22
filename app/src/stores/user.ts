@@ -1,6 +1,8 @@
 import { createSyncStore } from './factory';
 
-const valuesSchema = {} as const;
+const valuesSchema = {
+	name: { type: 'string' },
+} as const;
 
 const tablesSchema = {
 	groups: {
@@ -8,4 +10,5 @@ const tablesSchema = {
 	},
 } as const;
 
-export const useUserStore = createSyncStore('user', valuesSchema, tablesSchema);
+export const setupUserStore = (storeId: string) =>
+	createSyncStore(storeId, valuesSchema, tablesSchema);

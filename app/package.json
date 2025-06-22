@@ -13,11 +13,13 @@
 		"@mui/icons-material": "^7.1.2",
 		"@mui/material": "^7.1.2",
 		"@peerpocket/libs": "workspace:*",
+		"@tanstack/react-form": "^1.12.3",
 		"@tanstack/react-router": "^1.121.12",
 		"@tanstack/react-router-devtools": "^1.121.12",
 		"react": "^19.0.0",
 		"react-dom": "^19.0.0",
-		"tinybase": "^6.2.1"
+		"tinybase": "^6.2.1",
+		"zod": "^3.25.67"
 	},
 	"devDependencies": {
 		"@rsbuild/core": "1.2.4",
