@@ -14,6 +14,7 @@ function TextField(props: PropsOf<typeof MuiTextField>) {
 
 	return (
 		<MuiTextField
+			name={field.name}
 			value={field.state.value}
 			onChange={(e) => field.handleChange(e.target.value)}
 			onBlur={field.handleBlur}

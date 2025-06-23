@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root';
 import { Route as GroupsRouteImport } from './routes/groups';
+import { Route as GroupsCreateRouteImport } from './routes/groups.create';
 import { Route as GroupsIndexRouteImport } from './routes/groups.index';
 import { Route as IndexRouteImport } from './routes/index';
 
@@ -28,28 +29,36 @@ const GroupsIndexRoute = GroupsIndexRouteImport.update({
 	path: '/',
 	getParentRoute: () => GroupsRoute,
 } as any);
+const GroupsCreateRoute = GroupsCreateRouteImport.update({
+	id: '/create',
+	path: '/create',
+	getParentRoute: () => GroupsRoute,
+} as any);
 
 export interface FileRoutesByFullPath {
 	'/': typeof IndexRoute;
 	'/groups': typeof GroupsRouteWithChildren;
+	'/groups/create': typeof GroupsCreateRoute;
 	'/groups/': typeof GroupsIndexRoute;
 }
 export interface FileRoutesByTo {
 	'/': typeof IndexRoute;
+	'/groups/create': typeof GroupsCreateRoute;
 	'/groups': typeof GroupsIndexRoute;
 }
 export interface FileRoutesById {
 	__root__: typeof rootRouteImport;
 	'/': typeof IndexRoute;
 	'/groups': typeof GroupsRouteWithChildren;
+	'/groups/create': typeof GroupsCreateRoute;
 	'/groups/': typeof GroupsIndexRoute;
 }
 export interface FileRouteTypes {
 	fileRoutesByFullPath: FileRoutesByFullPath;
-	fullPaths: '/' | '/groups' | '/groups/';
+	fullPaths: '/' | '/groups' | '/groups/create' | '/groups/';
 	fileRoutesByTo: FileRoutesByTo;
-	to: '/' | '/groups';
-	id: '__root__' | '/' | '/groups' | '/groups/';
+	to: '/' | '/groups/create' | '/groups';
+	id: '__root__' | '/' | '/groups' | '/groups/create' | '/groups/';
 	fileRoutesById: FileRoutesById;
 }
 export interface RootRouteChildren {
@@ -80,14 +89,23 @@ declare module '@tanstack/react-router' {
 			preLoaderRoute: typeof GroupsIndexRouteImport;
 			parentRoute: typeof GroupsRoute;
 		};
+		'/groups/create': {
+			id: '/groups/create';
+			path: '/create';
+			fullPath: '/groups/create';
+			preLoaderRoute: typeof GroupsCreateRouteImport;
+			parentRoute: typeof GroupsRoute;
+		};
 	}
 }
 
 interface GroupsRouteChildren {
+	GroupsCreateRoute: typeof GroupsCreateRoute;
 	GroupsIndexRoute: typeof GroupsIndexRoute;
 }
 
 const GroupsRouteChildren: GroupsRouteChildren = {
+	GroupsCreateRoute: GroupsCreateRoute,
 	GroupsIndexRoute: GroupsIndexRoute,
 };
 
