@@ -16,6 +16,7 @@
 		"@tanstack/react-form": "^1.12.3",
 		"@tanstack/react-router": "^1.121.12",
 		"@tanstack/react-router-devtools": "^1.121.12",
+		"nanoid": "^5.1.5",
 		"react": "^19.0.0",
 		"react-dom": "^19.0.0",
 		"tinybase": "^6.2.1",

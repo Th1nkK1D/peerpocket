@@ -1,8 +1,9 @@
 import { createFileRoute, redirect, useNavigate } from '@tanstack/react-router';
 import * as z from 'zod';
 import { useMuiForm } from '../hooks/form';
-import { setupUserStore } from '../stores/user';
+import { setupUserStore, USER_STORE_PREFIX } from '../stores/user';
 import { activeUserStoreId } from '../utils/active-user';
+import { idHelper } from '../utils/id';
 
 export const Route = createFileRoute('/')({
 	component: RouteComponent,
@@ -32,12 +33,19 @@ function RouteComponent() {
 			onSubmit: formSchema,
 		},
 		onSubmit: async ({ value }) => {
-			const userStoreId = activeUserStoreId.assign();
+			const id = idHelper.generate();
+			const userStoreId = idHelper.createStoreId(USER_STORE_PREFIX, id);
 
 			const { store, persistence } = setupUserStore(userStoreId).getStore();
 
-			store.setValue('name', value.name);
+			store.setValues({
+				id,
+				hashedId: await idHelper.hash(id),
+				name: value.name,
+			});
+
 			await persistence.save();
+			activeUserStoreId.set(userStoreId);
 
 			navigate({ to: '/groups', replace: true });
 		},
