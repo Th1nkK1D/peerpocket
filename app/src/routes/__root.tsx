@@ -6,7 +6,6 @@ import {
 	ThemeProvider,
 } from '@mui/material/styles';
 import { createRootRoute, Outlet } from '@tanstack/react-router';
-import { TanStackRouterDevtools } from '@tanstack/react-router-devtools';
 
 const theme = createTheme({
 	colorSchemes: {
@@ -28,9 +27,6 @@ function RootComponent() {
 			<ThemeProvider theme={theme}>
 				<CssBaseline />
 				<Outlet />
-				{process.env.NODE_ENV === 'development' ? (
-					<TanStackRouterDevtools />
-				) : null}
 			</ThemeProvider>
 		</StyledEngineProvider>
 	);
