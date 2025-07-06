@@ -1,4 +1,5 @@
 import { createFileRoute, redirect } from '@tanstack/react-router';
+import { AuthenticatedLayout } from '../components/authenticated-layout';
 import { GROUP_STORE_PREFIX, setupGroupStore } from '../stores/group';
 import { idHelper } from '../utils/id';
 
@@ -19,21 +20,20 @@ export const Route = createFileRoute('/groups/$groupId')({
 
 		return {
 			...context,
-			groupStore: setupGroupStore(groupStoreId),
+			group: setupGroupStore(groupStoreId),
 		};
 	},
 	loader: ({ context }) => context,
 });
 
 function RouteComponent() {
-	const { groupStore } = Route.useLoaderData();
-
-	const group = groupStore.useStore();
-	const groupValues = group.useValues();
+	const { group, user } = Route.useLoaderData();
+	const userStore = user.useStore();
+	const groupValues = group.useStore().useValues();
 
 	return (
-		<div>
-			<h1 className="text-3xl font-bold">{groupValues.name}</h1>
-		</div>
+		<AuthenticatedLayout title={groupValues.name} userStore={userStore}>
+			Group page
+		</AuthenticatedLayout>
 	);
 }
