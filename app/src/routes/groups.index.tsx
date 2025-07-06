@@ -3,7 +3,6 @@ import { Fab } from '@mui/material';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import { createFileRoute, Link, useNavigate } from '@tanstack/react-router';
-import { useMemo } from 'react';
 import { AuthenticatedLayout } from '../components/authenticated-layout';
 
 export const Route = createFileRoute('/groups/')({
@@ -14,10 +13,8 @@ export const Route = createFileRoute('/groups/')({
 function RouteComponent() {
 	const { user } = Route.useLoaderData();
 	const userStore = user.useStore();
-	const groupTable = userStore.useTable('groups');
-	const groups = useMemo(
-		() => Object.values(groupTable).sort((a, z) => z.joinedAt - a.joinedAt),
-		[groupTable],
+	const groups = userStore.useTableRows('groups', (groups) =>
+		groups.sort((a, z) => z.joinedAt - a.joinedAt),
 	);
 
 	const navigate = useNavigate();

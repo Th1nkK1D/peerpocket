@@ -1,6 +1,6 @@
 /** biome-ignore-all lint/correctness/useHookAtTopLevel: top-level function is not a hook */
 import { formatMessage, parsedMessage } from '@peerpocket/libs/message';
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 import { createLocalPersister } from 'tinybase/persisters/persister-browser';
 import {
 	createCustomSynchronizer,
@@ -10,6 +10,7 @@ import {
 import * as UiReact from 'tinybase/ui-react/with-schemas';
 import {
 	createMergeableStore,
+	type Row,
 	type TablesSchema,
 	type ValuesSchema,
 } from 'tinybase/with-schemas';
@@ -20,6 +21,9 @@ export async function createSyncStore<
 	VS extends ValuesSchema,
 	TS extends TablesSchema,
 >(id: string, valuesSchema: VS, tablesSchema: TS) {
+	type TableName = Exclude<keyof TS & string, number>;
+	type RowValue<N extends TableName> = Row<TS, N, false>;
+
 	const store = createMergeableStore(id)
 		.setValuesSchema(valuesSchema)
 		.setTablesSchema(tablesSchema);
@@ -110,10 +114,22 @@ export async function createSyncStore<
 			};
 		});
 
+		function useTableRows<N extends TableName>(name: N): RowValue<N>[];
+		function useTableRows<N extends TableName, T>(
+			name: N,
+			method: (rows: RowValue<N>[]) => T[],
+		): T[];
+		function useTableRows<N extends TableName>(
+			name: N,
+			method: (rows: RowValue<N>[]) => unknown = (rows) => rows,
+		) {
+			const table = useTable(name, store);
+			return useMemo(() => method(Object.values(table)), [table, method]);
+		}
+
 		return {
 			store,
-			useTable: (name: Exclude<keyof TS & string, number>) =>
-				useTable(name, store),
+			useTableRows,
 			useValues: () => useValues(store),
 		};
 	}
