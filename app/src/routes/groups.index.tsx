@@ -1,9 +1,10 @@
-import { AddCircleOutline, ArrowForward } from '@mui/icons-material';
+import { ArrowForward, GroupAdd } from '@mui/icons-material';
 import { Fab } from '@mui/material';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import { createFileRoute, Link, useNavigate } from '@tanstack/react-router';
 import { AuthenticatedLayout } from '../components/authenticated-layout';
+import { FabsContainer } from '../components/fabs-container';
 
 export const Route = createFileRoute('/groups/')({
 	component: RouteComponent,
@@ -46,15 +47,14 @@ function RouteComponent() {
 					</p>
 				)}
 
-				<div className="fixed bottom-6 inset-x-4 flex flex-row gap-2 justify-center">
+				<FabsContainer>
 					<Fab
-						variant="extended"
 						color="primary"
 						onClick={() => navigate({ to: '/groups/create' })}
 					>
-						<AddCircleOutline className="mr-2" /> Create
+						<GroupAdd />
 					</Fab>
-				</div>
+				</FabsContainer>
 			</div>
 		</AuthenticatedLayout>
 	);
