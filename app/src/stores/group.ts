@@ -1,21 +1,20 @@
 import { createSyncStore } from './factory';
 
-export const USER_STORE_PREFIX = 'user';
+export const GROUP_STORE_PREFIX = 'group';
 
 const valuesSchema = {
 	id: { type: 'string', default: '' },
-	hashedId: { type: 'string', default: '' },
 	name: { type: 'string', default: '' },
 } as const;
 
 const tablesSchema = {
-	groups: {
-		id: { type: 'string', default: '' },
+	members: {
 		name: { type: 'string', default: '' },
+		hashedId: { type: 'string', default: '' },
 		joinedAt: { type: 'number', default: 0 },
 		archivedAt: { type: 'number' },
 	},
 } as const;
 
-export const setupUserStore = (storeId: string) =>
+export const setupGroupStore = (storeId: string) =>
 	createSyncStore(storeId, valuesSchema, tablesSchema);
