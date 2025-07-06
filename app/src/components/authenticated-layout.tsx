@@ -15,12 +15,14 @@ import type { UserStore } from '../stores/user';
 interface Props {
 	userStore: ReturnType<UserStore['useStore']>;
 	title?: string;
+	className?: string;
 }
 
 export function AuthenticatedLayout({
 	title,
 	userStore,
 	children,
+	className = '',
 }: PropsWithChildren<Props>) {
 	const user = userStore.useValues();
 	const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -93,7 +95,7 @@ export function AuthenticatedLayout({
 				</Toolbar>
 			</AppBar>
 
-			<div className="flex flex-col flex-1 p-4">{children}</div>
+			<div className={`flex flex-col flex-1 p-4 ${className}`}>{children}</div>
 		</div>
 	);
 }

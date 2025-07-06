@@ -29,11 +29,8 @@ function RouteComponent() {
 								<CardContent className="flex flex-row">
 									<div className="flex-1">
 										<h2 className="text-xl font-bold">{name}</h2>
-										<p className="text-xs text-gray-500">
-											Joined on{' '}
-											{new Date(joinedAt).toLocaleDateString(undefined, {
-												dateStyle: 'medium',
-											})}
+										<p className="text-sm text-gray-500">
+											Joined on {new Date(joinedAt).toLocaleDateString()}
 										</p>
 									</div>
 									<div>
