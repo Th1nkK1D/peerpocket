@@ -16,7 +16,7 @@ import {
 
 const ws = new WebSocket('ws://localhost:3000');
 
-export function createSyncStore<
+export async function createSyncStore<
 	VS extends ValuesSchema,
 	TS extends TablesSchema,
 >(id: string, valuesSchema: VS, tablesSchema: TS) {
@@ -26,6 +26,8 @@ export function createSyncStore<
 
 	// @ts-expect-error https://tinybase.org/guides/persistence/an-intro-to-persistence/
 	const persistence = createLocalPersister(store, id);
+
+	await persistence.startAutoPersisting();
 
 	function getStore() {
 		return { store, persistence };
@@ -37,8 +39,6 @@ export function createSyncStore<
 		>;
 
 		useEffect(() => {
-			persistence.startAutoPersisting();
-
 			let messageHandler: (event: MessageEvent) => void;
 
 			const synchronizer = createCustomSynchronizer(
@@ -107,7 +107,6 @@ export function createSyncStore<
 			return () => {
 				cleanupSync();
 				synchronizer.stopSync();
-				persistence.stopAutoPersisting();
 			};
 		});
 

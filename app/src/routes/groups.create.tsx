@@ -46,11 +46,11 @@ function RouteComponent() {
 			onChange: formSchema,
 			onSubmit: formSchema,
 		},
-		onSubmit({ value: { name } }) {
+		async onSubmit({ value: { name } }) {
 			if (activeStep !== 0) return;
 
-			const groupStore = setupGroupStore(
-				idHelper.createStoreId(GROUP_STORE_PREFIX, id),
+			const groupStore = (
+				await setupGroupStore(idHelper.createStoreId(GROUP_STORE_PREFIX, id))
 			).getStore();
 
 			const hashedId = userStore.store.getValue('hashedId');
@@ -68,9 +68,6 @@ function RouteComponent() {
 				name: userStore.store.getValue('name'),
 				joinedAt,
 			});
-
-			user.getStore().persistence.save();
-			groupStore.persistence.save();
 
 			setActiveStep(activeStep + 1);
 		},

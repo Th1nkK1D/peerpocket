@@ -5,7 +5,7 @@ import { idHelper } from '../utils/id';
 
 export const Route = createFileRoute('/groups/$groupId')({
 	component: RouteComponent,
-	beforeLoad: ({ params, context }) => {
+	async beforeLoad({ params, context }) {
 		const groupStoreId = idHelper.createStoreId(
 			GROUP_STORE_PREFIX,
 			params.groupId,
@@ -20,7 +20,7 @@ export const Route = createFileRoute('/groups/$groupId')({
 
 		return {
 			...context,
-			group: setupGroupStore(groupStoreId),
+			group: await setupGroupStore(groupStoreId),
 		};
 	},
 	loader: ({ context }) => context,

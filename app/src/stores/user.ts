@@ -20,4 +20,4 @@ const tablesSchema = {
 export const setupUserStore = (storeId: string) =>
 	createSyncStore(storeId, valuesSchema, tablesSchema);
 
-export type UserStore = ReturnType<typeof setupUserStore>;
+export type UserStore = Awaited<ReturnType<typeof setupUserStore>>;

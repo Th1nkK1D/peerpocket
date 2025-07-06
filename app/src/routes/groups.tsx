@@ -4,7 +4,7 @@ import { activeUserStoreId } from '../utils/active-user';
 
 export const Route = createFileRoute('/groups')({
 	component: RouteComponent,
-	beforeLoad() {
+	async beforeLoad() {
 		const userStoreId = activeUserStoreId.get();
 
 		if (!userStoreId) {
@@ -14,7 +14,7 @@ export const Route = createFileRoute('/groups')({
 			});
 		}
 
-		return { user: setupUserStore(userStoreId) };
+		return { user: await setupUserStore(userStoreId) };
 	},
 	loader: ({ context }) => context,
 });

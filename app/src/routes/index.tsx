@@ -36,7 +36,7 @@ function RouteComponent() {
 			const id = idHelper.generate();
 			const userStoreId = idHelper.createStoreId(USER_STORE_PREFIX, id);
 
-			const { store, persistence } = setupUserStore(userStoreId).getStore();
+			const { store } = (await setupUserStore(userStoreId)).getStore();
 
 			store.setValues({
 				id,
@@ -44,7 +44,6 @@ function RouteComponent() {
 				name: value.name,
 			});
 
-			await persistence.save();
 			activeUserStoreId.set(userStoreId);
 
 			navigate({ to: '/groups', replace: true });
