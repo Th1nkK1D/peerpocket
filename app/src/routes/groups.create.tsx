@@ -14,6 +14,7 @@ import { createFileRoute, Link } from '@tanstack/react-router';
 import { useMemo, useState } from 'react';
 import { z } from 'zod/v4';
 import { AuthenticatedLayout } from '../components/authenticated-layout';
+import { LinkButton } from '../components/links';
 import { useMuiForm } from '../hooks/form';
 import { GROUP_STORE_PREFIX, setupGroupStore } from '../stores/group';
 import { idHelper } from '../utils/id';
@@ -151,12 +152,17 @@ function RouteComponent() {
 							message="Link copied"
 						/>
 						<div className="flex flex-row justify-between">
-							<Link to="/groups" replace>
-								<Button>Return home</Button>
-							</Link>
-							<Link to="/groups/$groupId" params={{ groupId: id }} replace>
-								<Button variant="contained">Go to the group</Button>
-							</Link>
+							<LinkButton to="/groups" replace>
+								Return home
+							</LinkButton>
+							<LinkButton
+								variant="contained"
+								to="/groups/$groupId"
+								params={{ groupId: id }}
+								replace
+							>
+								Go to the group
+							</LinkButton>
 						</div>
 					</>
 				)}

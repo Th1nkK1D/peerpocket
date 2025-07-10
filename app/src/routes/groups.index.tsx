@@ -1,10 +1,10 @@
 import { ArrowForward, GroupAdd } from '@mui/icons-material';
-import { Fab } from '@mui/material';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
-import { createFileRoute, Link, useNavigate } from '@tanstack/react-router';
+import { createFileRoute, Link } from '@tanstack/react-router';
 import { AuthenticatedLayout } from '../components/authenticated-layout';
 import { FabsContainer } from '../components/fabs-container';
+import { LinkFab } from '../components/links';
 
 export const Route = createFileRoute('/groups/')({
 	component: RouteComponent,
@@ -17,8 +17,6 @@ function RouteComponent() {
 	const groups = userStore.useTableRows('groups', (groups) =>
 		groups.sort((a, z) => z.joinedAt - a.joinedAt),
 	);
-
-	const navigate = useNavigate();
 
 	return (
 		<AuthenticatedLayout userStore={userStore}>
@@ -48,12 +46,9 @@ function RouteComponent() {
 				)}
 
 				<FabsContainer>
-					<Fab
-						color="primary"
-						onClick={() => navigate({ to: '/groups/create' })}
-					>
+					<LinkFab color="primary" to="/groups/create">
 						<GroupAdd />
-					</Fab>
+					</LinkFab>
 				</FabsContainer>
 			</div>
 		</AuthenticatedLayout>
