@@ -1,25 +1,15 @@
 import { ContentCopyOutlined } from '@mui/icons-material';
-import {
-	Button,
-	IconButton,
-	InputAdornment,
-	Snackbar,
-	Step,
-	StepLabel,
-	Stepper,
-	TextField,
-} from '@mui/material';
+import { IconButton, InputAdornment, Snackbar, TextField } from '@mui/material';
 import { useStore } from '@tanstack/react-form';
-import { createFileRoute, Link } from '@tanstack/react-router';
+import { createFileRoute } from '@tanstack/react-router';
 import { useMemo, useState } from 'react';
 import { z } from 'zod/v4';
 import { AuthenticatedLayout } from '../components/authenticated-layout';
 import { LinkButton } from '../components/links';
 import { useMuiForm } from '../hooks/form';
+import { useStepper } from '../hooks/stepper';
 import { GROUP_STORE_PREFIX, setupGroupStore } from '../stores/group';
 import { idHelper } from '../utils/id';
-
-const steps = ['Create', 'Share'];
 
 export const Route = createFileRoute('/groups/create')({
 	component: RouteComponent,
@@ -30,7 +20,9 @@ function RouteComponent() {
 	const { user } = Route.useLoaderData();
 	const userStore = user.useStore();
 
-	const [activeStep, setActiveStep] = useState(0);
+	const { activeStep, setActiveStep, StepperView, StepNavigations } =
+		useStepper(['Create', 'Share']);
+
 	const [isCopied, setIsCopied] = useState(false);
 
 	const id = useMemo(idHelper.generate, []);
@@ -90,20 +82,7 @@ function RouteComponent() {
 
 	return (
 		<AuthenticatedLayout title="New Group" userStore={userStore}>
-			<div className="flex flex-col gap-4">
-				<Stepper activeStep={activeStep}>
-					{steps.map((label) => {
-						const stepProps: { completed?: boolean } = {};
-						const labelProps: {
-							optional?: React.ReactNode;
-						} = {};
-						return (
-							<Step key={label} {...stepProps}>
-								<StepLabel {...labelProps}>{label}</StepLabel>
-							</Step>
-						);
-					})}
-				</Stepper>
+			<StepperView>
 				{activeStep === 0 ? (
 					<form
 						className="flex flex-col gap-4"
@@ -115,9 +94,13 @@ function RouteComponent() {
 						<form.AppField name="name">
 							{(field) => <field.TextField label="Group name" />}
 						</form.AppField>
-						<form.AppForm>
-							<form.SubmitButton>Create Group</form.SubmitButton>
-						</form.AppForm>
+						<StepNavigations>
+							<form.AppForm>
+								<form.SubmitButton className="flex-1">
+									Create Group
+								</form.SubmitButton>
+							</form.AppForm>
+						</StepNavigations>
 					</form>
 				) : (
 					<>
@@ -151,7 +134,7 @@ function RouteComponent() {
 							onClose={() => setIsCopied(false)}
 							message="Link copied"
 						/>
-						<div className="flex flex-row justify-between">
+						<StepNavigations>
 							<LinkButton to="/groups" replace>
 								Return home
 							</LinkButton>
@@ -163,10 +146,10 @@ function RouteComponent() {
 							>
 								Go to the group
 							</LinkButton>
-						</div>
+						</StepNavigations>
 					</>
 				)}
-			</div>
+			</StepperView>
 		</AuthenticatedLayout>
 	);
 }
