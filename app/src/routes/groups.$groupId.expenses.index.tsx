@@ -3,7 +3,7 @@ import { createFileRoute } from '@tanstack/react-router';
 import { FabsContainer } from '../components/fabs-container';
 import { LinkFab } from '../components/links';
 
-export const Route = createFileRoute('/groups/$groupId/transactions/')({
+export const Route = createFileRoute('/groups/$groupId/expenses/')({
 	component: RouteComponent,
 });
 
@@ -16,7 +16,7 @@ function RouteComponent() {
 			<FabsContainer>
 				<LinkFab
 					color="primary"
-					aria-label="Add new transactions"
+					aria-label="Add new expense"
 					from={Route.fullPath}
 					to="add"
 				>

@@ -43,8 +43,8 @@ function RouteComponent() {
 				variant="fullWidth"
 				tabs={[
 					{
-						label: 'Transactions',
-						to: 'transactions',
+						label: 'Expenses',
+						to: 'expenses',
 						replace: true,
 					},
 					{ label: 'Members', to: 'members', replace: true },
