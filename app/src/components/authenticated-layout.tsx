@@ -40,9 +40,9 @@ export function AuthenticatedLayout({
 	}
 
 	return (
-		<div className="flex flex-col min-h-dvh">
+		<div className="flex min-h-dvh flex-col">
 			<AppBar position="static">
-				<Toolbar className="flex justify-between items-center">
+				<Toolbar className="flex items-center justify-between">
 					{title ? (
 						<IconButton
 							className="-ml-3"
@@ -56,7 +56,7 @@ export function AuthenticatedLayout({
 						</IconButton>
 					) : null}
 
-					<h1 className="text-xl font-bold">{title ?? '🐶 PeerPocket'}</h1>
+					<h1 className="font-bold text-xl">{title ?? '🐶 PeerPocket'}</h1>
 
 					<IconButton
 						size="large"
@@ -95,7 +95,7 @@ export function AuthenticatedLayout({
 				</Toolbar>
 			</AppBar>
 
-			<div className={`flex flex-col flex-1 p-4 ${className}`}>{children}</div>
+			<div className={`flex flex-1 flex-col p-4 ${className}`}>{children}</div>
 		</div>
 	);
 }

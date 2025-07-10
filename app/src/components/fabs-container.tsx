@@ -2,7 +2,7 @@ import type { PropsWithChildren } from 'react';
 
 export function FabsContainer({ children }: PropsWithChildren) {
 	return (
-		<div className="fixed bottom-6 inset-x-4 flex flex-row gap-2 justify-center">
+		<div className="fixed inset-x-4 bottom-6 flex flex-row justify-center gap-2">
 			{children}
 		</div>
 	);

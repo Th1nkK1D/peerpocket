@@ -18,6 +18,9 @@
 			"recommended": true,
 			"suspicious": {
 				"noExplicitAny": "off"
+			},
+			"nursery": {
+				"useSortedClasses": "on"
 			}
 		}
 	},

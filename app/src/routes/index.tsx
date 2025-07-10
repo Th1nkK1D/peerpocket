@@ -51,7 +51,7 @@ function RouteComponent() {
 	});
 
 	return (
-		<div className="flex flex-col p-2 gap-4 justify-center items-center min-h-dvh h-full">
+		<div className="flex h-full min-h-dvh flex-col items-center justify-center gap-4 p-2">
 			<h3>PeerPocket</h3>
 			<p>Your Peer-to-peer expense tracker</p>
 			<form

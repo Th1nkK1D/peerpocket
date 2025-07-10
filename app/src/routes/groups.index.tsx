@@ -22,15 +22,15 @@ function RouteComponent() {
 
 	return (
 		<AuthenticatedLayout userStore={userStore}>
-			<div className="relative flex-1 flex flex-col gap-3">
+			<div className="relative flex flex-1 flex-col gap-3">
 				{groups.length ? (
 					groups.map(({ id, name, joinedAt }) => (
 						<Link key={id} to="/groups/$groupId" params={{ groupId: id }}>
 							<Card>
 								<CardContent className="flex flex-row">
 									<div className="flex-1">
-										<h2 className="text-xl font-bold">{name}</h2>
-										<p className="text-sm text-gray-500">
+										<h2 className="font-bold text-xl">{name}</h2>
+										<p className="text-gray-500 text-sm">
 											Joined on {new Date(joinedAt).toLocaleDateString()}
 										</p>
 									</div>
@@ -42,7 +42,7 @@ function RouteComponent() {
 						</Link>
 					))
 				) : (
-					<p className="text-center m-auto">
+					<p className="m-auto text-center">
 						You have no groups yet. <br /> Add one or join one!
 					</p>
 				)}

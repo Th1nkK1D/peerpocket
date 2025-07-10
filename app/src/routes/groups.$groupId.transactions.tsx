@@ -9,8 +9,8 @@ export const Route = createFileRoute('/groups/$groupId/transactions')({
 
 function RouteComponent() {
 	return (
-		<div className="flex-1 flex flex-col">
-			<p className="text-center m-auto p-3">
+		<div className="flex flex-1 flex-col">
+			<p className="m-auto p-3 text-center">
 				Look like no one has taking a note just yet.
 			</p>
 			<FabsContainer>
