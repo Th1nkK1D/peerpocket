@@ -1,10 +1,8 @@
-import { ContentCopyOutlined } from '@mui/icons-material';
-import { IconButton, InputAdornment, Snackbar, TextField } from '@mui/material';
-import { useStore } from '@tanstack/react-form';
 import { createFileRoute } from '@tanstack/react-router';
-import { useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import { z } from 'zod/v4';
 import { AuthenticatedLayout } from '../components/authenticated-layout';
+import { GroupSharing } from '../components/group-sharing';
 import { LinkButton } from '../components/links';
 import { useMuiForm } from '../hooks/form';
 import { useStepper } from '../hooks/stepper';
@@ -23,21 +21,16 @@ function RouteComponent() {
 	const { activeStep, setActiveStep, StepperView, StepNavigations } =
 		useStepper(['Create', 'Share']);
 
-	const [isCopied, setIsCopied] = useState(false);
-
 	const id = useMemo(idHelper.generate, []);
-
-	const formSchema = z.object({
-		name: z.string().nonempty(),
-	});
 
 	const form = useMuiForm({
 		defaultValues: {
 			name: '',
 		},
 		validators: {
-			onChange: formSchema,
-			onSubmit: formSchema,
+			onSubmit: z.object({
+				name: z.string().nonempty(),
+			}),
 		},
 		async onSubmit({ value: { name } }) {
 			if (activeStep !== 0) return;
@@ -66,20 +59,6 @@ function RouteComponent() {
 		},
 	});
 
-	const sharedLink = useStore(
-		form.store,
-		(state) =>
-			`${window.location.origin}/groups/join?${new URLSearchParams({
-				id,
-				name: state.values.name,
-			}).toString()}`,
-	);
-
-	function copyLinkToClipboard() {
-		navigator.clipboard.writeText(sharedLink);
-		setIsCopied(true);
-	}
-
 	return (
 		<AuthenticatedLayout title="New Group" userStore={userStore}>
 			<StepperView>
@@ -106,34 +85,10 @@ function RouteComponent() {
 					<>
 						<p>
 							<strong>Your group has been created!</strong> Share this link with
-							your friend to start tracking expenses together.
+							your friend to start tracking expenses together (You can also add
+							them later!)
 						</p>
-						<TextField
-							value={sharedLink}
-							multiline
-							aria-readonly
-							slotProps={{
-								input: {
-									endAdornment: (
-										<InputAdornment position="end">
-											<IconButton
-												aria-label="Copy link"
-												onClick={copyLinkToClipboard}
-												edge="end"
-											>
-												<ContentCopyOutlined />
-											</IconButton>
-										</InputAdornment>
-									),
-								},
-							}}
-						/>
-						<Snackbar
-							open={isCopied}
-							autoHideDuration={4000}
-							onClose={() => setIsCopied(false)}
-							message="Link copied"
-						/>
+						<GroupSharing id={id} name={form.state.values.name} />
 						<StepNavigations>
 							<LinkButton to="/groups" replace>
 								Return home
