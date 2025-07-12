@@ -29,6 +29,11 @@ function TextField(props: ComponentProps<typeof MuiTextField>) {
 			helperText={field.state.meta.errors.map((e) => e.message).at(0)}
 			onChange={(e) => field.handleChange(e.target.value)}
 			onBlur={field.handleBlur}
+			slotProps={{
+				input: {
+					autoComplete: field.name,
+				},
+			}}
 			{...props}
 		></MuiTextField>
 	);
