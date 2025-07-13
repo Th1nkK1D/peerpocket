@@ -48,7 +48,6 @@ function RouteComponent() {
 				joinedAt,
 			});
 
-			groupStore.setValues({ id, name });
 			groupStore.setRow('members', hashedId, {
 				hashedId,
 				name: userStore.getValue('name'),

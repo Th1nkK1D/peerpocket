@@ -12,7 +12,9 @@ export const Route = createFileRoute('/groups/$groupId')({
 			params.groupId,
 		);
 
-		if (!localStorage.getItem(groupStoreId)) {
+		const userStore = context.user.getStore();
+
+		if (!userStore.hasRow('groups', params.groupId)) {
 			throw redirect({
 				to: '/groups',
 				replace: true,
@@ -21,6 +23,7 @@ export const Route = createFileRoute('/groups/$groupId')({
 
 		return {
 			...context,
+			userGroupInfo: userStore.getRow('groups', params.groupId),
 			group: await setupGroupStore(groupStoreId),
 		};
 	},
@@ -28,15 +31,12 @@ export const Route = createFileRoute('/groups/$groupId')({
 });
 
 function RouteComponent() {
-	const { group, user } = Route.useLoaderData();
-
-	const userStore = user.useStore();
-	const groupValues = group.useStore().useValues();
+	const { user, userGroupInfo } = Route.useLoaderData();
 
 	return (
 		<AuthenticatedLayout
-			title={groupValues.name}
-			userStore={userStore}
+			title={userGroupInfo.name}
+			userStore={user.useStore()}
 			className="!p-0"
 		>
 			<NavigationTabs

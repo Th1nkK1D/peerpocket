@@ -24,10 +24,8 @@ export const Route = createFileRoute('/groups/$groupId/members')({
 });
 
 function RouteComponent() {
-	const { group } = Route.useLoaderData();
-	const groupStore = group.useStore();
-	const groupValues = groupStore.useValues();
-	const members = groupStore.useTableRows('members');
+	const { userGroupInfo, group } = Route.useLoaderData();
+	const members = group.useStore().useTableRows('members');
 
 	const [isGroupSharingOpened, setIsGroupSharingOpened] = useState(false);
 
@@ -68,7 +66,7 @@ function RouteComponent() {
 					<DialogContentText>
 						Please send them the following invitation link:
 					</DialogContentText>
-					<GroupSharing {...groupValues} />
+					<GroupSharing id={userGroupInfo.id} name={userGroupInfo.name} />
 				</DialogContent>
 				<DialogActions>
 					<Button onClick={() => setIsGroupSharingOpened(false)} autoFocus>

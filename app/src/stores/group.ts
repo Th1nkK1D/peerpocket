@@ -2,10 +2,7 @@ import { createSyncStore } from './factory';
 
 export const GROUP_STORE_PREFIX = 'group';
 
-const valuesSchema = {
-	id: { type: 'string', default: '' },
-	name: { type: 'string', default: '' },
-} as const;
+const valuesSchema = {} as const;
 
 const tablesSchema = {
 	members: {
