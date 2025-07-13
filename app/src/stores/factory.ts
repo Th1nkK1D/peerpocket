@@ -34,7 +34,7 @@ export async function createSyncStore<
 	await persistence.startAutoPersisting();
 
 	function getStore() {
-		return { store, persistence };
+		return store;
 	}
 
 	function useStore() {
@@ -128,7 +128,7 @@ export async function createSyncStore<
 		}
 
 		return {
-			store,
+			...store,
 			useTableRows,
 			useValues: () => useValues(store),
 		};

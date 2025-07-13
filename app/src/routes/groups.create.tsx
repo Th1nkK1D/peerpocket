@@ -39,19 +39,19 @@ function RouteComponent() {
 				await setupGroupStore(idHelper.createStoreId(GROUP_STORE_PREFIX, id))
 			).getStore();
 
-			const hashedId = userStore.store.getValue('hashedId');
+			const hashedId = userStore.getValue('hashedId');
 			const joinedAt = Date.now();
 
-			userStore.store.setRow('groups', id, {
+			userStore.setRow('groups', id, {
 				id,
 				name,
 				joinedAt,
 			});
 
-			groupStore.store.setValues({ id, name });
-			groupStore.store.setRow('members', hashedId, {
+			groupStore.setValues({ id, name });
+			groupStore.setRow('members', hashedId, {
 				hashedId,
-				name: userStore.store.getValue('name'),
+				name: userStore.getValue('name'),
 				joinedAt,
 			});
 

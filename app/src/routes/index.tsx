@@ -36,7 +36,7 @@ function RouteComponent() {
 			const id = idHelper.generate();
 			const userStoreId = idHelper.createStoreId(USER_STORE_PREFIX, id);
 
-			const { store } = (await setupUserStore(userStoreId)).getStore();
+			const store = (await setupUserStore(userStoreId)).getStore();
 
 			store.setValues({
 				id,
