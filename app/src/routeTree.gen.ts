@@ -17,6 +17,7 @@ import { Route as GroupsGroupIdIndexRouteImport } from './routes/groups.$groupId
 import { Route as GroupsGroupIdMembersRouteImport } from './routes/groups.$groupId.members';
 import { Route as GroupsCreateRouteImport } from './routes/groups.create';
 import { Route as GroupsIndexRouteImport } from './routes/groups.index';
+import { Route as GroupsJoinRouteImport } from './routes/groups.join';
 import { Route as IndexRouteImport } from './routes/index';
 
 const GroupsRoute = GroupsRouteImport.update({
@@ -32,6 +33,11 @@ const IndexRoute = IndexRouteImport.update({
 const GroupsIndexRoute = GroupsIndexRouteImport.update({
 	id: '/',
 	path: '/',
+	getParentRoute: () => GroupsRoute,
+} as any);
+const GroupsJoinRoute = GroupsJoinRouteImport.update({
+	id: '/join',
+	path: '/join',
 	getParentRoute: () => GroupsRoute,
 } as any);
 const GroupsCreateRoute = GroupsCreateRouteImport.update({
@@ -72,6 +78,7 @@ export interface FileRoutesByFullPath {
 	'/groups': typeof GroupsRouteWithChildren;
 	'/groups/$groupId': typeof GroupsGroupIdRouteWithChildren;
 	'/groups/create': typeof GroupsCreateRoute;
+	'/groups/join': typeof GroupsJoinRoute;
 	'/groups/': typeof GroupsIndexRoute;
 	'/groups/$groupId/members': typeof GroupsGroupIdMembersRoute;
 	'/groups/$groupId/': typeof GroupsGroupIdIndexRoute;
@@ -81,6 +88,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
 	'/': typeof IndexRoute;
 	'/groups/create': typeof GroupsCreateRoute;
+	'/groups/join': typeof GroupsJoinRoute;
 	'/groups': typeof GroupsIndexRoute;
 	'/groups/$groupId/members': typeof GroupsGroupIdMembersRoute;
 	'/groups/$groupId': typeof GroupsGroupIdIndexRoute;
@@ -93,6 +101,7 @@ export interface FileRoutesById {
 	'/groups': typeof GroupsRouteWithChildren;
 	'/groups/$groupId': typeof GroupsGroupIdRouteWithChildren;
 	'/groups/create': typeof GroupsCreateRoute;
+	'/groups/join': typeof GroupsJoinRoute;
 	'/groups/': typeof GroupsIndexRoute;
 	'/groups/$groupId/members': typeof GroupsGroupIdMembersRoute;
 	'/groups/$groupId/': typeof GroupsGroupIdIndexRoute;
@@ -106,6 +115,7 @@ export interface FileRouteTypes {
 		| '/groups'
 		| '/groups/$groupId'
 		| '/groups/create'
+		| '/groups/join'
 		| '/groups/'
 		| '/groups/$groupId/members'
 		| '/groups/$groupId/'
@@ -115,6 +125,7 @@ export interface FileRouteTypes {
 	to:
 		| '/'
 		| '/groups/create'
+		| '/groups/join'
 		| '/groups'
 		| '/groups/$groupId/members'
 		| '/groups/$groupId'
@@ -126,6 +137,7 @@ export interface FileRouteTypes {
 		| '/groups'
 		| '/groups/$groupId'
 		| '/groups/create'
+		| '/groups/join'
 		| '/groups/'
 		| '/groups/$groupId/members'
 		| '/groups/$groupId/'
@@ -159,6 +171,13 @@ declare module '@tanstack/react-router' {
 			path: '/';
 			fullPath: '/groups/';
 			preLoaderRoute: typeof GroupsIndexRouteImport;
+			parentRoute: typeof GroupsRoute;
+		};
+		'/groups/join': {
+			id: '/groups/join';
+			path: '/join';
+			fullPath: '/groups/join';
+			preLoaderRoute: typeof GroupsJoinRouteImport;
 			parentRoute: typeof GroupsRoute;
 		};
 		'/groups/create': {
@@ -227,12 +246,14 @@ const GroupsGroupIdRouteWithChildren = GroupsGroupIdRoute._addFileChildren(
 interface GroupsRouteChildren {
 	GroupsGroupIdRoute: typeof GroupsGroupIdRouteWithChildren;
 	GroupsCreateRoute: typeof GroupsCreateRoute;
+	GroupsJoinRoute: typeof GroupsJoinRoute;
 	GroupsIndexRoute: typeof GroupsIndexRoute;
 }
 
 const GroupsRouteChildren: GroupsRouteChildren = {
 	GroupsGroupIdRoute: GroupsGroupIdRouteWithChildren,
 	GroupsCreateRoute: GroupsCreateRoute,
+	GroupsJoinRoute: GroupsJoinRoute,
 	GroupsIndexRoute: GroupsIndexRoute,
 };
 
