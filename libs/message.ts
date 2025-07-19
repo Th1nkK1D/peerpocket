@@ -10,6 +10,12 @@ interface UnsubscribeMessage {
 	storeId: string;
 }
 
+interface PeerChangeMessage {
+	type: 'PEER_CHANGE';
+	storeId: string;
+	count: number;
+}
+
 interface SyncMessage {
 	type: 'SYNC';
 	storeId: string;
@@ -19,6 +25,7 @@ interface SyncMessage {
 export type WebsocketMessage =
 	| SubscribeMessage
 	| UnsubscribeMessage
+	| PeerChangeMessage
 	| SyncMessage;
 
 export function formatMessage(message: WebsocketMessage) {

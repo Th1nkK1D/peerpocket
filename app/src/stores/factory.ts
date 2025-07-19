@@ -1,6 +1,6 @@
 /** biome-ignore-all lint/correctness/useHookAtTopLevel: top-level function is not a hook */
 import { formatMessage, parsedMessage } from '@peerpocket/libs/message';
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { createLocalPersister } from 'tinybase/persisters/persister-browser';
 import {
 	createCustomSynchronizer,
@@ -42,6 +42,8 @@ export async function createSyncStore<
 			[typeof tablesSchema, typeof valuesSchema]
 		>;
 
+		const [peerCount, setPeerCount] = useState(0);
+
 		useEffect(() => {
 			let messageHandler: (event: MessageEvent) => void;
 
@@ -63,8 +65,13 @@ export async function createSyncStore<
 					messageHandler = async (event: MessageEvent) => {
 						const data = await parsedMessage(event.data);
 
-						if (data.type === 'SYNC' && data.storeId === id) {
-							receive(...data.payload);
+						if (data.storeId !== id) return;
+
+						switch (data.type) {
+							case 'SYNC':
+								return receive(...data.payload);
+							case 'PEER_CHANGE':
+								return setPeerCount(data.count);
 						}
 					};
 
@@ -80,7 +87,10 @@ export async function createSyncStore<
 				ws.addEventListener('open', enableSync);
 			}
 
-			ws.addEventListener('close', synchronizer.destroy);
+			ws.addEventListener('close', () => {
+				setPeerCount(0);
+				synchronizer.destroy();
+			});
 
 			function enableSync() {
 				ws.send(
@@ -128,6 +138,7 @@ export async function createSyncStore<
 		}
 
 		return {
+			peerCount,
 			...store,
 			useTableRows,
 			useValues: () => useValues(store),
