@@ -1,4 +1,5 @@
 import { createFileRoute, redirect, useNavigate } from '@tanstack/react-router';
+import { zodValidator } from '@tanstack/zod-adapter';
 import * as z from 'zod';
 import { useMuiForm } from '../hooks/form';
 import { setupUserStore, USER_STORE_PREFIX } from '../stores/user';
@@ -15,13 +16,16 @@ export const Route = createFileRoute('/')({
 			});
 		}
 	},
+	validateSearch: zodValidator(
+		z.object({
+			path: z.string().optional(),
+			params: z.record(z.any()).optional(),
+		}),
+	),
 });
 
 function RouteComponent() {
-	const formSchema = z.object({
-		name: z.string().nonempty(),
-	});
-
+	const { path, params } = Route.useSearch();
 	const navigate = useNavigate();
 
 	const form = useMuiForm({
@@ -29,8 +33,9 @@ function RouteComponent() {
 			name: '',
 		},
 		validators: {
-			onChange: formSchema,
-			onSubmit: formSchema,
+			onSubmit: z.object({
+				name: z.string().nonempty(),
+			}),
 		},
 		onSubmit: async ({ value }) => {
 			const id = idHelper.generate();
@@ -46,7 +51,7 @@ function RouteComponent() {
 
 			activeUserStoreId.set(userStoreId);
 
-			navigate({ to: '/groups', replace: true });
+			navigate({ to: path || '/groups', search: params, replace: true });
 		},
 	});
 

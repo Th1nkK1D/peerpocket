@@ -20,8 +20,6 @@ export const Route = createFileRoute('/groups/join')({
 	loader: async ({ deps, context }) => {
 		const { id, name } = deps;
 
-		console.log(id, name);
-
 		const userStore = context.user.getStore();
 		const groupStore = (
 			await setupGroupStore(idHelper.createStoreId(GROUP_STORE_PREFIX, id))

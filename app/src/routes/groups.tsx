@@ -4,13 +4,17 @@ import { activeUserStoreId } from '../utils/active-user';
 
 export const Route = createFileRoute('/groups')({
 	component: RouteComponent,
-	async beforeLoad() {
+	async beforeLoad({ location }) {
 		const userStoreId = activeUserStoreId.get();
 
 		if (!userStoreId) {
 			throw redirect({
 				to: '/',
 				replace: true,
+				search: {
+					path: location.pathname,
+					params: location.search,
+				},
 			});
 		}
 
