@@ -13,18 +13,18 @@ const server = Bun.serve({
 			switch (data.type) {
 				case 'SUBSCRIBE':
 					ws.subscribe(data.storeId);
-					broadcastPeerChange(data.storeId);
-					return;
-				case 'UNSUBSCRIBE':
-					ws.unsubscribe(data.storeId);
+					ws.data = [...(ws.data ?? []), data.storeId];
 					broadcastPeerChange(data.storeId);
 					return;
 				case 'SYNC':
-					server.publish(data.storeId, message);
+					ws.publish(data.storeId, message);
 					return;
 			}
 		},
-	},
+		async close(ws) {
+			ws.data?.forEach((storeId) => broadcastPeerChange(storeId));
+		},
+	} as Bun.WebSocketHandler<string[]>,
 });
 
 function broadcastPeerChange(storeId: string) {
