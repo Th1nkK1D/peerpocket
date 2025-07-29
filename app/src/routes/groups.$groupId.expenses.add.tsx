@@ -14,7 +14,7 @@ export const Route = createFileRoute('/groups/$groupId/expenses/add')({
 
 function RouteComponent() {
 	const { group } = Route.useLoaderData();
-	const members = group.useStore().useTableRows('members');
+	const members = group.useTableRows('members');
 
 	const { activeStep, setActiveStep, StepperView, StepNavigations } =
 		useStepper(['Expense details', 'Splits']);

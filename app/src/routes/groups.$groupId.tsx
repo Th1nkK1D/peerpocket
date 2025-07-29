@@ -7,23 +7,21 @@ import { idHelper } from '../utils/id';
 export const Route = createFileRoute('/groups/$groupId')({
 	component: RouteComponent,
 	async beforeLoad({ params, context }) {
-		const groupStoreId = idHelper.createStoreId(
-			GROUP_STORE_PREFIX,
-			params.groupId,
-		);
-
-		const userStore = context.user.getStore();
-
-		if (!userStore.hasRow('groups', params.groupId)) {
+		if (!context.user.hasRow('groups', params.groupId)) {
 			throw redirect({
 				to: '/groups',
 				replace: true,
 			});
 		}
 
+		const groupStoreId = idHelper.createStoreId(
+			GROUP_STORE_PREFIX,
+			params.groupId,
+		);
+
 		return {
 			...context,
-			userGroupInfo: userStore.getRow('groups', params.groupId),
+			userGroupInfo: context.user.getRow('groups', params.groupId),
 			group: await setupGroupStore(groupStoreId),
 		};
 	},
@@ -33,12 +31,12 @@ export const Route = createFileRoute('/groups/$groupId')({
 function RouteComponent() {
 	const { user, group, userGroupInfo } = Route.useLoaderData();
 
-	const { peerCount } = group.useStore();
+	const peerCount = group.usePeerSync();
 
 	return (
 		<AuthenticatedLayout
 			title={userGroupInfo.name}
-			userStore={user.useStore()}
+			userStore={user}
 			className="!p-0"
 		>
 			<div className="flex flex-row py-2 px-3 justify-center items-center gap-2">

@@ -41,9 +41,9 @@ function RouteComponent() {
 			const id = idHelper.generate();
 			const userStoreId = idHelper.createStoreId(USER_STORE_PREFIX, id);
 
-			const store = (await setupUserStore(userStoreId)).getStore();
+			const user = await setupUserStore(userStoreId);
 
-			store.setValues({
+			user.setValues({
 				id,
 				hashedId: await idHelper.hash(id),
 				name: value.name,

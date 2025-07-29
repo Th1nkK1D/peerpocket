@@ -13,13 +13,13 @@ export const Route = createFileRoute('/groups/')({
 
 function RouteComponent() {
 	const { user } = Route.useLoaderData();
-	const userStore = user.useStore();
-	const groups = userStore.useTableRows('groups', (groups) =>
+
+	const groups = user.useTableRows('groups', (groups) =>
 		groups.sort((a, z) => z.joinedAt - a.joinedAt),
 	);
 
 	return (
-		<AuthenticatedLayout userStore={userStore}>
+		<AuthenticatedLayout userStore={user}>
 			<div className="relative flex flex-1 flex-col gap-3">
 				{groups.length ? (
 					groups.map(({ id, name, joinedAt }) => (

@@ -1,4 +1,4 @@
-import { createSyncStore } from './factory';
+import { createSyncStore } from '../hooks/sync-store';
 
 export const USER_STORE_PREFIX = 'user';
 

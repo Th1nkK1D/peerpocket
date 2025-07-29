@@ -19,27 +19,27 @@ export const Route = createFileRoute('/groups/join')({
 	loaderDeps: ({ search: { id, name } }) => ({ id, name }),
 	loader: async ({ deps, context }) => {
 		const { id, name } = deps;
+		const { user } = context;
 
-		const userStore = context.user.getStore();
-		const groupStore = (
-			await setupGroupStore(idHelper.createStoreId(GROUP_STORE_PREFIX, id))
-		).getStore();
+		const group = await setupGroupStore(
+			idHelper.createStoreId(GROUP_STORE_PREFIX, id),
+		);
 
-		const hashedId = userStore.getValue('hashedId');
+		const hashedId = user.getValue('hashedId');
 		const joinedAt = Date.now();
 
-		if (!userStore.hasRow('groups', id)) {
-			userStore.setRow('groups', id, {
+		if (!user.hasRow('groups', id)) {
+			user.setRow('groups', id, {
 				id,
 				name,
 				joinedAt,
 			});
 		}
 
-		if (!groupStore.hasRow('members', hashedId)) {
-			groupStore.setRow('members', hashedId, {
+		if (!group.hasRow('members', hashedId)) {
+			group.setRow('members', hashedId, {
 				hashedId,
-				name: userStore.getValue('name'),
+				name: user.getValue('name'),
 				joinedAt,
 			});
 		}
@@ -52,7 +52,7 @@ function RouteComponent() {
 	const { id, name, user } = Route.useLoaderData();
 
 	return (
-		<AuthenticatedLayout userStore={user.useStore()} className="justify-center">
+		<AuthenticatedLayout userStore={user} className="justify-center">
 			<div className="flex flex-col items-center gap-8">
 				<Avatar className="size-16 bg-success">
 					<HandshakeOutlined className="size-8" />

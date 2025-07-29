@@ -25,7 +25,7 @@ export const Route = createFileRoute('/groups/$groupId/members')({
 
 function RouteComponent() {
 	const { userGroupInfo, group } = Route.useLoaderData();
-	const members = group.useStore().useTableRows('members');
+	const members = group.useTableRows('members');
 
 	const [isGroupSharingOpened, setIsGroupSharingOpened] = useState(false);
 

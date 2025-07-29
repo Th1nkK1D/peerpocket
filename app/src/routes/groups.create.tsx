@@ -16,7 +16,6 @@ export const Route = createFileRoute('/groups/create')({
 
 function RouteComponent() {
 	const { user } = Route.useLoaderData();
-	const userStore = user.useStore();
 
 	const { activeStep, setActiveStep, StepperView, StepNavigations } =
 		useStepper(['Create', 'Share']);
@@ -35,22 +34,22 @@ function RouteComponent() {
 		async onSubmit({ value: { name } }) {
 			if (activeStep !== 0) return;
 
-			const groupStore = (
-				await setupGroupStore(idHelper.createStoreId(GROUP_STORE_PREFIX, id))
-			).getStore();
+			const group = await setupGroupStore(
+				idHelper.createStoreId(GROUP_STORE_PREFIX, id),
+			);
 
-			const hashedId = userStore.getValue('hashedId');
+			const hashedId = user.getValue('hashedId');
 			const joinedAt = Date.now();
 
-			userStore.setRow('groups', id, {
+			user.setRow('groups', id, {
 				id,
 				name,
 				joinedAt,
 			});
 
-			groupStore.setRow('members', hashedId, {
+			group.setRow('members', hashedId, {
 				hashedId,
-				name: userStore.getValue('name'),
+				name: user.getValue('name'),
 				joinedAt,
 			});
 
@@ -59,7 +58,7 @@ function RouteComponent() {
 	});
 
 	return (
-		<AuthenticatedLayout title="New Group" userStore={userStore}>
+		<AuthenticatedLayout title="New Group" userStore={user}>
 			<StepperView>
 				{activeStep === 0 ? (
 					<form

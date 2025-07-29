@@ -13,7 +13,7 @@ import { type PropsWithChildren, useState } from 'react';
 import type { UserStore } from '../stores/user';
 
 interface Props {
-	userStore: ReturnType<UserStore['useStore']>;
+	userStore: UserStore;
 	title?: string;
 	className?: string;
 }
