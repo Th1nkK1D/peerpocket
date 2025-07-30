@@ -24,7 +24,7 @@ const tablesSchema = {
 	},
 	splits: {
 		expenseId: { type: 'string', default: '' },
-		userHasedId: { type: 'string', default: '' },
+		userHashedId: { type: 'string', default: '' },
 		amount: { type: 'number', default: 0 },
 		settledAt: { type: 'number' },
 	},

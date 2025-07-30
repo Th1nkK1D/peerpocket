@@ -55,7 +55,7 @@ function RouteComponent() {
 				splits: z.array(
 					z.object({
 						name: z.string(),
-						userHasedId: z.string(),
+						userHashedId: z.string(),
 						amount: z.number(),
 						isSelected: z.boolean(),
 					}),
@@ -65,7 +65,7 @@ function RouteComponent() {
 		defaultValues: {
 			splits: members.map(({ name, hashedId }) => ({
 				name,
-				userHasedId: hashedId,
+				userHashedId: hashedId,
 				amount: 0,
 				isSelected: true,
 			})),
@@ -79,9 +79,10 @@ function RouteComponent() {
 
 			value.splits
 				.filter((s) => s.amount > 0)
-				.forEach(({ userHasedId, amount }) => {
+				.forEach(({ userHashedId, amount }) => {
 					group.addRow('splits', {
-						userHasedId,
+						expenseId: detailsForm.state.values.id,
+						userHashedId,
 						amount,
 					});
 				});
@@ -215,9 +216,9 @@ function RouteComponent() {
 												/>
 											</td>
 										</tr>
-										{field.state.value.map(({ userHasedId, name }, i) => {
+										{field.state.value.map(({ userHashedId, name }, i) => {
 											return (
-												<tr key={userHasedId}>
+												<tr key={userHashedId}>
 													<td>
 														<splitsForm.AppField
 															name={`splits[${i}].isSelected`}
