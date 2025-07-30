@@ -6,3 +6,7 @@ export const categories = [
 	{ name: 'Transportation', emoji: '🚗' },
 	{ name: 'Other', emoji: '❓' },
 ];
+
+export const categoryNameEmojiMap = new Map(
+	categories.map((cat) => [cat.name, cat.emoji]),
+);
