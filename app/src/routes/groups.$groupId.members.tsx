@@ -14,6 +14,7 @@ import {
 	ListItemText,
 } from '@mui/material';
 import { createFileRoute } from '@tanstack/react-router';
+import dayjs from 'dayjs';
 import { useState } from 'react';
 import { FabsContainer } from '../components/fabs-container';
 import { GroupSharing } from '../components/group-sharing';
@@ -43,7 +44,7 @@ function RouteComponent() {
 						</ListItemAvatar>
 						<ListItemText
 							primary={member.name}
-							secondary={`Joined at ${new Date(member.joinedAt).toLocaleString()}`}
+							secondary={`Joined on ${dayjs(member.joinedAt).format('DD MMMM YYYY')}`}
 						/>
 					</ListItem>
 				))}

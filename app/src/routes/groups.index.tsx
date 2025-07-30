@@ -2,6 +2,7 @@ import { ArrowForward, GroupAdd } from '@mui/icons-material';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import { createFileRoute, Link } from '@tanstack/react-router';
+import dayjs from 'dayjs';
 import { AuthenticatedLayout } from '../components/authenticated-layout';
 import { FabsContainer } from '../components/fabs-container';
 import { LinkFab } from '../components/links';
@@ -29,7 +30,7 @@ function RouteComponent() {
 									<div className="flex-1">
 										<h2 className="font-bold text-xl">{name}</h2>
 										<p className="text-gray-500 text-sm">
-											Joined on {new Date(joinedAt).toLocaleDateString()}
+											Joined on {dayjs(joinedAt).format('DD MMMM YYYY')}
 										</p>
 									</div>
 									<div>

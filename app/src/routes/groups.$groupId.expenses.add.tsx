@@ -179,7 +179,13 @@ function RouteComponent() {
 						)}
 					</detailsForm.AppField>
 					<detailsForm.AppField name="paidOn">
-						{(field) => <field.DateField label="Paid on" />}
+						{(field) => (
+							<field.DateField
+								label="Paid on"
+								format="ddd, D MMM YY"
+								disableFuture
+							/>
+						)}
 					</detailsForm.AppField>
 					<StepNavigations>
 						<LinkButton from={Route.fullPath} to="..">
