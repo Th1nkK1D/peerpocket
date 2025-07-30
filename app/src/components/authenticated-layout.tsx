@@ -8,7 +8,7 @@ import {
 	MenuItem,
 	Toolbar,
 } from '@mui/material';
-import { useRouter } from '@tanstack/react-router';
+import { useNavigate } from '@tanstack/react-router';
 import { type PropsWithChildren, useState } from 'react';
 import type { UserStore } from '../stores/user';
 
@@ -27,7 +27,7 @@ export function AuthenticatedLayout({
 	const user = userStore.useValues();
 	const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
-	const router = useRouter();
+	const navigate = useNavigate();
 
 	function closeMenu() {
 		setAnchorEl(null);
@@ -36,7 +36,7 @@ export function AuthenticatedLayout({
 	function logout() {
 		closeMenu();
 		localStorage.clear();
-		router.navigate({ to: '/', replace: true });
+		navigate({ to: '/', replace: true });
 	}
 
 	return (
@@ -46,11 +46,7 @@ export function AuthenticatedLayout({
 					{title ? (
 						<IconButton
 							className="-ml-3"
-							onClick={() =>
-								router.history.canGoBack()
-									? router.history.back()
-									: router.navigate({ to: '/groups' })
-							}
+							onClick={() => navigate({ to: '..' })}
 						>
 							<ChevronLeft />
 						</IconButton>
