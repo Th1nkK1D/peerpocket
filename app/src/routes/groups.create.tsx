@@ -38,7 +38,7 @@ function RouteComponent() {
 				idHelper.createStoreId(GROUP_STORE_PREFIX, id),
 			);
 
-			const hashedId = user.getValue('hashedId');
+			const hashedId = user.getValue('hashedId') as string;
 			const joinedAt = Date.now();
 
 			user.setRow('groups', id, {
