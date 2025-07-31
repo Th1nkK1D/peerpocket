@@ -40,7 +40,7 @@ export function AuthenticatedLayout({
 	}
 
 	return (
-		<div className="flex min-h-dvh flex-col">
+		<div className="flex h-dvh flex-col">
 			<AppBar position="static">
 				<Toolbar className="flex items-center justify-between">
 					{title ? (
@@ -91,7 +91,11 @@ export function AuthenticatedLayout({
 				</Toolbar>
 			</AppBar>
 
-			<div className={`flex flex-1 flex-col p-4 ${className}`}>{children}</div>
+			<div
+				className={`flex flex-1 flex-col p-4 overflow-y-scroll ${className}`}
+			>
+				{children}
+			</div>
 		</div>
 	);
 }

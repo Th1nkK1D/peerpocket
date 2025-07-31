@@ -39,38 +39,42 @@ function RouteComponent() {
 			userStore={user}
 			className="!p-0"
 		>
-			<div className="flex flex-row py-2 px-3 justify-center items-center gap-2">
-				<div
-					className={`size-2 rounded-full ${
-						peerCount === 0
-							? 'bg-error'
+			<div className="">
+				<div className="flex flex-row py-2 px-3 justify-center items-center gap-2">
+					<div
+						className={`size-2 rounded-full ${
+							peerCount === 0
+								? 'bg-error'
+								: peerCount === 1
+									? 'bg-warning'
+									: 'bg-success'
+						}`}
+					>
+						<div className="size-2 rounded-full bg-inherit animate-ping"></div>
+					</div>
+					<span className="text-xs text-gray-400">
+						{peerCount === 0
+							? 'SYNC OFF - No connection to the broadcast server'
 							: peerCount === 1
-								? 'bg-warning'
-								: 'bg-success'
-					}`}
-				>
-					<div className="size-2 rounded-full bg-inherit animate-ping"></div>
+								? 'Sync OFF - Only you are online'
+								: `Sync ON - ${peerCount - 1} peers connected`}
+					</span>
 				</div>
-				<span className="text-xs text-gray-400">
-					{peerCount === 0
-						? 'SYNC OFF - No connection to the broadcast server'
-						: peerCount === 1
-							? 'Sync OFF - Only you are online'
-							: `Sync ON - ${peerCount - 1} peers connected`}
-				</span>
+				<NavigationTabs
+					variant="fullWidth"
+					tabs={[
+						{
+							label: 'Expenses',
+							to: 'expenses',
+							replace: true,
+						},
+						{ label: 'Members', to: 'members', replace: true },
+					]}
+				/>
 			</div>
-			<NavigationTabs
-				variant="fullWidth"
-				tabs={[
-					{
-						label: 'Expenses',
-						to: 'expenses',
-						replace: true,
-					},
-					{ label: 'Members', to: 'members', replace: true },
-				]}
-			/>
-			<Outlet />
+			<div className="flex flex-col flex-1 overflow-y-scroll">
+				<Outlet />
+			</div>
 		</AuthenticatedLayout>
 	);
 }

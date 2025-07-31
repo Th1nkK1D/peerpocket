@@ -33,7 +33,7 @@ function RouteComponent() {
 	const members = group.useTableRows('members');
 
 	return (
-		<div className="flex flex-1 flex-col">
+		<>
 			{expenseByDays.length === 0 ? (
 				<p className="m-auto p-3 text-center">
 					Look like no one has taking a note just yet.
@@ -95,6 +95,6 @@ function RouteComponent() {
 					<Add />
 				</LinkFab>
 			</FabsContainer>
-		</div>
+		</>
 	);
 }

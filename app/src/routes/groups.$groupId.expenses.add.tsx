@@ -151,7 +151,7 @@ function RouteComponent() {
 					}}
 				>
 					<detailsForm.AppField name="amount">
-						{(field) => <field.CurrencyField label="Amount" />}
+						{(field) => <field.CurrencyField label="Total" />}
 					</detailsForm.AppField>
 					<detailsForm.AppField name="category">
 						{(field) => (
