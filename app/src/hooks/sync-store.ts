@@ -38,8 +38,8 @@ export async function createSyncStore<
 	function useTableRows<N extends TableName>(name: N): RowValue<N>[];
 	function useTableRows<N extends TableName, T>(
 		name: N,
-		method: (rows: RowValue<N>[]) => T[],
-	): T[];
+		method: (rows: RowValue<N>[]) => T,
+	): T;
 	function useTableRows<N extends TableName>(
 		name: N,
 		method: (rows: RowValue<N>[]) => unknown = (rows) => rows,
