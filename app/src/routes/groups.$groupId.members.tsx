@@ -36,7 +36,7 @@ function RouteComponent() {
 		<>
 			<List>
 				{members.map((member) => (
-					<ListItem key={member.hashedId}>
+					<ListItem key={member.id}>
 						<ListItemAvatar>
 							<Avatar>
 								<Person />

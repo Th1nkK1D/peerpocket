@@ -6,7 +6,6 @@ import { LinkButton } from '../components/links';
 import { categories } from '../constants/expense';
 import { BaseCurrencyField, formatDecimal, useMuiForm } from '../hooks/form';
 import { useStepper } from '../hooks/stepper';
-import { idHelper } from '../utils/id';
 
 export const Route = createFileRoute('/groups/$groupId/expenses/add')({
 	component: RouteComponent,
@@ -26,22 +25,20 @@ function RouteComponent() {
 	const detailsForm = useMuiForm({
 		validators: {
 			onSubmit: z.object({
-				id: z.string(),
 				amount: z.number(),
 				category: z.string().nonempty(),
 				notes: z.string(),
-				paidByUserHashedId: z.string(),
+				paidByMemberId: z.string(),
 				paidOn: z.instanceof(dayjs as unknown as typeof Dayjs, {
 					error: 'Invalid date',
 				}),
 			}),
 		},
 		defaultValues: {
-			id: idHelper.generate(),
 			notes: '',
 			amount: 0,
 			category: 'Other',
-			paidByUserHashedId: currentUser.hashedId,
+			paidByMemberId: currentUser.hashedId,
 			paidOn: dayjs(),
 		},
 		onSubmit() {
@@ -55,7 +52,7 @@ function RouteComponent() {
 				splits: z.array(
 					z.object({
 						name: z.string(),
-						userHashedId: z.string(),
+						memberId: z.string(),
 						amount: z.number(),
 						isSelected: z.boolean(),
 					}),
@@ -63,15 +60,15 @@ function RouteComponent() {
 			}),
 		},
 		defaultValues: {
-			splits: members.map(({ name, hashedId }) => ({
+			splits: members.map(({ id, name }) => ({
 				name,
-				userHashedId: hashedId,
+				memberId: id,
 				amount: 0,
 				isSelected: true,
 			})),
 		},
 		async onSubmit({ value }) {
-			group.addRow('expenses', {
+			const expenseId = group.addRow('expenses', {
 				...detailsForm.state.values,
 				paidOn: detailsForm.state.values.paidOn.unix() * 1000,
 				createdAt: Date.now(),
@@ -79,10 +76,10 @@ function RouteComponent() {
 
 			value.splits
 				.filter((s) => s.amount > 0)
-				.forEach(({ userHashedId, amount }) => {
+				.forEach(({ memberId, amount }) => {
 					group.addRow('splits', {
-						expenseId: detailsForm.state.values.id,
-						userHashedId,
+						expenseId,
+						memberId,
 						amount,
 					});
 				});
@@ -167,12 +164,12 @@ function RouteComponent() {
 					<detailsForm.AppField name="notes">
 						{(field) => <field.TextField label="Notes" />}
 					</detailsForm.AppField>
-					<detailsForm.AppField name="paidByUserHashedId">
+					<detailsForm.AppField name="paidByMemberId">
 						{(field) => (
 							<field.SelectField
-								options={members.map(({ name, hashedId }) => ({
+								options={members.map(({ name, id }) => ({
 									label: name,
-									value: hashedId,
+									value: id,
 								}))}
 								label="Paid by"
 							/>
@@ -222,9 +219,9 @@ function RouteComponent() {
 												/>
 											</td>
 										</tr>
-										{field.state.value.map(({ userHashedId, name }, i) => {
+										{field.state.value.map(({ memberId, name }, i) => {
 											return (
-												<tr key={userHashedId}>
+												<tr key={memberId}>
 													<td>
 														<splitsForm.AppField
 															name={`splits[${i}].isSelected`}

@@ -35,7 +35,7 @@ export async function createSyncStore<
 		[typeof tablesSchema, typeof valuesSchema]
 	>;
 
-	type withRowId<T> = { _rowId: string } & T;
+	type withRowId<T> = { id: string } & T;
 
 	function useTableRows<N extends TableName>(name: N): withRowId<RowValue<N>>[];
 	function useTableRows<N extends TableName, T>(
@@ -50,8 +50,8 @@ export async function createSyncStore<
 		return useMemo(
 			() =>
 				method(
-					Object.entries(table).map(([_rowId, value]) => ({
-						_rowId,
+					Object.entries(table).map(([id, value]) => ({
+						id,
 						...value,
 					})),
 				),

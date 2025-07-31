@@ -21,7 +21,10 @@ export const Route = createFileRoute('/groups/$groupId')({
 
 		return {
 			...context,
-			userGroupInfo: context.user.getRow('groups', params.groupId),
+			userGroupInfo: {
+				id: params.groupId,
+				...context.user.getRow('groups', params.groupId),
+			},
 			group: await setupGroupStore(groupStoreId),
 		};
 	},

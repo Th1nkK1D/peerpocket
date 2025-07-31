@@ -30,7 +30,6 @@ export const Route = createFileRoute('/groups/join')({
 
 		if (!user.hasRow('groups', id)) {
 			user.setRow('groups', id, {
-				id,
 				name,
 				joinedAt,
 			});
@@ -38,7 +37,6 @@ export const Route = createFileRoute('/groups/join')({
 
 		if (!group.hasRow('members', hashedId)) {
 			group.setRow('members', hashedId, {
-				hashedId,
 				name: user.getValue('name'),
 				joinedAt,
 			});

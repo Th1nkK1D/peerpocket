@@ -43,9 +43,9 @@ function RouteComponent() {
 		),
 	);
 	const splits = group.useTableRows('splits');
-	const membersHashedIdNameMap = group.useTableRows(
+	const memberIdNameMap = group.useTableRows(
 		'members',
-		(members) => new Map(members.map((m) => [m.hashedId, m.name])),
+		(members) => new Map(members.map((m) => [m.id, m.name])),
 	);
 
 	const [selectedExpense, setSelectedExpense] = useState<{
@@ -59,16 +59,14 @@ function RouteComponent() {
 	function deleteExpense() {
 		if (!selectedExpense) return;
 
-		console.log(selectedExpense);
-
-		group.delRow('expenses', selectedExpense.expense._rowId);
+		group.delRow('expenses', selectedExpense.expense.id);
 
 		if (selectedExpense.yourSplit) {
-			group.delRow('splits', selectedExpense.yourSplit._rowId);
+			group.delRow('splits', selectedExpense.yourSplit.id);
 		}
 
 		selectedExpense.otherSplits.forEach((split) => {
-			group.delRow('splits', split._rowId);
+			group.delRow('splits', split.id);
 		});
 
 		setSelectedExpense(null);
@@ -89,10 +87,10 @@ function RouteComponent() {
 								(split) => split.expenseId === expense.id,
 							);
 							const yourSplit = relatedSplits.find(
-								(split) => split.userHashedId === currentUser.hashedId,
+								(split) => split.memberId === currentUser.hashedId,
 							);
 							const otherSplits = relatedSplits.filter(
-								(split) => split.userHashedId !== currentUser.hashedId,
+								(split) => split.memberId !== currentUser.hashedId,
 							);
 
 							return (
@@ -119,10 +117,10 @@ function RouteComponent() {
 											</div>
 											<div className="flex flex-row">
 												<p className="flex-1 text-gray-500 text-sm">
-													{expense.paidByUserHashedId === currentUser.hashedId
+													{expense.paidByMemberId === currentUser.hashedId
 														? `${otherSplits.length} people owe you`
 														: yourSplit
-															? `You owe ${membersHashedIdNameMap.get(expense.paidByUserHashedId)}`
+															? `You owe ${memberIdNameMap.get(expense.paidByMemberId)}`
 															: ''}
 												</p>
 												<p className="text-gray-500 text-sm">
@@ -153,10 +151,7 @@ function RouteComponent() {
 						<DialogContent dividers>
 							<DialogContentText className="mb-1 text-sm">
 								Paid by{' '}
-								{membersHashedIdNameMap.get(
-									selectedExpense.expense.paidByUserHashedId,
-								)}{' '}
-								on{' '}
+								{memberIdNameMap.get(selectedExpense.expense.paidByMemberId)} on{' '}
 								{dayjs(selectedExpense.expense.paidOn).format('ddd, D MMM YY')}
 							</DialogContentText>
 							<Table aria-label="splits">
@@ -180,9 +175,9 @@ function RouteComponent() {
 										</TableRow>
 									) : null}
 									{selectedExpense.otherSplits.map((split) => (
-										<TableRow key={split.userHashedId}>
+										<TableRow key={split.memberId}>
 											<TableCell>
-												{membersHashedIdNameMap.get(split.userHashedId)}
+												{memberIdNameMap.get(split.memberId)}
 											</TableCell>
 											<TableCell align="right">
 												{formatDecimal(split.amount)}

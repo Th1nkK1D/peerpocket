@@ -10,7 +10,6 @@ const valuesSchema = {
 
 const tablesSchema = {
 	groups: {
-		id: { type: 'string', default: '' },
 		name: { type: 'string', default: '' },
 		joinedAt: { type: 'number', default: 0 },
 		archivedAt: { type: 'number' },
