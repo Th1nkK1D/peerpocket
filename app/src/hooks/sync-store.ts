@@ -35,17 +35,28 @@ export async function createSyncStore<
 		[typeof tablesSchema, typeof valuesSchema]
 	>;
 
-	function useTableRows<N extends TableName>(name: N): RowValue<N>[];
+	type withRowId<T> = { _rowId: string } & T;
+
+	function useTableRows<N extends TableName>(name: N): withRowId<RowValue<N>>[];
 	function useTableRows<N extends TableName, T>(
 		name: N,
-		method: (rows: RowValue<N>[]) => T,
+		method: (rows: withRowId<RowValue<N>>[]) => T,
 	): T;
 	function useTableRows<N extends TableName>(
 		name: N,
-		method: (rows: RowValue<N>[]) => unknown = (rows) => rows,
+		method: (rows: withRowId<RowValue<N>>[]) => unknown = (rows) => rows,
 	) {
 		const table = useTable(name, store);
-		return useMemo(() => method(Object.values(table)), [table, method]);
+		return useMemo(
+			() =>
+				method(
+					Object.entries(table).map(([_rowId, value]) => ({
+						_rowId,
+						...value,
+					})),
+				),
+			[table, method],
+		);
 	}
 
 	function usePeerSync() {

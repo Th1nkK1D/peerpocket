@@ -48,11 +48,32 @@ function RouteComponent() {
 		(members) => new Map(members.map((m) => [m.hashedId, m.name])),
 	);
 
-	const [openedDialog, setOpenedDialog] = useState<{
+	const [selectedExpense, setSelectedExpense] = useState<{
 		expense: (typeof expenseByDays)[number][1][number];
 		yourSplit?: (typeof splits)[number];
 		otherSplits: typeof splits;
 	} | null>(null);
+
+	const [isDeleting, setIsDeleting] = useState(false);
+
+	function deleteExpense() {
+		if (!selectedExpense) return;
+
+		console.log(selectedExpense);
+
+		group.delRow('expenses', selectedExpense.expense._rowId);
+
+		if (selectedExpense.yourSplit) {
+			group.delRow('splits', selectedExpense.yourSplit._rowId);
+		}
+
+		selectedExpense.otherSplits.forEach((split) => {
+			group.delRow('splits', split._rowId);
+		});
+
+		setSelectedExpense(null);
+		setIsDeleting(false);
+	}
 
 	return (
 		<>
@@ -78,7 +99,7 @@ function RouteComponent() {
 								<ListItem key={expense.id} disablePadding>
 									<ListItemButton
 										onClick={() =>
-											setOpenedDialog({ expense, yourSplit, otherSplits })
+											setSelectedExpense({ expense, yourSplit, otherSplits })
 										}
 									>
 										<ListItemAvatar>
@@ -117,46 +138,48 @@ function RouteComponent() {
 				))
 			)}
 			<Dialog
-				open={openedDialog !== null}
-				onClose={() => setOpenedDialog(null)}
+				open={!!selectedExpense && !isDeleting}
+				onClose={() => setSelectedExpense(null)}
 				scroll="paper"
 				fullWidth
 			>
-				{openedDialog ? (
+				{selectedExpense ? (
 					<>
 						<DialogTitle>
-							{categoryNameEmojiMap.get(openedDialog.expense.category)}{' '}
-							{openedDialog.expense.notes || openedDialog.expense.category}
+							{categoryNameEmojiMap.get(selectedExpense.expense.category)}{' '}
+							{selectedExpense.expense.notes ||
+								selectedExpense.expense.category}
 						</DialogTitle>
 						<DialogContent dividers>
 							<DialogContentText className="mb-1 text-sm">
 								Paid by{' '}
 								{membersHashedIdNameMap.get(
-									openedDialog.expense.paidByUserHashedId,
+									selectedExpense.expense.paidByUserHashedId,
 								)}{' '}
-								on {dayjs(openedDialog.expense.paidOn).format('ddd, D MMM YY')}
+								on{' '}
+								{dayjs(selectedExpense.expense.paidOn).format('ddd, D MMM YY')}
 							</DialogContentText>
 							<Table aria-label="splits">
 								<TableHead>
 									<TableRow>
 										<TableCell>Splits</TableCell>
 										<TableCell align="right">
-											{openedDialog.expense.currency}
+											{selectedExpense.expense.currency}
 										</TableCell>
 									</TableRow>
 								</TableHead>
 								<TableBody>
-									{openedDialog.yourSplit ? (
+									{selectedExpense.yourSplit ? (
 										<TableRow>
 											<TableCell className="text-primary">
 												{currentUser.name} (You)
 											</TableCell>
 											<TableCell align="right" className="text-primary">
-												{formatDecimal(openedDialog.yourSplit.amount)}
+												{formatDecimal(selectedExpense.yourSplit.amount)}
 											</TableCell>
 										</TableRow>
 									) : null}
-									{openedDialog.otherSplits.map((split) => (
+									{selectedExpense.otherSplits.map((split) => (
 										<TableRow key={split.userHashedId}>
 											<TableCell>
 												{membersHashedIdNameMap.get(split.userHashedId)}
@@ -166,17 +189,44 @@ function RouteComponent() {
 											</TableCell>
 										</TableRow>
 									))}
+									<TableRow className="italic [&>td]:border-0">
+										<TableCell>Total</TableCell>
+										<TableCell align="right">
+											{formatDecimal(selectedExpense.expense.amount)}
+										</TableCell>
+									</TableRow>
 								</TableBody>
-								<TableRow className="italic [&>td]:border-0">
-									<TableCell>Total</TableCell>
-									<TableCell align="right">
-										{formatDecimal(openedDialog.expense.amount)}
-									</TableCell>
-								</TableRow>
 							</Table>
 						</DialogContent>
 						<DialogActions>
-							<Button onClick={() => setOpenedDialog(null)}>Close</Button>
+							<Button color="error" onClick={() => setIsDeleting(true)}>
+								Delete
+							</Button>
+							<Button
+								variant="outlined"
+								onClick={() => setSelectedExpense(null)}
+							>
+								Close
+							</Button>
+						</DialogActions>
+					</>
+				) : null}
+			</Dialog>
+			<Dialog open={isDeleting} onClose={() => setIsDeleting(false)}>
+				{selectedExpense ? (
+					<>
+						<DialogTitle>Deleting expense</DialogTitle>
+						<DialogContent>
+							<DialogContentText>
+								This expense will be removed for everyone in the group. Are you
+								sure?
+							</DialogContentText>
+						</DialogContent>
+						<DialogActions>
+							<Button onClick={() => setIsDeleting(false)}>Cancel</Button>
+							<Button color="error" onClick={deleteExpense}>
+								Yes, delete it
+							</Button>
 						</DialogActions>
 					</>
 				) : null}
