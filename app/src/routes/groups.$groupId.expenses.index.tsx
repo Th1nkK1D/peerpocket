@@ -80,61 +80,64 @@ function RouteComponent() {
 					Look like no one has taking a note just yet.
 				</p>
 			) : (
-				expenseByDays.map(([day, expenses]) => (
-					<List key={day} subheader={<ListSubheader>{day}</ListSubheader>}>
-						{expenses.map((expense) => {
-							const relatedSplits = splits.filter(
-								(split) => split.expenseId === expense.id,
-							);
-							const yourSplit = relatedSplits.find(
-								(split) => split.memberId === currentUser.hashedId,
-							);
-							const otherSplits = relatedSplits.filter(
-								(split) => split.memberId !== currentUser.hashedId,
-							);
+				<div className="flex-1">
+					{expenseByDays.map(([day, expenses]) => (
+						<List key={day} subheader={<ListSubheader>{day}</ListSubheader>}>
+							{expenses.map((expense) => {
+								const relatedSplits = splits.filter(
+									(split) => split.expenseId === expense.id,
+								);
+								const yourSplit = relatedSplits.find(
+									(split) => split.memberId === currentUser.hashedId,
+								);
+								const otherSplits = relatedSplits.filter(
+									(split) => split.memberId !== currentUser.hashedId,
+								);
 
-							return (
-								<ListItem key={expense.id} disablePadding>
-									<ListItemButton
-										onClick={() =>
-											setSelectedExpense({ expense, yourSplit, otherSplits })
-										}
-									>
-										<ListItemAvatar>
-											<Avatar>
-												{categoryNameEmojiMap.get(expense.category)}
-											</Avatar>
-										</ListItemAvatar>
-										<div className="flex flex-1 flex-col">
-											<div className="flex flex-row">
-												<p className="flex-1">
-													{expense.notes || expense.category}
-												</p>
-												<span>
-													{expense.currency}{' '}
-													{formatDecimal(yourSplit?.amount ?? 0)}
-												</span>
+								return (
+									<ListItem key={expense.id} disablePadding>
+										<ListItemButton
+											onClick={() =>
+												setSelectedExpense({ expense, yourSplit, otherSplits })
+											}
+										>
+											<ListItemAvatar>
+												<Avatar>
+													{categoryNameEmojiMap.get(expense.category)}
+												</Avatar>
+											</ListItemAvatar>
+											<div className="flex flex-1 flex-col">
+												<div className="flex flex-row">
+													<p className="flex-1">
+														{expense.notes || expense.category}
+													</p>
+													<span>
+														{expense.currency}{' '}
+														{formatDecimal(yourSplit?.amount ?? 0)}
+													</span>
+												</div>
+												<div className="flex flex-row">
+													<p className="flex-1 text-gray-500 text-sm">
+														{expense.paidByMemberId === currentUser.hashedId
+															? `${otherSplits.length} people owe you`
+															: yourSplit
+																? `You owe ${memberIdNameMap.get(expense.paidByMemberId)}`
+																: ''}
+													</p>
+													<p className="text-gray-500 text-sm">
+														Total {formatDecimal(expense.amount)}
+													</p>
+												</div>
 											</div>
-											<div className="flex flex-row">
-												<p className="flex-1 text-gray-500 text-sm">
-													{expense.paidByMemberId === currentUser.hashedId
-														? `${otherSplits.length} people owe you`
-														: yourSplit
-															? `You owe ${memberIdNameMap.get(expense.paidByMemberId)}`
-															: ''}
-												</p>
-												<p className="text-gray-500 text-sm">
-													Total {formatDecimal(expense.amount)}
-												</p>
-											</div>
-										</div>
-									</ListItemButton>
-								</ListItem>
-							);
-						})}
-					</List>
-				))
+										</ListItemButton>
+									</ListItem>
+								);
+							})}
+						</List>
+					))}
+				</div>
 			)}
+
 			<Dialog
 				open={!!selectedExpense && !isDeleting}
 				onClose={() => setSelectedExpense(null)}
@@ -207,6 +210,7 @@ function RouteComponent() {
 					</>
 				) : null}
 			</Dialog>
+
 			<Dialog open={isDeleting} onClose={() => setIsDeleting(false)}>
 				{selectedExpense ? (
 					<>
@@ -226,6 +230,7 @@ function RouteComponent() {
 					</>
 				) : null}
 			</Dialog>
+
 			<FabsContainer>
 				<LinkFab
 					color="primary"

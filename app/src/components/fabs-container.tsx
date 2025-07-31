@@ -1,8 +1,17 @@
 import type { PropsWithChildren } from 'react';
 
-export function FabsContainer({ children }: PropsWithChildren) {
+interface FabsContainerProps {
+	className?: string;
+}
+
+export function FabsContainer({
+	children,
+	className = '',
+}: PropsWithChildren<FabsContainerProps>) {
 	return (
-		<div className="fixed inset-x-4 bottom-6 z-10 flex flex-row justify-center gap-2">
+		<div
+			className={`sticky bottom-0 z-10 flex flex-row justify-center gap-2 pt-4 pb-6 ${className}`}
+		>
 			{children}
 		</div>
 	);

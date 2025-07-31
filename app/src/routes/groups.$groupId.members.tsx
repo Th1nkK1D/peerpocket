@@ -34,7 +34,7 @@ function RouteComponent() {
 
 	return (
 		<>
-			<List>
+			<List className="flex-1">
 				{members.map((member) => (
 					<ListItem key={member.id}>
 						<ListItemAvatar>

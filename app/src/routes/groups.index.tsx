@@ -20,8 +20,8 @@ function RouteComponent() {
 	);
 
 	return (
-		<AuthenticatedLayout userStore={user}>
-			<div className="relative flex flex-1 flex-col gap-3">
+		<AuthenticatedLayout userStore={user} className="p-3 pb-0">
+			<div className="flex flex-1 flex-col gap-3">
 				{groups.length ? (
 					groups.map(({ id, name, joinedAt }) => (
 						<Link key={id} to="/groups/$groupId" params={{ groupId: id }}>
@@ -45,13 +45,12 @@ function RouteComponent() {
 						You have no groups yet. <br /> Add one or join one!
 					</p>
 				)}
-
-				<FabsContainer>
-					<LinkFab color="primary" to="/groups/create">
-						<GroupAdd />
-					</LinkFab>
-				</FabsContainer>
 			</div>
+			<FabsContainer>
+				<LinkFab color="primary" to="/groups/create">
+					<GroupAdd />
+				</LinkFab>
+			</FabsContainer>
 		</AuthenticatedLayout>
 	);
 }

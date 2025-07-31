@@ -91,9 +91,7 @@ export function AuthenticatedLayout({
 				</Toolbar>
 			</AppBar>
 
-			<div
-				className={`flex flex-1 flex-col overflow-y-scroll p-4 ${className}`}
-			>
+			<div className={`flex flex-1 flex-col overflow-y-scroll ${className}`}>
 				{children}
 			</div>
 		</div>

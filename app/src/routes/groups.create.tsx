@@ -57,7 +57,7 @@ function RouteComponent() {
 
 	return (
 		<AuthenticatedLayout title="New Group" userStore={user}>
-			<StepperView>
+			<StepperView className="p-3">
 				{activeStep === 0 ? (
 					<form
 						className="flex flex-col gap-4"
