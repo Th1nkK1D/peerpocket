@@ -40,7 +40,7 @@ function RouteComponent() {
 			className="!p-0"
 		>
 			<div className="">
-				<div className="flex flex-row py-2 px-3 justify-center items-center gap-2">
+				<div className="flex flex-row items-center justify-center gap-2 px-3 py-2">
 					<div
 						className={`size-2 rounded-full ${
 							peerCount === 0
@@ -50,9 +50,9 @@ function RouteComponent() {
 									: 'bg-success'
 						}`}
 					>
-						<div className="size-2 rounded-full bg-inherit animate-ping"></div>
+						<div className="size-2 animate-ping rounded-full bg-inherit"></div>
 					</div>
-					<span className="text-xs text-gray-400">
+					<span className="text-gray-400 text-xs">
 						{peerCount === 0
 							? 'SYNC OFF - No connection to the broadcast server'
 							: peerCount === 1
@@ -72,7 +72,7 @@ function RouteComponent() {
 					]}
 				/>
 			</div>
-			<div className="flex flex-col flex-1 overflow-y-scroll">
+			<div className="flex flex-1 flex-col overflow-y-scroll">
 				<Outlet />
 			</div>
 		</AuthenticatedLayout>

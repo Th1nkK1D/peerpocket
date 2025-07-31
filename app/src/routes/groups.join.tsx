@@ -59,7 +59,7 @@ function RouteComponent() {
 				</Avatar>
 				<div className="text-center">
 					<p>You have successfully joined the group</p>
-					<p className="text-xl font-bold">"{name}"</p>
+					<p className="font-bold text-xl">"{name}"</p>
 				</div>
 				<div className="flex flex-col gap-2">
 					<LinkButton

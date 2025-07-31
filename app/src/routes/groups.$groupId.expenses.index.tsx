@@ -86,7 +86,7 @@ function RouteComponent() {
 												{categoryNameEmojiMap.get(expense.category)}
 											</Avatar>
 										</ListItemAvatar>
-										<div className="flex-1 flex flex-col">
+										<div className="flex flex-1 flex-col">
 											<div className="flex flex-row">
 												<p className="flex-1">
 													{expense.notes || expense.category}
@@ -97,14 +97,14 @@ function RouteComponent() {
 												</span>
 											</div>
 											<div className="flex flex-row">
-												<p className="flex-1 text-sm text-gray-500">
+												<p className="flex-1 text-gray-500 text-sm">
 													{expense.paidByUserHashedId === currentUser.hashedId
 														? `${otherSplits.length} people owe you`
 														: yourSplit
 															? `You owe ${membersHashedIdNameMap.get(expense.paidByUserHashedId)}`
 															: ''}
 												</p>
-												<p className="text-sm text-gray-500">
+												<p className="text-gray-500 text-sm">
 													Total {formatDecimal(expense.amount)}
 												</p>
 											</div>
@@ -129,7 +129,7 @@ function RouteComponent() {
 							{openedDialog.expense.notes || openedDialog.expense.category}
 						</DialogTitle>
 						<DialogContent dividers>
-							<DialogContentText className="text-sm mb-1">
+							<DialogContentText className="mb-1 text-sm">
 								Paid by{' '}
 								{membersHashedIdNameMap.get(
 									openedDialog.expense.paidByUserHashedId,
