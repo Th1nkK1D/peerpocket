@@ -44,15 +44,21 @@ export function AuthenticatedLayout({
 			<AppBar position="static" className="z-20">
 				<Toolbar className="flex items-center justify-between">
 					{title ? (
-						<IconButton
-							className="-ml-3"
-							onClick={() => navigate({ to: '..' })}
-						>
-							<ChevronLeft />
-						</IconButton>
-					) : null}
-
-					<h1 className="font-bold text-xl">{title ?? '🐶 PeerPocket'}</h1>
+						<>
+							<IconButton
+								className="-ml-3"
+								onClick={() => navigate({ to: '..' })}
+							>
+								<ChevronLeft />
+							</IconButton>
+							<h1 className="font-bold text-xl">{title}</h1>
+						</>
+					) : (
+						<div className="flex flex-row items-center gap-3">
+							<img src="/favicon-72x72.png" alt="" className="size-6 rounded" />
+							<h1 className="font-bold text-xl">PeerPocket</h1>
+						</div>
+					)}
 
 					<IconButton
 						size="large"
@@ -61,7 +67,7 @@ export function AuthenticatedLayout({
 						aria-haspopup="true"
 						onClick={(e) => setAnchorEl(e.currentTarget)}
 						color="inherit"
-						className="-mr-3"
+						className="-mx-3"
 					>
 						<AccountCircle />
 					</IconButton>
