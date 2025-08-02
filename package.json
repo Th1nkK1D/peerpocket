@@ -5,6 +5,7 @@
 	"private": true,
 	"scripts": {
 		"dev": "bun run --filter=\"@peerpocket/*\" dev",
+		"build": "bun run --filter=\"@peerpocket/*\" build",
 		"biome": "./node_modules/@biomejs/cli-linux-x64-musl/biome",
 		"prepack": "lefthook install"
 	},

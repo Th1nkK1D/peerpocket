@@ -1,0 +1,12 @@
+[Unit]
+Description=Peerpocket Relay Server
+After=network.target
+
+[Service]
+User=droid
+ExecStart=/home/droid/peerpocket/relay-server-linux-arm64
+Restart=always
+RestartSec=1
+
+[Install]
+WantedBy=multi-user.target

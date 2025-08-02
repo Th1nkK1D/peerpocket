@@ -4,7 +4,10 @@
 	"type": "module",
 	"private": true,
 	"scripts": {
-		"dev": "PORT=3000 bun run --hot index.ts"
+		"dev": "PORT=3000 bun run --hot index.ts",
+		"build": "bun run build:linux-x64 && bun run build:linux-arm64",
+		"build:linux-x64": "bun build --compile --minify --sourcemap --target=bun-linux-x64 ./index.ts --outfile dist/relay-server-linux-x64",
+		"build:linux-arm64": "bun build --compile --minify --sourcemap --target=bun-linux-arm64 ./index.ts --outfile dist/relay-server-linux-arm64"
 	},
 	"dependencies": {
 		"@peerpocket/libs": "workspace:*"
