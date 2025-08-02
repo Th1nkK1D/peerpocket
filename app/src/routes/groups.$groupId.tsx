@@ -66,6 +66,11 @@ function RouteComponent() {
 				variant="fullWidth"
 				tabs={[
 					{
+						label: 'Summary',
+						to: 'summary',
+						replace: true,
+					},
+					{
 						label: 'Expenses',
 						to: 'expenses',
 						replace: true,
