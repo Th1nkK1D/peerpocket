@@ -1,5 +1,7 @@
+import { ArrowDownward } from '@mui/icons-material';
 import { Paper } from '@mui/material';
 import { createFileRoute, Outlet, redirect } from '@tanstack/react-router';
+import ReactPullToRefresh from 'react-pull-to-refresh';
 import { AuthenticatedLayout } from '../components/authenticated-layout';
 import { NavigationTabs } from '../components/navigation-tabs';
 import { GROUP_STORE_PREFIX, setupGroupStore } from '../stores/group';
@@ -34,7 +36,6 @@ export const Route = createFileRoute('/groups/$groupId')({
 
 function RouteComponent() {
 	const { user, group, userGroupInfo } = Route.useLoaderData();
-
 	const peerCount = group.usePeerSync();
 
 	return (
@@ -58,10 +59,10 @@ function RouteComponent() {
 					</div>
 					<span className="text-gray-400 text-xs">
 						{peerCount === 0
-							? 'SYNC OFF - No connection to the broadcast server'
+							? 'No connection to the relay server'
 							: peerCount === 1
-								? 'Sync OFF - Only you are online'
-								: `Sync ON - ${peerCount - 1} peers connected`}
+								? 'Only you are online'
+								: `${peerCount - 1} peers connected`}
 					</span>
 				</div>
 				<NavigationTabs
@@ -81,8 +82,22 @@ function RouteComponent() {
 					]}
 				/>
 			</Paper>
+
 			<div className="flex flex-1 flex-col overflow-y-scroll">
-				<Outlet />
+				<ReactPullToRefresh
+					disabled={peerCount <= 1}
+					onRefresh={async () => location.reload()}
+					icon={
+						<div className="relative w-full">
+							<div className="absolute inset-x-0 bottom-0 flex flex-col items-center opacity-50">
+								<ArrowDownward />
+								<span className="text-xs">Pull to reload and sync data</span>
+							</div>
+						</div>
+					}
+				>
+					<Outlet />
+				</ReactPullToRefresh>
 			</div>
 		</AuthenticatedLayout>
 	);
