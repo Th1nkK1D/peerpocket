@@ -64,7 +64,7 @@ export async function createSyncStore<
 		const messageReceiver = useRef<Receive>(() => {});
 		const [peerCount, setPeerCount] = useState(0);
 
-		const { sendMessage } = useWebSocket('ws://localhost:3000', {
+		const { sendMessage } = useWebSocket(import.meta.env.PUBLIC_RELAY_URL, {
 			onOpen() {
 				synchronizer.current = createCustomSynchronizer(
 					store,
@@ -105,6 +105,9 @@ export async function createSyncStore<
 					case 'SYNC':
 						return messageReceiver.current(...data.payload);
 					case 'PEER_CHANGE':
+						if (data.count > 1 && data.count > peerCount) {
+							await synchronizer.current?.startSync();
+						}
 						return setPeerCount(data.count);
 				}
 			},
