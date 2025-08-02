@@ -17,7 +17,7 @@ export function StackHorizontalBarChart({
 	const x = scaleLinear([0, max], [0, 100]);
 
 	return (
-		<div className="flex flex-1 flex-col gap-2">
+		<div className="flex flex-1 flex-col gap-3">
 			{data.map(({ category, myTotal, groupTotal }) => (
 				<div className="flex flex-col gap-1" key={category}>
 					<div className="flex flex-row">

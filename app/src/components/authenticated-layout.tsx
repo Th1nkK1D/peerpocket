@@ -41,7 +41,7 @@ export function AuthenticatedLayout({
 
 	return (
 		<div className="flex h-dvh flex-col">
-			<AppBar position="static">
+			<AppBar position="static" className="z-20">
 				<Toolbar className="flex items-center justify-between">
 					{title ? (
 						<IconButton
