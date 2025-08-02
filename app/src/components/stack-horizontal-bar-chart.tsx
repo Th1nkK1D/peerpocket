@@ -1,4 +1,3 @@
-import { scaleLinear } from 'd3-scale';
 import { categoryNameEmojiMap } from '../constants/expense';
 import { formatDecimal } from '../hooks/form';
 
@@ -14,7 +13,6 @@ export function StackHorizontalBarChart({
 	data,
 }: StackHorizontalBarChartProps) {
 	const max = Math.max(...data.map((item) => item.groupTotal));
-	const x = scaleLinear([0, max], [0, 100]);
 
 	return (
 		<div className="flex flex-1 flex-col gap-3">
@@ -26,19 +24,18 @@ export function StackHorizontalBarChart({
 						</p>
 						<p>
 							<span className="text-secondary">{formatDecimal(myTotal)}</span>{' '}
-							<span className="text-gray-500">
+							<span className="text-gray-600">
 								/ {formatDecimal(groupTotal)}
 							</span>
 						</p>
 					</div>
-					<div className="flex h-3 flex-row gap-[1px]">
+					<div
+						className="flex h-3 flex-row gap-[1px] rounded-sm bg-gray-600"
+						style={{ width: `${(groupTotal * 100) / max}%` }}
+					>
 						<div
 							className="rounded-sm bg-secondary"
-							style={{ width: `${x(myTotal)}%` }}
-						></div>
-						<div
-							className="rounded-sm bg-gray-500"
-							style={{ width: `${x(groupTotal - myTotal)}%` }}
+							style={{ width: `${(myTotal * 100) / groupTotal}%` }}
 						></div>
 					</div>
 				</div>

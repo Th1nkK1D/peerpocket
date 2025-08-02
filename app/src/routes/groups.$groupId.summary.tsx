@@ -106,7 +106,7 @@ function RouteComponent() {
 						value={expenseByCategories.reduce((acc, tx) => acc + tx.myTotal, 0)}
 					/>
 					<TotalExpenseCard
-						className="text-gray-400"
+						className="opacity-70"
 						label="Group expense"
 						value={expenseByCategories.reduce(
 							(acc, tx) => acc + tx.groupTotal,
@@ -154,7 +154,7 @@ function TotalExpenseCard(props: {
 	return (
 		<Card className={`p-2 ${props.className ?? ''}`}>
 			<span className="text-sm">{props.label}</span>
-			<p className="text-right text-2xl">{formatDecimal(props.value)}</p>
+			<p className="text-2xl">{formatDecimal(props.value)}</p>
 		</Card>
 	);
 }
