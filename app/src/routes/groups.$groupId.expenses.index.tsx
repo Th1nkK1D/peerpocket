@@ -12,11 +12,6 @@ import {
 	ListItemAvatar,
 	ListItemButton,
 	ListSubheader,
-	Table,
-	TableBody,
-	TableCell,
-	TableHead,
-	TableRow,
 } from '@mui/material';
 import { createFileRoute } from '@tanstack/react-router';
 import { groups } from 'd3-array';
@@ -24,6 +19,7 @@ import dayjs from 'dayjs';
 import { useState } from 'react';
 import { FabsContainer } from '../components/fabs-container';
 import { LinkFab } from '../components/links';
+import { MemberAmountTable } from '../components/member-amount-table';
 import { categoryNameEmojiMap } from '../constants/expense';
 import { formatDecimal } from '../hooks/form';
 
@@ -50,8 +46,7 @@ function RouteComponent() {
 
 	const [selectedExpense, setSelectedExpense] = useState<{
 		expense: (typeof expenseByDays)[number][1][number];
-		yourSplit?: (typeof splits)[number];
-		otherSplits: typeof splits;
+		relatedSplits: typeof splits;
 	} | null>(null);
 
 	const [isDeleting, setIsDeleting] = useState(false);
@@ -61,11 +56,7 @@ function RouteComponent() {
 
 		group.delRow('expenses', selectedExpense.expense.id);
 
-		if (selectedExpense.yourSplit) {
-			group.delRow('splits', selectedExpense.yourSplit.id);
-		}
-
-		selectedExpense.otherSplits.forEach((split) => {
+		selectedExpense.relatedSplits.forEach((split) => {
 			group.delRow('splits', split.id);
 		});
 
@@ -98,7 +89,7 @@ function RouteComponent() {
 									<ListItem key={expense.id} disablePadding>
 										<ListItemButton
 											onClick={() =>
-												setSelectedExpense({ expense, yourSplit, otherSplits })
+												setSelectedExpense({ expense, relatedSplits })
 											}
 										>
 											<ListItemAvatar>
@@ -111,7 +102,7 @@ function RouteComponent() {
 													<p className="flex-1">
 														{expense.notes || expense.category}
 													</p>
-													<span>
+													<span className="text-secondary">
 														{expense.currency}{' '}
 														{formatDecimal(yourSplit?.amount ?? 0)}
 													</span>
@@ -157,44 +148,15 @@ function RouteComponent() {
 								{memberIdNameMap.get(selectedExpense.expense.paidByMemberId)} on{' '}
 								{dayjs(selectedExpense.expense.paidOn).format('ddd, D MMM YY')}
 							</DialogContentText>
-							<Table aria-label="splits">
-								<TableHead>
-									<TableRow>
-										<TableCell>Splits</TableCell>
-										<TableCell align="right">
-											{selectedExpense.expense.currency}
-										</TableCell>
-									</TableRow>
-								</TableHead>
-								<TableBody>
-									{selectedExpense.yourSplit ? (
-										<TableRow>
-											<TableCell className="text-primary">
-												{currentUser.name} (You)
-											</TableCell>
-											<TableCell align="right" className="text-primary">
-												{formatDecimal(selectedExpense.yourSplit.amount)}
-											</TableCell>
-										</TableRow>
-									) : null}
-									{selectedExpense.otherSplits.map((split) => (
-										<TableRow key={split.memberId}>
-											<TableCell>
-												{memberIdNameMap.get(split.memberId)}
-											</TableCell>
-											<TableCell align="right">
-												{formatDecimal(split.amount)}
-											</TableCell>
-										</TableRow>
-									))}
-									<TableRow className="italic [&>td]:border-0">
-										<TableCell>Total</TableCell>
-										<TableCell align="right">
-											{formatDecimal(selectedExpense.expense.amount)}
-										</TableCell>
-									</TableRow>
-								</TableBody>
-							</Table>
+							<MemberAmountTable
+								currency={selectedExpense.expense.currency}
+								currentUserKey={currentUser.hashedId}
+								items={selectedExpense.relatedSplits.map((exp) => ({
+									key: exp.memberId,
+									name: memberIdNameMap.get(exp.memberId),
+									amount: exp.amount,
+								}))}
+							/>
 						</DialogContent>
 						<DialogActions>
 							<Button color="error" onClick={() => setIsDeleting(true)}>
