@@ -3,7 +3,7 @@ import { formatMessage, parsedMessage } from '@peerpocket/libs/message';
 const server = Bun.serve({
 	fetch(req, server) {
 		if (!server.upgrade(req)) {
-			return new Response('Signaling server is running');
+			return new Response('PeerPocket relay server is running');
 		}
 	},
 	websocket: {
