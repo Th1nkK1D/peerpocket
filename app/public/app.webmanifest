@@ -1,7 +1,6 @@
 {
 	"short_name": "PeerPocket",
 	"name": "PeerPocket",
-	"theme_color": "#bfdee1",
 	"background_color": "#bfdee1",
 	"display": "standalone",
 	"Scope": "/",
