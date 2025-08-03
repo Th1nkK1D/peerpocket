@@ -65,6 +65,8 @@ export async function createSyncStore<
 		const [peerCount, setPeerCount] = useState(0);
 
 		const { sendMessage } = useWebSocket(import.meta.env.PUBLIC_RELAY_URL, {
+			retryOnError: true,
+			shouldReconnect: () => true,
 			onOpen() {
 				synchronizer.current = createCustomSynchronizer(
 					store,
