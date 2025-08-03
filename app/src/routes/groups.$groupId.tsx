@@ -83,22 +83,21 @@ function RouteComponent() {
 				/>
 			</Paper>
 
-			<div className="flex flex-1 flex-col overflow-y-scroll">
-				<ReactPullToRefresh
-					disabled={peerCount <= 1}
-					onRefresh={async () => location.reload()}
-					icon={
-						<div className="relative w-full">
-							<div className="absolute inset-x-0 bottom-0 flex flex-col items-center opacity-50">
-								<ArrowDownward />
-								<span className="text-xs">Pull to reload and sync data</span>
-							</div>
+			<ReactPullToRefresh
+				className="flex flex-1 flex-col overflow-y-scroll"
+				disabled={peerCount <= 1}
+				onRefresh={async () => location.reload()}
+				icon={
+					<div className="relative w-full">
+						<div className="absolute inset-x-0 bottom-0 flex flex-col items-center opacity-50">
+							<ArrowDownward />
+							<span className="text-xs">Pull to reload and sync data</span>
 						</div>
-					}
-				>
-					<Outlet />
-				</ReactPullToRefresh>
-			</div>
+					</div>
+				}
+			>
+				<Outlet />
+			</ReactPullToRefresh>
 		</AuthenticatedLayout>
 	);
 }
