@@ -1,41 +1,52 @@
 import { formatMessage, parsedMessage } from '@peerpocket/libs/message';
+import type { Message, Peer } from 'crossws';
+import { serve } from 'crossws/server';
 
-const server = Bun.serve({
-	fetch(req, server) {
-		if (!server.upgrade(req)) {
-			return new Response('PeerPocket relay server is running');
-		}
-	},
+serve({
 	websocket: {
-		async message(ws, message) {
-			const data = await parsedMessage(message as Buffer<ArrayBufferLike>);
+		open() {},
+		async message(peer: Peer, { rawData }: Message) {
+			const data = await parsedMessage(rawData as Buffer<ArrayBufferLike>);
 
 			switch (data.type) {
 				case 'SUBSCRIBE':
-					ws.subscribe(data.storeId);
-					ws.data = [...(ws.data ?? []), data.storeId];
-					broadcastPeerChange(data.storeId);
+					peer.subscribe(data.storeId);
+					broadcastPeerChange(peer, data.storeId);
 					return;
 				case 'SYNC':
-					ws.publish(data.storeId, message);
+					peer.publish(data.storeId, rawData);
 					return;
 			}
 		},
-		async close(ws) {
-			ws.data?.forEach((storeId) => broadcastPeerChange(storeId));
+
+		close(peer: Peer) {
+			peer.topics.forEach((storeId) => broadcastPeerChange(peer, storeId));
 		},
-	} as Bun.WebSocketHandler<string[]>,
+	},
+	fetch: () => new Response('PeerPocket relay server is running'),
 });
 
-function broadcastPeerChange(storeId: string) {
-	server.publish(
+function broadcastPeerChange(peer: Peer, storeId: string) {
+	const count = peer.peers
+		.values()
+		.reduce((sum, p) => sum + (p.topics.has(storeId) ? 1 : 0), 0);
+
+	peer.publish(
 		storeId,
 		formatMessage({
 			type: 'PEER_CHANGE',
 			storeId,
-			count: server.subscriberCount(storeId),
+			count,
 		}),
 	);
-}
 
-console.log(`Listening on http://${server.hostname}:${server.port}`);
+	if (peer.websocket.readyState === 1) {
+		peer.send(
+			formatMessage({
+				type: 'PEER_CHANGE',
+				storeId,
+				count,
+			}),
+		);
+	}
+}
