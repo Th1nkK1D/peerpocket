@@ -4,8 +4,15 @@ import dayjs, { type Dayjs } from 'dayjs';
 import { z } from 'zod/v4';
 import { LinkButton } from '../components/links';
 import { categories } from '../constants/expense';
-import { BaseCurrencyField, formatDecimal, useMuiForm } from '../hooks/form';
+import {
+	BaseCurrencyField,
+	formatDecimal,
+	roundToTwoDecimal,
+	useMuiForm,
+} from '../hooks/form';
 import { useStepper } from '../hooks/stepper';
+
+const SMALLEST_FRACTION = 0.01;
 
 export const Route = createFileRoute('/groups/$groupId/expenses/add')({
 	component: RouteComponent,
@@ -89,7 +96,7 @@ function RouteComponent() {
 	});
 
 	function sumSplitsAmount(splits: { amount: number }[]) {
-		return splits.reduce((sum, s) => sum + s.amount, 0);
+		return roundToTwoDecimal(splits.reduce((sum, s) => sum + s.amount, 0));
 	}
 
 	function splitSelectionsEqually() {
@@ -103,16 +110,20 @@ function RouteComponent() {
 				splitsForm.state.values.splits.filter((s) => !s.isSelected),
 			);
 
-		const amount = Math.round((leftover / selectedFields) * 100) / 100;
+		const amount = roundToTwoDecimal(leftover / selectedFields);
+		const unequalFractionShares = Math.round(
+			(leftover - amount * selectedFields) / SMALLEST_FRACTION,
+		);
+		const unequalPeople = Math.abs(unequalFractionShares);
+		const unequalSharePerPerson = roundToTwoDecimal(
+			amount + (unequalFractionShares / unequalPeople) * SMALLEST_FRACTION,
+		);
 
 		splitsForm.state.values.splits.forEach((s, i) => {
 			if (s.isSelected) {
 				splitsForm.replaceFieldValue('splits', i, {
 					...s,
-					amount:
-						i < selectedFields - 1
-							? amount
-							: leftover - amount * (selectedFields - 1),
+					amount: i < unequalPeople ? unequalSharePerPerson : amount,
 				});
 			}
 		});

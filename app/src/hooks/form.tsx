@@ -63,7 +63,9 @@ function CurrencyField(props: ComponentProps<typeof BaseCurrencyField>) {
 			}}
 			onBlur={() => {
 				if (temporaryValue) {
-					field.handleChange(+temporaryValue);
+					field.handleChange(
+						roundToTwoDecimal(+temporaryValue.replaceAll(',', '')),
+					);
 				}
 				field.handleBlur();
 			}}
@@ -182,4 +184,8 @@ export function formatDecimal(value: number, minimumFractionDigits = 2) {
 		minimumFractionDigits,
 		maximumFractionDigits: 2,
 	});
+}
+
+export function roundToTwoDecimal(value: number): number {
+	return Math.round(value * 100) / 100;
 }
