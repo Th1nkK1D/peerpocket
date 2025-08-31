@@ -15,7 +15,7 @@ import {
 	useStore,
 } from '@tanstack/react-form';
 import type { Dayjs } from 'dayjs';
-import { type ComponentProps, useState } from 'react';
+import { type ComponentProps, useEffect, useState } from 'react';
 
 const { fieldContext, formContext, useFieldContext, useFormContext } =
 	createFormHookContexts();
@@ -43,20 +43,28 @@ function TextField(props: ComponentProps<typeof MuiTextField>) {
 
 function CurrencyField(props: ComponentProps<typeof BaseCurrencyField>) {
 	const field = useFieldContext<number>();
-	const [isFocused, setIsFocus] = useState(false);
+	const [temporaryValue, setTemporaryValue] = useState<string | null>(null);
+
+	useEffect(() => {
+		setTemporaryValue(formatDecimal(field.state.value, 0));
+	}, [field.state.value]);
 
 	return (
 		<BaseCurrencyField
 			name={field.name}
-			value={
-				isFocused ? field.state.value || '' : formatDecimal(field.state.value)
-			}
+			value={temporaryValue ?? formatDecimal(field.state.value)}
 			error={!field.state.meta.isValid}
 			helperText={field.state.meta.errors.map((e) => e.message).at(0)}
-			onChange={(e) => field.handleChange(+e.target.value.replaceAll(',', ''))}
-			onFocus={() => setIsFocus(true)}
+			onChange={(e) => setTemporaryValue(e.target.value)}
+			onFocus={() => {
+				setTemporaryValue(
+					field.state.value ? formatDecimal(field.state.value, 0) : '',
+				);
+			}}
 			onBlur={() => {
-				setIsFocus(false);
+				if (temporaryValue) {
+					field.handleChange(+temporaryValue);
+				}
 				field.handleBlur();
 			}}
 			{...props}
@@ -169,9 +177,9 @@ export const useMuiForm = createFormHook({
 	},
 }).useAppForm;
 
-export function formatDecimal(value: number) {
+export function formatDecimal(value: number, minimumFractionDigits = 2) {
 	return value.toLocaleString('th-TH', {
-		minimumFractionDigits: 2,
+		minimumFractionDigits,
 		maximumFractionDigits: 2,
 	});
 }
