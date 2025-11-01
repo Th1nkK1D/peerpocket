@@ -123,7 +123,7 @@ function RouteComponent() {
 
 			{outstandingBalanceWithOtherMembers.toPayThem.length ? (
 				<MemberAmountTable
-					currency="THB"
+					currency="Amount"
 					items={outstandingBalanceWithOtherMembers.toPayThem}
 				/>
 			) : (
@@ -136,7 +136,7 @@ function RouteComponent() {
 
 			{outstandingBalanceWithOtherMembers.toPayMe.length ? (
 				<MemberAmountTable
-					currency="THB"
+					currency="Amount"
 					items={outstandingBalanceWithOtherMembers.toPayMe}
 				/>
 			) : (

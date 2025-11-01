@@ -1,7 +1,6 @@
 import {
 	Button,
 	FormControlLabel,
-	InputAdornment,
 	MenuItem,
 	Checkbox as MuiCheckbox,
 	TextField as MuiTextField,
@@ -78,9 +77,6 @@ export function BaseCurrencyField(props: ComponentProps<typeof MuiTextField>) {
 	return (
 		<MuiTextField
 			slotProps={{
-				input: {
-					endAdornment: <InputAdornment position="end">THB</InputAdornment>,
-				},
 				htmlInput: {
 					className: 'text-right',
 				},

@@ -12,7 +12,7 @@ const tablesSchema = {
 	},
 	expenses: {
 		amount: { type: 'number', default: 0 },
-		currency: { type: 'string', default: 'THB' },
+		currency: { type: 'string', default: '' },
 		category: { type: 'string', default: '' },
 		notes: { type: 'string', default: '' },
 		paidOn: { type: 'number', default: 0 },
