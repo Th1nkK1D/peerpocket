@@ -1,0 +1,3 @@
+#!/data/data/com.termux/files/usr/bin/sh
+# https://wiki.termux.com/wiki/Termux-services
+exec node /data/data/com.termux/files/home/peerpocket/server.js 2>&1
