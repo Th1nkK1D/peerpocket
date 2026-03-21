@@ -5,7 +5,6 @@ import {
 	Dialog,
 	DialogActions,
 	DialogContent,
-	DialogContentText,
 	DialogTitle,
 	Fab,
 	List,
@@ -66,10 +65,11 @@ function RouteComponent() {
 			>
 				<DialogTitle>Add new members</DialogTitle>
 				<DialogContent>
-					<DialogContentText>
-						Please send them the following invitation link:
-					</DialogContentText>
-					<GroupSharing id={userGroupInfo.id} name={userGroupInfo.name} />
+					<GroupSharing
+						id={userGroupInfo.id}
+						name={userGroupInfo.name}
+						label="Share the QR Code or the link with your friends"
+					/>
 				</DialogContent>
 				<DialogActions>
 					<Button onClick={() => setIsGroupSharingOpened(false)} autoFocus>

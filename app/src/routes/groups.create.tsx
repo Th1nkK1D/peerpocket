@@ -80,11 +80,13 @@ function RouteComponent() {
 				) : (
 					<>
 						<p>
-							<strong>Your group has been created!</strong> Share this link with
-							your friend to start tracking expenses together (You can also add
-							them later!)
+							<strong>Your group has been created!</strong>
 						</p>
-						<GroupSharing id={id} name={form.state.values.name} />
+						<GroupSharing
+							id={id}
+							name={form.state.values.name}
+							label="To invite your friends, share the QR Code or the link with them. You can also do this later in the group's members tab."
+						/>
 						<StepNavigations>
 							<LinkButton to="/groups" replace>
 								Return home

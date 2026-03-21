@@ -11,4 +11,4 @@ The project is monorepo managed by bun
 
 - Prefer Tailwind class over custom CSS
 - Always use tab for indent
-- Do not touch routeTree.gen.ts and bun.lock file, it is auto generated
+- Do not touch routeTree.gen.ts, it is auto generated

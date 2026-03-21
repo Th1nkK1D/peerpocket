@@ -1,13 +1,22 @@
 import { ContentCopyOutlined } from '@mui/icons-material';
-import { IconButton, InputAdornment, Snackbar, TextField } from '@mui/material';
+import {
+	Box,
+	IconButton,
+	InputAdornment,
+	Snackbar,
+	TextField,
+	Typography,
+} from '@mui/material';
+import { QRCodeCanvas } from 'qrcode.react';
 import { useMemo, useState } from 'react';
 
 interface GroupSharingProps {
 	id: string;
 	name: string;
+	label: string;
 }
 
-export function GroupSharing({ id, name }: GroupSharingProps) {
+export function GroupSharing({ id, name, label }: GroupSharingProps) {
 	const [isCopied, setIsCopied] = useState(false);
 
 	const sharedLink = useMemo(
@@ -25,7 +34,18 @@ export function GroupSharing({ id, name }: GroupSharingProps) {
 	}
 
 	return (
-		<>
+		<div className="flex flex-col gap-3">
+			<Typography variant="body2" color="text.secondary">
+				{label}
+			</Typography>
+			<Box className="flex flex-col items-center gap-3">
+				<QRCodeCanvas
+					value={sharedLink}
+					size={180}
+					includeMargin
+					className="rounded-xl bg-white"
+				/>
+			</Box>
 			<TextField
 				fullWidth
 				value={sharedLink}
@@ -52,6 +72,6 @@ export function GroupSharing({ id, name }: GroupSharingProps) {
 				onClose={() => setIsCopied(false)}
 				message="Link copied"
 			/>
-		</>
+		</div>
 	);
 }
