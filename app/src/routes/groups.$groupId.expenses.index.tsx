@@ -30,6 +30,7 @@ export const Route = createFileRoute('/groups/$groupId/expenses/')({
 
 function RouteComponent() {
 	const { user, group } = Route.useLoaderData();
+	const { groupId } = Route.useParams();
 	const currentUser = user.useValues();
 
 	const expenseByDays = group.useTableRows('expenses', (expenses) =>
@@ -197,8 +198,8 @@ function RouteComponent() {
 				<LinkFab
 					color="primary"
 					aria-label="Add new expense"
-					from={Route.fullPath}
-					to="add"
+					to="/groups/add-expense"
+					search={{ groupId }}
 				>
 					<Add />
 				</LinkFab>

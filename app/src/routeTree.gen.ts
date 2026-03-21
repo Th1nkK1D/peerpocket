@@ -11,11 +11,11 @@
 import { Route as rootRouteImport } from './routes/__root';
 import { Route as GroupsRouteImport } from './routes/groups';
 import { Route as GroupsGroupIdRouteImport } from './routes/groups.$groupId';
-import { Route as GroupsGroupIdExpensesAddRouteImport } from './routes/groups.$groupId.expenses.add';
 import { Route as GroupsGroupIdExpensesIndexRouteImport } from './routes/groups.$groupId.expenses.index';
 import { Route as GroupsGroupIdIndexRouteImport } from './routes/groups.$groupId.index';
 import { Route as GroupsGroupIdMembersRouteImport } from './routes/groups.$groupId.members';
 import { Route as GroupsGroupIdSummaryRouteImport } from './routes/groups.$groupId.summary';
+import { Route as GroupsAddExpenseRouteImport } from './routes/groups.add-expense';
 import { Route as GroupsCreateRouteImport } from './routes/groups.create';
 import { Route as GroupsIndexRouteImport } from './routes/groups.index';
 import { Route as GroupsJoinRouteImport } from './routes/groups.join';
@@ -46,6 +46,11 @@ const GroupsCreateRoute = GroupsCreateRouteImport.update({
 	path: '/create',
 	getParentRoute: () => GroupsRoute,
 } as any);
+const GroupsAddExpenseRoute = GroupsAddExpenseRouteImport.update({
+	id: '/add-expense',
+	path: '/add-expense',
+	getParentRoute: () => GroupsRoute,
+} as any);
 const GroupsGroupIdRoute = GroupsGroupIdRouteImport.update({
 	id: '/$groupId',
 	path: '/$groupId',
@@ -72,35 +77,29 @@ const GroupsGroupIdExpensesIndexRoute =
 		path: '/expenses/',
 		getParentRoute: () => GroupsGroupIdRoute,
 	} as any);
-const GroupsGroupIdExpensesAddRoute =
-	GroupsGroupIdExpensesAddRouteImport.update({
-		id: '/expenses/add',
-		path: '/expenses/add',
-		getParentRoute: () => GroupsGroupIdRoute,
-	} as any);
 
 export interface FileRoutesByFullPath {
 	'/': typeof IndexRoute;
 	'/groups': typeof GroupsRouteWithChildren;
 	'/groups/$groupId': typeof GroupsGroupIdRouteWithChildren;
+	'/groups/add-expense': typeof GroupsAddExpenseRoute;
 	'/groups/create': typeof GroupsCreateRoute;
 	'/groups/join': typeof GroupsJoinRoute;
 	'/groups/': typeof GroupsIndexRoute;
 	'/groups/$groupId/members': typeof GroupsGroupIdMembersRoute;
 	'/groups/$groupId/summary': typeof GroupsGroupIdSummaryRoute;
 	'/groups/$groupId/': typeof GroupsGroupIdIndexRoute;
-	'/groups/$groupId/expenses/add': typeof GroupsGroupIdExpensesAddRoute;
 	'/groups/$groupId/expenses': typeof GroupsGroupIdExpensesIndexRoute;
 }
 export interface FileRoutesByTo {
 	'/': typeof IndexRoute;
+	'/groups/add-expense': typeof GroupsAddExpenseRoute;
 	'/groups/create': typeof GroupsCreateRoute;
 	'/groups/join': typeof GroupsJoinRoute;
 	'/groups': typeof GroupsIndexRoute;
 	'/groups/$groupId/members': typeof GroupsGroupIdMembersRoute;
 	'/groups/$groupId/summary': typeof GroupsGroupIdSummaryRoute;
 	'/groups/$groupId': typeof GroupsGroupIdIndexRoute;
-	'/groups/$groupId/expenses/add': typeof GroupsGroupIdExpensesAddRoute;
 	'/groups/$groupId/expenses': typeof GroupsGroupIdExpensesIndexRoute;
 }
 export interface FileRoutesById {
@@ -108,13 +107,13 @@ export interface FileRoutesById {
 	'/': typeof IndexRoute;
 	'/groups': typeof GroupsRouteWithChildren;
 	'/groups/$groupId': typeof GroupsGroupIdRouteWithChildren;
+	'/groups/add-expense': typeof GroupsAddExpenseRoute;
 	'/groups/create': typeof GroupsCreateRoute;
 	'/groups/join': typeof GroupsJoinRoute;
 	'/groups/': typeof GroupsIndexRoute;
 	'/groups/$groupId/members': typeof GroupsGroupIdMembersRoute;
 	'/groups/$groupId/summary': typeof GroupsGroupIdSummaryRoute;
 	'/groups/$groupId/': typeof GroupsGroupIdIndexRoute;
-	'/groups/$groupId/expenses/add': typeof GroupsGroupIdExpensesAddRoute;
 	'/groups/$groupId/expenses/': typeof GroupsGroupIdExpensesIndexRoute;
 }
 export interface FileRouteTypes {
@@ -123,37 +122,37 @@ export interface FileRouteTypes {
 		| '/'
 		| '/groups'
 		| '/groups/$groupId'
+		| '/groups/add-expense'
 		| '/groups/create'
 		| '/groups/join'
 		| '/groups/'
 		| '/groups/$groupId/members'
 		| '/groups/$groupId/summary'
 		| '/groups/$groupId/'
-		| '/groups/$groupId/expenses/add'
 		| '/groups/$groupId/expenses';
 	fileRoutesByTo: FileRoutesByTo;
 	to:
 		| '/'
+		| '/groups/add-expense'
 		| '/groups/create'
 		| '/groups/join'
 		| '/groups'
 		| '/groups/$groupId/members'
 		| '/groups/$groupId/summary'
 		| '/groups/$groupId'
-		| '/groups/$groupId/expenses/add'
 		| '/groups/$groupId/expenses';
 	id:
 		| '__root__'
 		| '/'
 		| '/groups'
 		| '/groups/$groupId'
+		| '/groups/add-expense'
 		| '/groups/create'
 		| '/groups/join'
 		| '/groups/'
 		| '/groups/$groupId/members'
 		| '/groups/$groupId/summary'
 		| '/groups/$groupId/'
-		| '/groups/$groupId/expenses/add'
 		| '/groups/$groupId/expenses/';
 	fileRoutesById: FileRoutesById;
 }
@@ -199,6 +198,13 @@ declare module '@tanstack/react-router' {
 			preLoaderRoute: typeof GroupsCreateRouteImport;
 			parentRoute: typeof GroupsRoute;
 		};
+		'/groups/add-expense': {
+			id: '/groups/add-expense';
+			path: '/add-expense';
+			fullPath: '/groups/add-expense';
+			preLoaderRoute: typeof GroupsAddExpenseRouteImport;
+			parentRoute: typeof GroupsRoute;
+		};
 		'/groups/$groupId': {
 			id: '/groups/$groupId';
 			path: '/$groupId';
@@ -234,13 +240,6 @@ declare module '@tanstack/react-router' {
 			preLoaderRoute: typeof GroupsGroupIdExpensesIndexRouteImport;
 			parentRoute: typeof GroupsGroupIdRoute;
 		};
-		'/groups/$groupId/expenses/add': {
-			id: '/groups/$groupId/expenses/add';
-			path: '/expenses/add';
-			fullPath: '/groups/$groupId/expenses/add';
-			preLoaderRoute: typeof GroupsGroupIdExpensesAddRouteImport;
-			parentRoute: typeof GroupsGroupIdRoute;
-		};
 	}
 }
 
@@ -248,7 +247,6 @@ interface GroupsGroupIdRouteChildren {
 	GroupsGroupIdMembersRoute: typeof GroupsGroupIdMembersRoute;
 	GroupsGroupIdSummaryRoute: typeof GroupsGroupIdSummaryRoute;
 	GroupsGroupIdIndexRoute: typeof GroupsGroupIdIndexRoute;
-	GroupsGroupIdExpensesAddRoute: typeof GroupsGroupIdExpensesAddRoute;
 	GroupsGroupIdExpensesIndexRoute: typeof GroupsGroupIdExpensesIndexRoute;
 }
 
@@ -256,7 +254,6 @@ const GroupsGroupIdRouteChildren: GroupsGroupIdRouteChildren = {
 	GroupsGroupIdMembersRoute: GroupsGroupIdMembersRoute,
 	GroupsGroupIdSummaryRoute: GroupsGroupIdSummaryRoute,
 	GroupsGroupIdIndexRoute: GroupsGroupIdIndexRoute,
-	GroupsGroupIdExpensesAddRoute: GroupsGroupIdExpensesAddRoute,
 	GroupsGroupIdExpensesIndexRoute: GroupsGroupIdExpensesIndexRoute,
 };
 
@@ -266,6 +263,7 @@ const GroupsGroupIdRouteWithChildren = GroupsGroupIdRoute._addFileChildren(
 
 interface GroupsRouteChildren {
 	GroupsGroupIdRoute: typeof GroupsGroupIdRouteWithChildren;
+	GroupsAddExpenseRoute: typeof GroupsAddExpenseRoute;
 	GroupsCreateRoute: typeof GroupsCreateRoute;
 	GroupsJoinRoute: typeof GroupsJoinRoute;
 	GroupsIndexRoute: typeof GroupsIndexRoute;
@@ -273,6 +271,7 @@ interface GroupsRouteChildren {
 
 const GroupsRouteChildren: GroupsRouteChildren = {
 	GroupsGroupIdRoute: GroupsGroupIdRouteWithChildren,
+	GroupsAddExpenseRoute: GroupsAddExpenseRoute,
 	GroupsCreateRoute: GroupsCreateRoute,
 	GroupsJoinRoute: GroupsJoinRoute,
 	GroupsIndexRoute: GroupsIndexRoute,
