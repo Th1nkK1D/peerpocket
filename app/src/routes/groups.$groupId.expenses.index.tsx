@@ -1,4 +1,4 @@
-import { Add } from '@mui/icons-material';
+import { Create } from '@mui/icons-material';
 import {
 	Avatar,
 	Button,
@@ -201,7 +201,7 @@ function RouteComponent() {
 					to="/groups/add-expense"
 					search={{ groupId }}
 				>
-					<Add />
+					<Create />
 				</LinkFab>
 			</FabsContainer>
 		</>
