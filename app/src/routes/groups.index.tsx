@@ -1,11 +1,17 @@
-import { ArrowForward, GroupAdd } from '@mui/icons-material';
+import {
+	ArrowForward,
+	GroupAdd,
+	QrCodeScannerOutlined,
+} from '@mui/icons-material';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
-import { createFileRoute, Link } from '@tanstack/react-router';
+import SpeedDial from '@mui/material/SpeedDial';
+import SpeedDialAction from '@mui/material/SpeedDialAction';
+import SpeedDialIcon from '@mui/material/SpeedDialIcon';
+import { createFileRoute, Link, useNavigate } from '@tanstack/react-router';
 import dayjs from 'dayjs';
 import { AuthenticatedLayout } from '../components/authenticated-layout';
 import { FabsContainer } from '../components/fabs-container';
-import { LinkFab } from '../components/links';
 
 export const Route = createFileRoute('/groups/')({
 	component: RouteComponent,
@@ -14,14 +20,15 @@ export const Route = createFileRoute('/groups/')({
 
 function RouteComponent() {
 	const { user } = Route.useLoaderData();
+	const navigate = useNavigate();
 
 	const groups = user.useTableRows('groups', (groups) =>
 		groups.sort((a, z) => z.joinedAt - a.joinedAt),
 	);
 
 	return (
-		<AuthenticatedLayout userStore={user} className="p-3 pb-0">
-			<div className="flex flex-1 flex-col gap-3">
+		<AuthenticatedLayout userStore={user}>
+			<div className="flex flex-1 flex-col gap-3 p-3">
 				{groups.length ? (
 					groups.map(({ id, name, joinedAt }) => (
 						<Link key={id} to="/groups/$groupId" params={{ groupId: id }}>
@@ -47,9 +54,26 @@ function RouteComponent() {
 				)}
 			</div>
 			<FabsContainer>
-				<LinkFab color="primary" to="/groups/create">
-					<GroupAdd />
-				</LinkFab>
+				<SpeedDial
+					ariaLabel="Group actions"
+					icon={<SpeedDialIcon />}
+					direction="up"
+				>
+					<SpeedDialAction
+						icon={<GroupAdd />}
+						tooltipTitle="Create"
+						tooltipOpen
+						onClick={() => navigate({ to: '/groups/create' })}
+						slotProps={{ fab: { color: 'primary' } }}
+					/>
+					<SpeedDialAction
+						icon={<QrCodeScannerOutlined />}
+						tooltipTitle="Join"
+						tooltipOpen
+						onClick={() => navigate({ to: '/groups/scan' })}
+						slotProps={{ fab: { color: 'secondary' } }}
+					/>
+				</SpeedDial>
 			</FabsContainer>
 		</AuthenticatedLayout>
 	);
