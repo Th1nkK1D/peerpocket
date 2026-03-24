@@ -1,3 +1,4 @@
+import 'barcode-detector/polyfill';
 import { Alert, Snackbar } from '@mui/material';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { type IDetectedBarcode, Scanner } from '@yudiel/react-qr-scanner';
