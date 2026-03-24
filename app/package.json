@@ -25,6 +25,7 @@
 		"react": "^19.0.0",
 		"react-dom": "^19.0.0",
 		"react-pull-to-refresh": "^2.0.1",
+		"react-swipeable-list": "^1.10.0",
 		"react-use-websocket": "^4.13.0",
 		"tinybase": "^6.2.1",
 		"zod": "^3.25.67"

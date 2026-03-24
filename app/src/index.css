@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "react-swipeable-list/dist/styles.css";
 
 @theme inline {
 	/* Material UI typography */
