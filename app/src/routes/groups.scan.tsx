@@ -84,6 +84,7 @@ function RouteComponent() {
 				onScan={handleScan}
 				onError={handleError}
 				formats={['qr_code']}
+				sound={false}
 				styles={{
 					container: {
 						width: '100%',
