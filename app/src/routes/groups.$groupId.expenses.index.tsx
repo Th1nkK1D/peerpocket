@@ -1,4 +1,4 @@
-import { Close, Create } from '@mui/icons-material';
+import { Close, Create, DeleteOutline, Edit, Swipe } from '@mui/icons-material';
 import {
 	Avatar,
 	Button,
@@ -14,10 +14,18 @@ import {
 	ListItemButton,
 	ListSubheader,
 } from '@mui/material';
-import { createFileRoute } from '@tanstack/react-router';
+import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { groups } from 'd3-array';
 import dayjs from 'dayjs';
 import { useState } from 'react';
+import {
+	LeadingActions,
+	SwipeAction,
+	SwipeableList,
+	SwipeableListItem,
+	TrailingActions,
+	Type,
+} from 'react-swipeable-list';
 import { FabsContainer } from '../components/fabs-container';
 import { LinkButton, LinkFab } from '../components/links';
 import { MemberAmountTable } from '../components/member-amount-table';
@@ -32,11 +40,12 @@ export const Route = createFileRoute('/groups/$groupId/expenses/')({
 function RouteComponent() {
 	const { user, group } = Route.useLoaderData();
 	const { groupId } = Route.useParams();
+	const navigate = useNavigate();
 	const currentUser = user.useValues();
 
 	const expenseByDays = group.useTableRows('expenses', (expenses) =>
 		groups(
-			expenses.sort((a, z) => z.createdAt - a.createdAt),
+			expenses.sort((a, z) => z.paidOn - a.paidOn),
 			(expense) => dayjs(expense.paidOn).format('ddd, D MMM YY'),
 		),
 	);
@@ -46,24 +55,68 @@ function RouteComponent() {
 		(members) => new Map(members.map((m) => [m.id, m.name])),
 	);
 
-	const [selectedExpense, setSelectedExpense] = useState<{
+	type ExpenseSelection = {
 		expense: (typeof expenseByDays)[number][1][number];
 		relatedSplits: typeof splits;
-	} | null>(null);
+	};
 
-	const [isDeleting, setIsDeleting] = useState(false);
+	const [openedExpense, setOpenedExpense] = useState<ExpenseSelection | null>(
+		null,
+	);
+	const [expensePendingDelete, setExpensePendingDelete] =
+		useState<ExpenseSelection | null>(null);
 
 	function deleteExpense() {
-		if (!selectedExpense) return;
+		if (!expensePendingDelete) return;
 
-		group.delRow('expenses', selectedExpense.expense.id);
+		group.delRow('expenses', expensePendingDelete.expense.id);
 
-		selectedExpense.relatedSplits.forEach((split) => {
+		expensePendingDelete.relatedSplits.forEach((split) => {
 			group.delRow('splits', split.id);
 		});
 
-		setSelectedExpense(null);
-		setIsDeleting(false);
+		setExpensePendingDelete(null);
+		setOpenedExpense(null);
+	}
+
+	function buildTrailingActions(
+		expense: ExpenseSelection['expense'],
+		relatedSplits: ExpenseSelection['relatedSplits'],
+	) {
+		return (
+			<TrailingActions>
+				<SwipeAction
+					onClick={() => {
+						setExpensePendingDelete({ expense, relatedSplits });
+					}}
+				>
+					<div className="flex h-full min-w-24 items-center justify-center gap-2 bg-error px-4 font-medium text-error-contrast text-sm">
+						<span className="text-sm">Delete</span>
+						<DeleteOutline />
+					</div>
+				</SwipeAction>
+			</TrailingActions>
+		);
+	}
+
+	function buildLeadingActions(expenseId: ExpenseSelection['expense']['id']) {
+		return (
+			<LeadingActions>
+				<SwipeAction
+					onClick={() =>
+						navigate({
+							to: '/groups/expense',
+							search: { groupId, expenseId },
+						})
+					}
+				>
+					<div className="flex h-full min-w-24 items-center justify-center gap-2 bg-warning px-4 font-medium text-sm text-warning-contrast">
+						<Edit />
+						<span className="text-sm">Edit</span>
+					</div>
+				</SwipeAction>
+			</LeadingActions>
+		);
 	}
 
 	return (
@@ -76,77 +129,91 @@ function RouteComponent() {
 				<div className="flex-1">
 					{expenseByDays.map(([day, expenses]) => (
 						<List key={day} subheader={<ListSubheader>{day}</ListSubheader>}>
-							{expenses.map((expense) => {
-								const relatedSplits = splits.filter(
-									(split) => split.expenseId === expense.id,
-								);
-								const yourSplit = relatedSplits.find(
-									(split) => split.memberId === currentUser.hashedId,
-								);
-								const otherSplits = relatedSplits.filter(
-									(split) => split.memberId !== currentUser.hashedId,
-								);
+							<SwipeableList type={Type.ANDROID}>
+								{expenses.map((expense) => {
+									const relatedSplits = splits.filter(
+										(split) => split.expenseId === expense.id,
+									);
+									const yourSplit = relatedSplits.find(
+										(split) => split.memberId === currentUser.hashedId,
+									);
+									const otherSplits = relatedSplits.filter(
+										(split) => split.memberId !== currentUser.hashedId,
+									);
 
-								return (
-									<ListItem key={expense.id} disablePadding>
-										<ListItemButton
-											onClick={() =>
-												setSelectedExpense({ expense, relatedSplits })
-											}
+									return (
+										<SwipeableListItem
+											key={expense.id}
+											leadingActions={buildLeadingActions(expense.id)}
+											trailingActions={buildTrailingActions(
+												expense,
+												relatedSplits,
+											)}
 										>
-											<ListItemAvatar>
-												<Avatar>
-													{categoryNameEmojiMap.get(expense.category)}
-												</Avatar>
-											</ListItemAvatar>
-											<div className="flex flex-1 flex-col">
-												<div className="flex flex-row">
-													<p className="flex-1">
-														{expense.notes || expense.category}
-													</p>
-													<span className="text-secondary">
-														{expense.currency}{' '}
-														{formatDecimal(yourSplit?.amount ?? 0)}
-													</span>
-												</div>
-												<div className="flex flex-row">
-													<p className="flex-1 text-gray-500 text-sm">
-														{expense.paidByMemberId === currentUser.hashedId
-															? `${otherSplits.length} people owe you`
-															: yourSplit
-																? `You owe ${memberIdNameMap.get(expense.paidByMemberId)}`
-																: ''}
-													</p>
-													<p className="text-gray-500 text-sm">
-														Total {formatDecimal(expense.amount)}
-													</p>
-												</div>
-											</div>
-										</ListItemButton>
-									</ListItem>
-								);
-							})}
+											<ListItem disablePadding>
+												<ListItemButton
+													onClick={() => {
+														setOpenedExpense({ expense, relatedSplits });
+													}}
+												>
+													<ListItemAvatar>
+														<Avatar>
+															{categoryNameEmojiMap.get(expense.category)}
+														</Avatar>
+													</ListItemAvatar>
+													<div className="flex flex-1 flex-col">
+														<div className="flex flex-row">
+															<p className="flex-1">
+																{expense.notes || expense.category}
+															</p>
+															<span className="text-secondary">
+																{expense.currency}{' '}
+																{formatDecimal(yourSplit?.amount ?? 0)}
+															</span>
+														</div>
+														<div className="flex flex-row">
+															<p className="flex-1 text-gray-500 text-sm">
+																{expense.paidByMemberId === currentUser.hashedId
+																	? `${otherSplits.length} people owe you`
+																	: yourSplit
+																		? `You owe ${memberIdNameMap.get(expense.paidByMemberId)}`
+																		: ''}
+															</p>
+															<p className="text-gray-500 text-sm">
+																Total {formatDecimal(expense.amount)}
+															</p>
+														</div>
+													</div>
+												</ListItemButton>
+											</ListItem>
+										</SwipeableListItem>
+									);
+								})}
+							</SwipeableList>
 						</List>
 					))}
+					<p className="flex flex-row items-center justify-center gap-2 px-3 pt-2 text-gray-500 text-xs italic">
+						<Swipe fontSize="small" />
+						Swipe right to edit, left to delete the expense
+					</p>
 				</div>
 			)}
 
 			<Dialog
-				open={!!selectedExpense && !isDeleting}
-				onClose={() => setSelectedExpense(null)}
+				open={!!openedExpense}
+				onClose={() => setOpenedExpense(null)}
 				scroll="paper"
 				fullWidth
 			>
-				{selectedExpense ? (
+				{openedExpense ? (
 					<>
 						<DialogTitle>
-							{categoryNameEmojiMap.get(selectedExpense.expense.category)}{' '}
-							{selectedExpense.expense.notes ||
-								selectedExpense.expense.category}
+							{categoryNameEmojiMap.get(openedExpense.expense.category)}{' '}
+							{openedExpense.expense.notes || openedExpense.expense.category}
 							<IconButton
 								aria-label="Close"
 								className="!absolute top-3 right-2"
-								onClick={() => setSelectedExpense(null)}
+								onClick={() => setOpenedExpense(null)}
 							>
 								<Close />
 							</IconButton>
@@ -154,13 +221,13 @@ function RouteComponent() {
 						<DialogContent dividers>
 							<DialogContentText className="mb-1 text-sm">
 								Paid by{' '}
-								{memberIdNameMap.get(selectedExpense.expense.paidByMemberId)} on{' '}
-								{dayjs(selectedExpense.expense.paidOn).format('ddd, D MMM YY')}
+								{memberIdNameMap.get(openedExpense.expense.paidByMemberId)} on{' '}
+								{dayjs(openedExpense.expense.paidOn).format('ddd, D MMM YY')}
 							</DialogContentText>
 							<MemberAmountTable
-								currency={selectedExpense.expense.currency}
+								currency={openedExpense.expense.currency}
 								currentUserKey={currentUser.hashedId}
-								items={selectedExpense.relatedSplits.map((exp) => ({
+								items={openedExpense.relatedSplits.map((exp) => ({
 									key: exp.memberId,
 									name: memberIdNameMap.get(exp.memberId),
 									amount: exp.amount,
@@ -168,7 +235,10 @@ function RouteComponent() {
 							/>
 						</DialogContent>
 						<DialogActions>
-							<Button color="error" onClick={() => setIsDeleting(true)}>
+							<Button
+								color="error"
+								onClick={() => setExpensePendingDelete(openedExpense)}
+							>
 								Delete
 							</Button>
 							<LinkButton
@@ -176,7 +246,7 @@ function RouteComponent() {
 								to="/groups/expense"
 								search={{
 									groupId,
-									expenseId: selectedExpense.expense.id,
+									expenseId: openedExpense.expense.id,
 								}}
 							>
 								Edit
@@ -186,24 +256,23 @@ function RouteComponent() {
 				) : null}
 			</Dialog>
 
-			<Dialog open={isDeleting} onClose={() => setIsDeleting(false)}>
-				{selectedExpense ? (
-					<>
-						<DialogTitle>Deleting expense</DialogTitle>
-						<DialogContent>
-							<DialogContentText>
-								This expense will be removed for everyone in the group. Are you
-								sure?
-							</DialogContentText>
-						</DialogContent>
-						<DialogActions>
-							<Button onClick={() => setIsDeleting(false)}>Cancel</Button>
-							<Button color="error" onClick={deleteExpense}>
-								Yes, delete it
-							</Button>
-						</DialogActions>
-					</>
-				) : null}
+			<Dialog
+				open={!!expensePendingDelete}
+				onClose={() => setExpensePendingDelete(null)}
+			>
+				<DialogTitle>Deleting expense</DialogTitle>
+				<DialogContent>
+					<DialogContentText>
+						This expense will be deleted for everyone in the group. Are you
+						sure?
+					</DialogContentText>
+				</DialogContent>
+				<DialogActions>
+					<Button onClick={() => setExpensePendingDelete(null)}>Cancel</Button>
+					<Button color="error" onClick={deleteExpense}>
+						Yes, delete it
+					</Button>
+				</DialogActions>
 			</Dialog>
 
 			<FabsContainer>

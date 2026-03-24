@@ -35,19 +35,11 @@ function RouteComponent() {
 	);
 
 	function joinGroup() {
-		const memberName = user.getValue('name') as string;
 		const joinedAt = Date.now();
 
 		if (!user.hasRow('groups', id)) {
 			user.setRow('groups', id, {
 				name,
-				joinedAt,
-			});
-		}
-
-		if (!group.hasRow('members', hashedId)) {
-			group.setRow('members', hashedId, {
-				name: memberName,
 				joinedAt,
 			});
 		}

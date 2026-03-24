@@ -1,13 +1,18 @@
-import { Person, PersonAdd } from '@mui/icons-material';
+import {
+	DeleteOutline,
+	Person,
+	PersonAdd,
+	SwipeLeft,
+} from '@mui/icons-material';
 import {
 	Avatar,
 	Button,
 	Dialog,
 	DialogActions,
 	DialogContent,
+	DialogContentText,
 	DialogTitle,
 	Fab,
-	List,
 	ListItem,
 	ListItemAvatar,
 	ListItemText,
@@ -15,6 +20,13 @@ import {
 import { createFileRoute } from '@tanstack/react-router';
 import dayjs from 'dayjs';
 import { useState } from 'react';
+import {
+	SwipeAction,
+	SwipeableList,
+	SwipeableListItem,
+	TrailingActions,
+	Type,
+} from 'react-swipeable-list';
 import { FabsContainer } from '../components/fabs-container';
 import { GroupSharing } from '../components/group-sharing';
 
@@ -24,30 +36,76 @@ export const Route = createFileRoute('/groups/$groupId/members')({
 });
 
 function RouteComponent() {
-	const { userGroupInfo, group } = Route.useLoaderData();
+	const { user, userGroupInfo, group } = Route.useLoaderData();
+	const currentUser = user.useValues();
 	const members = group.useTableRows('members', (members) =>
 		members.sort((a, z) => z.joinedAt - a.joinedAt),
 	);
+	const expenses = group.useTableRows('expenses');
+	const splits = group.useTableRows('splits');
 
 	const [isGroupSharingOpened, setIsGroupSharingOpened] = useState(false);
+	const [selectedMember, setSelectedMember] = useState<{
+		id: string;
+		name: string;
+	} | null>(null);
+
+	function removeMember() {
+		if (!selectedMember) return;
+
+		group.delRow('members', selectedMember.id);
+		setSelectedMember(null);
+	}
+
+	function buildTrailingActions(id: string, name: string) {
+		return (
+			<TrailingActions>
+				<SwipeAction onClick={() => setSelectedMember({ id, name })}>
+					<div className="flex h-full min-w-24 items-center justify-center gap-2 bg-error px-4 font-medium text-error-contrast text-sm">
+						<span className="text-sm">Delete</span>
+						<DeleteOutline />
+					</div>
+				</SwipeAction>
+			</TrailingActions>
+		);
+	}
+
+	const deleteBlockedReason = selectedMember
+		? selectedMember.id === currentUser.hashedId
+			? 'You cannot delete yourself from the group.'
+			: expenses.some(
+						(expense) => expense.paidByMemberId === selectedMember.id,
+					) || splits.some((split) => split.memberId === selectedMember.id)
+				? 'This member cannot be deleted because they are related to an expense or split.'
+				: null
+		: null;
 
 	return (
 		<>
-			<List className="flex-1">
+			<SwipeableList type={Type.ANDROID}>
 				{members.map((member) => (
-					<ListItem key={member.id}>
-						<ListItemAvatar>
-							<Avatar>
-								<Person />
-							</Avatar>
-						</ListItemAvatar>
-						<ListItemText
-							primary={member.name}
-							secondary={`Joined on ${dayjs(member.joinedAt).format('DD MMMM YYYY')}`}
-						/>
-					</ListItem>
+					<SwipeableListItem
+						key={member.id}
+						trailingActions={buildTrailingActions(member.id, member.name)}
+					>
+						<ListItem>
+							<ListItemAvatar>
+								<Avatar>
+									<Person />
+								</Avatar>
+							</ListItemAvatar>
+							<ListItemText
+								primary={member.name}
+								secondary={`Joined on ${dayjs(member.joinedAt).format('DD MMMM YYYY')}`}
+							/>
+						</ListItem>
+					</SwipeableListItem>
 				))}
-			</List>
+				<p className="flex flex-row items-center justify-center gap-2 px-3 pt-2 text-gray-500 text-xs italic">
+					<SwipeLeft fontSize="small" />
+					Swipe left to delete a member
+				</p>
+			</SwipeableList>
 
 			<FabsContainer>
 				<Fab
@@ -76,6 +134,38 @@ function RouteComponent() {
 						Done
 					</Button>
 				</DialogActions>
+			</Dialog>
+
+			<Dialog
+				open={!!selectedMember}
+				onClose={() => setSelectedMember(null)}
+				fullWidth
+			>
+				{selectedMember ? (
+					<>
+						<DialogTitle>
+							{deleteBlockedReason
+								? `Cannot delete ${selectedMember.name}`
+								: `Delete ${selectedMember.name}?`}
+						</DialogTitle>
+						<DialogContent>
+							<DialogContentText>
+								{deleteBlockedReason ??
+									'They can be added back later by sharing the group again.'}
+							</DialogContentText>
+						</DialogContent>
+						<DialogActions>
+							<Button onClick={() => setSelectedMember(null)}>
+								{deleteBlockedReason ? 'Close' : 'Cancel'}
+							</Button>
+							{deleteBlockedReason ? null : (
+								<Button color="error" onClick={removeMember}>
+									Delete
+								</Button>
+							)}
+						</DialogActions>
+					</>
+				) : null}
 			</Dialog>
 		</>
 	);

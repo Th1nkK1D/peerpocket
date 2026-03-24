@@ -10,7 +10,9 @@ import { idHelper } from '../utils/id';
 export const Route = createFileRoute('/groups/$groupId')({
 	component: RouteComponent,
 	async beforeLoad({ params, context }) {
-		if (!context.user.hasRow('groups', params.groupId)) {
+		const { user } = context;
+
+		if (!user.hasRow('groups', params.groupId)) {
 			throw redirect({
 				to: '/groups',
 				replace: true,
@@ -22,13 +24,23 @@ export const Route = createFileRoute('/groups/$groupId')({
 			params.groupId,
 		);
 
+		const group = await setupGroupStore(groupStoreId);
+		const hashedId = user.getValue('hashedId') as string;
+
+		if (!group.hasRow('members', hashedId)) {
+			group.setRow('members', hashedId, {
+				name: user.getValue('name') as string,
+				joinedAt: user.getCell('groups', params.groupId, 'joinedAt'),
+			});
+		}
+
 		return {
 			...context,
 			userGroupInfo: {
 				id: params.groupId,
 				...context.user.getRow('groups', params.groupId),
 			},
-			group: await setupGroupStore(groupStoreId),
+			group,
 		};
 	},
 	loader: ({ context }) => context,
