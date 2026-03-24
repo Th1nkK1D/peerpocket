@@ -20,15 +20,14 @@ import {
 import { createFileRoute } from '@tanstack/react-router';
 import dayjs from 'dayjs';
 import { useState } from 'react';
-import {
-	SwipeAction,
-	SwipeableList,
-	SwipeableListItem,
-	TrailingActions,
-	Type,
-} from 'react-swipeable-list';
 import { FabsContainer } from '../components/fabs-container';
 import { GroupSharing } from '../components/group-sharing';
+import {
+	SwipeableList,
+	SwipeableListItem,
+	SwipeHint,
+	SwipeTrailingAction,
+} from '../components/swipeable-list';
 
 export const Route = createFileRoute('/groups/$groupId/members')({
 	component: RouteComponent,
@@ -59,14 +58,12 @@ function RouteComponent() {
 
 	function buildTrailingActions(id: string, name: string) {
 		return (
-			<TrailingActions>
-				<SwipeAction onClick={() => setSelectedMember({ id, name })}>
-					<div className="flex h-full min-w-24 items-center justify-center gap-2 bg-error px-4 font-medium text-error-contrast text-sm">
-						<span className="text-sm">Delete</span>
-						<DeleteOutline />
-					</div>
-				</SwipeAction>
-			</TrailingActions>
+			<SwipeTrailingAction
+				label="Delete"
+				icon={<DeleteOutline />}
+				onClick={() => setSelectedMember({ id, name })}
+				className="bg-error text-error-contrast"
+			/>
 		);
 	}
 
@@ -82,7 +79,7 @@ function RouteComponent() {
 
 	return (
 		<>
-			<SwipeableList type={Type.ANDROID}>
+			<SwipeableList>
 				{members.map((member) => (
 					<SwipeableListItem
 						key={member.id}
@@ -101,10 +98,9 @@ function RouteComponent() {
 						</ListItem>
 					</SwipeableListItem>
 				))}
-				<p className="flex flex-row items-center justify-center gap-2 px-3 pt-2 text-gray-500 text-xs italic">
-					<SwipeLeft fontSize="small" />
+				<SwipeHint icon={<SwipeLeft fontSize="small" />} className="px-3 pt-2">
 					Swipe left to delete a member
-				</p>
+				</SwipeHint>
 			</SwipeableList>
 
 			<FabsContainer>

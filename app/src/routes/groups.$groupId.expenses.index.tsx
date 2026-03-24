@@ -18,17 +18,16 @@ import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { groups } from 'd3-array';
 import dayjs from 'dayjs';
 import { useState } from 'react';
-import {
-	LeadingActions,
-	SwipeAction,
-	SwipeableList,
-	SwipeableListItem,
-	TrailingActions,
-	Type,
-} from 'react-swipeable-list';
 import { FabsContainer } from '../components/fabs-container';
 import { LinkButton, LinkFab } from '../components/links';
 import { MemberAmountTable } from '../components/member-amount-table';
+import {
+	SwipeableList,
+	SwipeableListItem,
+	SwipeHint,
+	SwipeLeadingAction,
+	SwipeTrailingAction,
+} from '../components/swipeable-list';
 import { categoryNameEmojiMap } from '../constants/expense';
 import { formatDecimal } from '../hooks/form';
 
@@ -84,38 +83,30 @@ function RouteComponent() {
 		relatedSplits: ExpenseSelection['relatedSplits'],
 	) {
 		return (
-			<TrailingActions>
-				<SwipeAction
-					onClick={() => {
-						setExpensePendingDelete({ expense, relatedSplits });
-					}}
-				>
-					<div className="flex h-full min-w-24 items-center justify-center gap-2 bg-error px-4 font-medium text-error-contrast text-sm">
-						<span className="text-sm">Delete</span>
-						<DeleteOutline />
-					</div>
-				</SwipeAction>
-			</TrailingActions>
+			<SwipeTrailingAction
+				label="Delete"
+				icon={<DeleteOutline />}
+				onClick={() => {
+					setExpensePendingDelete({ expense, relatedSplits });
+				}}
+				className="bg-error text-error-contrast"
+			/>
 		);
 	}
 
 	function buildLeadingActions(expenseId: ExpenseSelection['expense']['id']) {
 		return (
-			<LeadingActions>
-				<SwipeAction
-					onClick={() =>
-						navigate({
-							to: '/groups/expense',
-							search: { groupId, expenseId },
-						})
-					}
-				>
-					<div className="flex h-full min-w-24 items-center justify-center gap-2 bg-warning px-4 font-medium text-sm text-warning-contrast">
-						<Edit />
-						<span className="text-sm">Edit</span>
-					</div>
-				</SwipeAction>
-			</LeadingActions>
+			<SwipeLeadingAction
+				label="Edit"
+				icon={<Edit />}
+				onClick={() =>
+					navigate({
+						to: '/groups/expense',
+						search: { groupId, expenseId },
+					})
+				}
+				className="bg-warning text-warning-contrast"
+			/>
 		);
 	}
 
@@ -129,7 +120,7 @@ function RouteComponent() {
 				<div className="flex-1">
 					{expenseByDays.map(([day, expenses]) => (
 						<List key={day} subheader={<ListSubheader>{day}</ListSubheader>}>
-							<SwipeableList type={Type.ANDROID}>
+							<SwipeableList>
 								{expenses.map((expense) => {
 									const relatedSplits = splits.filter(
 										(split) => split.expenseId === expense.id,
@@ -192,10 +183,9 @@ function RouteComponent() {
 							</SwipeableList>
 						</List>
 					))}
-					<p className="flex flex-row items-center justify-center gap-2 px-3 pt-2 text-gray-500 text-xs italic">
-						<Swipe fontSize="small" />
+					<SwipeHint icon={<Swipe fontSize="small" />} className="px-3 pt-2">
 						Swipe right to edit, left to delete the expense
-					</p>
+					</SwipeHint>
 				</div>
 			)}
 

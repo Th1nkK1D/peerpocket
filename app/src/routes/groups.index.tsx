@@ -20,15 +20,14 @@ import SpeedDialIcon from '@mui/material/SpeedDialIcon';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import dayjs from 'dayjs';
 import { useState } from 'react';
-import {
-	SwipeAction,
-	SwipeableList,
-	SwipeableListItem,
-	TrailingActions,
-	Type,
-} from 'react-swipeable-list';
 import { AuthenticatedLayout } from '../components/authenticated-layout';
 import { FabsContainer } from '../components/fabs-container';
+import {
+	SwipeableList,
+	SwipeableListItem,
+	SwipeHint,
+	SwipeTrailingAction,
+} from '../components/swipeable-list';
 import { GROUP_STORE_PREFIX } from '../stores/group';
 import { idHelper } from '../utils/id';
 
@@ -61,14 +60,12 @@ function RouteComponent() {
 
 	function buildTrailingActions(id: string, name: string) {
 		return (
-			<TrailingActions>
-				<SwipeAction onClick={() => setSelectedGroup({ id, name })}>
-					<div className="flex h-full min-w-24 items-center justify-center gap-2 bg-error px-4 font-medium text-error-contrast text-sm">
-						<span className="text-sm">Remove</span>
-						<DeleteOutline />
-					</div>
-				</SwipeAction>
-			</TrailingActions>
+			<SwipeTrailingAction
+				label="Remove"
+				icon={<DeleteOutline />}
+				onClick={() => setSelectedGroup({ id, name })}
+				className="bg-error text-error-contrast"
+			/>
 		);
 	}
 
@@ -76,7 +73,7 @@ function RouteComponent() {
 		<AuthenticatedLayout userStore={user}>
 			<div className="m-3 mb-0 flex flex-1 flex-col gap-3">
 				{groups.length ? (
-					<SwipeableList type={Type.ANDROID} className="flex flex-col gap-3">
+					<SwipeableList className="flex flex-col gap-3">
 						{groups.map(({ id, name, joinedAt }) => (
 							<SwipeableListItem
 								key={id}
@@ -104,10 +101,9 @@ function RouteComponent() {
 								</Card>
 							</SwipeableListItem>
 						))}
-						<p className="flex flex-row items-center justify-center gap-2 pt-2 text-gray-500 text-xs italic">
-							<SwipeLeft fontSize="small" />
+						<SwipeHint icon={<SwipeLeft fontSize="small" />} className="pt-2">
 							Swipe left to remove the group
-						</p>
+						</SwipeHint>
 					</SwipeableList>
 				) : (
 					<p className="m-auto text-center">
