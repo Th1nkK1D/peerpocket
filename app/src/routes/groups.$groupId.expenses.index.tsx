@@ -1,4 +1,4 @@
-import { Create } from '@mui/icons-material';
+import { Close, Create } from '@mui/icons-material';
 import {
 	Avatar,
 	Button,
@@ -7,6 +7,7 @@ import {
 	DialogContent,
 	DialogContentText,
 	DialogTitle,
+	IconButton,
 	List,
 	ListItem,
 	ListItemAvatar,
@@ -18,7 +19,7 @@ import { groups } from 'd3-array';
 import dayjs from 'dayjs';
 import { useState } from 'react';
 import { FabsContainer } from '../components/fabs-container';
-import { LinkFab } from '../components/links';
+import { LinkButton, LinkFab } from '../components/links';
 import { MemberAmountTable } from '../components/member-amount-table';
 import { categoryNameEmojiMap } from '../constants/expense';
 import { formatDecimal } from '../hooks/form';
@@ -142,6 +143,13 @@ function RouteComponent() {
 							{categoryNameEmojiMap.get(selectedExpense.expense.category)}{' '}
 							{selectedExpense.expense.notes ||
 								selectedExpense.expense.category}
+							<IconButton
+								aria-label="Close"
+								className="!absolute top-3 right-2"
+								onClick={() => setSelectedExpense(null)}
+							>
+								<Close />
+							</IconButton>
 						</DialogTitle>
 						<DialogContent dividers>
 							<DialogContentText className="mb-1 text-sm">
@@ -163,12 +171,16 @@ function RouteComponent() {
 							<Button color="error" onClick={() => setIsDeleting(true)}>
 								Delete
 							</Button>
-							<Button
+							<LinkButton
 								variant="outlined"
-								onClick={() => setSelectedExpense(null)}
+								to="/groups/expense"
+								search={{
+									groupId,
+									expenseId: selectedExpense.expense.id,
+								}}
 							>
-								Close
-							</Button>
+								Edit
+							</LinkButton>
 						</DialogActions>
 					</>
 				) : null}
@@ -198,7 +210,7 @@ function RouteComponent() {
 				<LinkFab
 					color="primary"
 					aria-label="Add new expense"
-					to="/groups/add-expense"
+					to="/groups/expense"
 					search={{ groupId }}
 				>
 					<Create />

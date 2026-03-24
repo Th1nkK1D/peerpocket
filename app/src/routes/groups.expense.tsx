@@ -18,16 +18,17 @@ import { idHelper } from '../utils/id';
 
 const SMALLEST_FRACTION = 0.01;
 
-export const Route = createFileRoute('/groups/add-expense')({
+export const Route = createFileRoute('/groups/expense')({
 	component: RouteComponent,
 	validateSearch: zodValidator(
 		z.object({
 			groupId: z.string().nonempty(),
+			expenseId: z.string().nonempty().optional(),
 		}),
 	),
-	loaderDeps: ({ search: { groupId } }) => ({ groupId }),
+	loaderDeps: ({ search: { groupId, expenseId } }) => ({ groupId, expenseId }),
 	async loader({ deps, context }) {
-		const { groupId } = deps;
+		const { groupId, expenseId } = deps;
 
 		if (!context.user.hasRow('groups', groupId)) {
 			throw redirect({
@@ -36,21 +37,41 @@ export const Route = createFileRoute('/groups/add-expense')({
 			});
 		}
 
+		const group = await setupGroupStore(
+			idHelper.createStoreId(GROUP_STORE_PREFIX, groupId),
+		);
+		const expense = expenseId ? group.getRow('expenses', expenseId) : null;
+
+		if (expenseId && !expense) {
+			throw redirect({
+				to: '/groups/$groupId/expenses',
+				params: { groupId },
+				replace: true,
+			});
+		}
+
 		return {
 			...context,
 			groupId,
-			group: await setupGroupStore(
-				idHelper.createStoreId(GROUP_STORE_PREFIX, groupId),
-			),
+			expenseId,
+			expense,
+			group,
 		};
 	},
 });
 
 function RouteComponent() {
-	const { user, group, groupId } = Route.useLoaderData();
+	const { user, group, groupId, expenseId, expense } = Route.useLoaderData();
 	const currentUser = user.useValues();
 	const members = group.useTableRows('members');
+	const splits = group.useTableRows('splits');
 	const groupName = user.getRow('groups', groupId)?.name ?? 'Add Expense';
+	const existingSplits = expenseId
+		? splits.filter((split) => split.expenseId === expenseId)
+		: [];
+	const splitAmountByMemberId = new Map(
+		existingSplits.map((split) => [split.memberId, split.amount]),
+	);
 
 	const navigate = useNavigate();
 
@@ -70,11 +91,11 @@ function RouteComponent() {
 			}),
 		},
 		defaultValues: {
-			notes: '',
-			amount: 0,
-			category: 'Other',
-			paidByMemberId: currentUser.hashedId,
-			paidOn: dayjs(),
+			notes: expense?.notes ?? '',
+			amount: expense?.amount ?? 0,
+			category: expense?.category ?? 'Other',
+			paidByMemberId: expense?.paidByMemberId ?? currentUser.hashedId,
+			paidOn: expense ? dayjs(expense.paidOn) : dayjs(),
 		},
 		onSubmit() {
 			setActiveStep(activeStep + 1);
@@ -98,22 +119,33 @@ function RouteComponent() {
 			splits: members.map(({ id, name }) => ({
 				name,
 				memberId: id,
-				amount: 0,
-				isSelected: true,
+				amount: splitAmountByMemberId.get(id) ?? 0,
+				isSelected: expenseId ? splitAmountByMemberId.has(id) : true,
 			})),
 		},
 		async onSubmit({ value }) {
-			const expenseId = group.addRow('expenses', {
+			const nextExpenseId = expenseId || group.addRow('expenses', {});
+
+			if (!nextExpenseId) return;
+
+			group.setRow('expenses', nextExpenseId, {
 				...detailsForm.state.values,
 				paidOn: detailsForm.state.values.paidOn.unix() * 1000,
-				createdAt: Date.now(),
+				createdAt: expense?.createdAt ?? Date.now(),
+				updatedAt: expenseId ? Date.now() : undefined,
 			});
+
+			if (expenseId) {
+				existingSplits.forEach((split) => {
+					group.delRow('splits', split.id);
+				});
+			}
 
 			value.splits
 				.filter((s) => s.amount > 0)
 				.forEach(({ memberId, amount }) => {
 					group.addRow('splits', {
-						expenseId,
+						expenseId: nextExpenseId,
 						memberId,
 						amount,
 					});
@@ -360,7 +392,7 @@ function RouteComponent() {
 														sumSplit !== detailsForm.store.state.values.amount
 													}
 												>
-													Add
+													{expenseId ? 'Update' : 'Add'}
 												</splitsForm.SubmitButton>
 											</splitsForm.AppForm>
 										</StepNavigations>
