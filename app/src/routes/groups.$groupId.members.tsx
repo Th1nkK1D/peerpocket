@@ -23,10 +23,11 @@ import { useState } from 'react';
 import { FabsContainer } from '../components/fabs-container';
 import { GroupSharing } from '../components/group-sharing';
 import {
+	SwipeActionButton,
 	SwipeableList,
 	SwipeableListItem,
 	SwipeHint,
-	SwipeTrailingAction,
+	TrailingActions,
 } from '../components/swipeable-list';
 
 export const Route = createFileRoute('/groups/$groupId/members')({
@@ -56,17 +57,6 @@ function RouteComponent() {
 		setSelectedMember(null);
 	}
 
-	function buildTrailingActions(id: string, name: string) {
-		return (
-			<SwipeTrailingAction
-				label="Delete"
-				icon={<DeleteOutline />}
-				onClick={() => setSelectedMember({ id, name })}
-				className="bg-error text-error-contrast"
-			/>
-		);
-	}
-
 	const deleteBlockedReason = selectedMember
 		? selectedMember.id === currentUser.hashedId
 			? 'You cannot delete yourself from the group.'
@@ -83,7 +73,18 @@ function RouteComponent() {
 				{members.map((member) => (
 					<SwipeableListItem
 						key={member.id}
-						trailingActions={buildTrailingActions(member.id, member.name)}
+						trailingActions={
+							<TrailingActions>
+								<SwipeActionButton
+									label="Delete"
+									icon={<DeleteOutline />}
+									onClick={() =>
+										setSelectedMember({ id: member.id, name: member.name })
+									}
+									className="bg-error text-error-contrast"
+								/>
+							</TrailingActions>
+						}
 					>
 						<ListItem>
 							<ListItemAvatar>

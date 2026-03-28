@@ -1,19 +1,17 @@
 import type { PropsWithChildren, ReactNode } from 'react';
 import {
 	SwipeableList as BaseSwipeableList,
-	LeadingActions,
 	SwipeAction,
-	TrailingActions,
 	Type,
 } from 'react-swipeable-list';
 
-export { SwipeableListItem } from 'react-swipeable-list';
+export { SwipeableListItem, TrailingActions } from 'react-swipeable-list';
 
 interface SwipeListProps extends PropsWithChildren {
 	className?: string;
 }
 
-interface SwipeActionButtonProps {
+export interface SwipeActionButtonProps {
 	label: string;
 	icon: ReactNode;
 	onClick: () => void;
@@ -26,7 +24,7 @@ interface SwipeHintProps {
 	className?: string;
 }
 
-function SwipeActionButton({
+export function SwipeActionButton({
 	label,
 	icon,
 	onClick,
@@ -35,10 +33,10 @@ function SwipeActionButton({
 	return (
 		<SwipeAction onClick={onClick}>
 			<div
-				className={`flex h-full min-w-24 items-center justify-center gap-2 px-4 font-medium text-sm ${className}`}
+				className={`flex h-full min-w-20 flex-col items-center justify-center gap-1 px-4 text-sm ${className}`}
 			>
-				<span className="text-sm">{label}</span>
 				{icon}
+				<span className="text-xs">{label}</span>
 			</div>
 		</SwipeAction>
 	);
@@ -46,32 +44,16 @@ function SwipeActionButton({
 
 export function SwipeableList({ children, className }: SwipeListProps) {
 	return (
-		<BaseSwipeableList type={Type.ANDROID} className={className}>
+		<BaseSwipeableList type={Type.IOS} className={className}>
 			{children}
 		</BaseSwipeableList>
-	);
-}
-
-export function SwipeLeadingAction(props: SwipeActionButtonProps) {
-	return (
-		<LeadingActions>
-			<SwipeActionButton {...props} />
-		</LeadingActions>
-	);
-}
-
-export function SwipeTrailingAction(props: SwipeActionButtonProps) {
-	return (
-		<TrailingActions>
-			<SwipeActionButton {...props} />
-		</TrailingActions>
 	);
 }
 
 export function SwipeHint({ icon, children, className = '' }: SwipeHintProps) {
 	return (
 		<p
-			className={`flex flex-row items-center justify-center gap-2 text-gray-600 text-xs italic ${className}`}
+			className={`flex flex-col items-center justify-center gap-2 text-gray-600 text-xs italic ${className}`}
 		>
 			{icon}
 			{children}

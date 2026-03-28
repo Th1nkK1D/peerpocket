@@ -23,10 +23,11 @@ import { useState } from 'react';
 import { AuthenticatedLayout } from '../components/authenticated-layout';
 import { FabsContainer } from '../components/fabs-container';
 import {
+	SwipeActionButton,
 	SwipeableList,
 	SwipeableListItem,
 	SwipeHint,
-	SwipeTrailingAction,
+	TrailingActions,
 } from '../components/swipeable-list';
 import { GROUP_STORE_PREFIX } from '../stores/group';
 import { idHelper } from '../utils/id';
@@ -58,17 +59,6 @@ function RouteComponent() {
 		setSelectedGroup(null);
 	}
 
-	function buildTrailingActions(id: string, name: string) {
-		return (
-			<SwipeTrailingAction
-				label="Remove"
-				icon={<DeleteOutline />}
-				onClick={() => setSelectedGroup({ id, name })}
-				className="bg-error text-error-contrast"
-			/>
-		);
-	}
-
 	return (
 		<AuthenticatedLayout userStore={user}>
 			<div className="m-3 mb-0 flex flex-1 flex-col gap-3">
@@ -77,7 +67,16 @@ function RouteComponent() {
 						{groups.map(({ id, name, joinedAt }) => (
 							<SwipeableListItem
 								key={id}
-								trailingActions={buildTrailingActions(id, name)}
+								trailingActions={
+									<TrailingActions>
+										<SwipeActionButton
+											label="Remove"
+											icon={<DeleteOutline />}
+											onClick={() => setSelectedGroup({ id, name })}
+											className="bg-error text-error-contrast"
+										/>
+									</TrailingActions>
+								}
 							>
 								<Card className="w-full">
 									<CardActionArea

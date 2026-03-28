@@ -1,4 +1,10 @@
-import { Close, Create, DeleteOutline, Edit, Swipe } from '@mui/icons-material';
+import {
+	Close,
+	Create,
+	DeleteOutline,
+	Edit,
+	SwipeLeft,
+} from '@mui/icons-material';
 import {
 	Avatar,
 	Button,
@@ -22,11 +28,11 @@ import { FabsContainer } from '../components/fabs-container';
 import { LinkButton, LinkFab } from '../components/links';
 import { MemberAmountTable } from '../components/member-amount-table';
 import {
+	SwipeActionButton,
 	SwipeableList,
 	SwipeableListItem,
 	SwipeHint,
-	SwipeLeadingAction,
-	SwipeTrailingAction,
+	TrailingActions,
 } from '../components/swipeable-list';
 import { categoryNameEmojiMap } from '../constants/expense';
 import { formatDecimal } from '../hooks/form';
@@ -78,38 +84,6 @@ function RouteComponent() {
 		setOpenedExpense(null);
 	}
 
-	function buildTrailingActions(
-		expense: ExpenseSelection['expense'],
-		relatedSplits: ExpenseSelection['relatedSplits'],
-	) {
-		return (
-			<SwipeTrailingAction
-				label="Delete"
-				icon={<DeleteOutline />}
-				onClick={() => {
-					setExpensePendingDelete({ expense, relatedSplits });
-				}}
-				className="bg-error text-error-contrast"
-			/>
-		);
-	}
-
-	function buildLeadingActions(expenseId: ExpenseSelection['expense']['id']) {
-		return (
-			<SwipeLeadingAction
-				label="Edit"
-				icon={<Edit />}
-				onClick={() =>
-					navigate({
-						to: '/groups/expense',
-						search: { groupId, expenseId },
-					})
-				}
-				className="bg-warning text-warning-contrast"
-			/>
-		);
-	}
-
 	return (
 		<>
 			<div className="flex flex-1 flex-col">
@@ -136,11 +110,32 @@ function RouteComponent() {
 										return (
 											<SwipeableListItem
 												key={expense.id}
-												leadingActions={buildLeadingActions(expense.id)}
-												trailingActions={buildTrailingActions(
-													expense,
-													relatedSplits,
-												)}
+												trailingActions={
+													<TrailingActions>
+														<SwipeActionButton
+															label="Edit"
+															icon={<Edit />}
+															onClick={() =>
+																navigate({
+																	to: '/groups/expense',
+																	search: { groupId, expenseId: expense.id },
+																})
+															}
+															className="bg-warning text-warning-contrast"
+														/>
+														<SwipeActionButton
+															label="Delete"
+															icon={<DeleteOutline />}
+															onClick={() =>
+																setExpensePendingDelete({
+																	expense,
+																	relatedSplits,
+																})
+															}
+															className="bg-error text-error-contrast"
+														/>
+													</TrailingActions>
+												}
 											>
 												<ListItem disablePadding>
 													<ListItemButton
@@ -185,8 +180,11 @@ function RouteComponent() {
 								</SwipeableList>
 							</List>
 						))}
-						<SwipeHint icon={<Swipe fontSize="small" />} className="px-3 pt-2">
-							Swipe right to edit, left to delete the expense
+						<SwipeHint
+							icon={<SwipeLeft fontSize="small" />}
+							className="px-3 pt-2"
+						>
+							Swipe left to edit or delete the expense
 						</SwipeHint>
 					</>
 				)}
