@@ -112,82 +112,85 @@ function RouteComponent() {
 
 	return (
 		<>
-			{expenseByDays.length === 0 ? (
-				<p className="m-auto p-3 text-center">
-					Look like no one has taking a note just yet.
-				</p>
-			) : (
-				<div className="flex-1">
-					{expenseByDays.map(([day, expenses]) => (
-						<List key={day} subheader={<ListSubheader>{day}</ListSubheader>}>
-							<SwipeableList>
-								{expenses.map((expense) => {
-									const relatedSplits = splits.filter(
-										(split) => split.expenseId === expense.id,
-									);
-									const yourSplit = relatedSplits.find(
-										(split) => split.memberId === currentUser.hashedId,
-									);
-									const otherSplits = relatedSplits.filter(
-										(split) => split.memberId !== currentUser.hashedId,
-									);
+			<div className="flex flex-1 flex-col">
+				{expenseByDays.length === 0 ? (
+					<p className="m-auto p-3 text-center">
+						Look like no one has taking a note just yet.
+					</p>
+				) : (
+					<>
+						{expenseByDays.map(([day, expenses]) => (
+							<List key={day} subheader={<ListSubheader>{day}</ListSubheader>}>
+								<SwipeableList>
+									{expenses.map((expense) => {
+										const relatedSplits = splits.filter(
+											(split) => split.expenseId === expense.id,
+										);
+										const yourSplit = relatedSplits.find(
+											(split) => split.memberId === currentUser.hashedId,
+										);
+										const otherSplits = relatedSplits.filter(
+											(split) => split.memberId !== currentUser.hashedId,
+										);
 
-									return (
-										<SwipeableListItem
-											key={expense.id}
-											leadingActions={buildLeadingActions(expense.id)}
-											trailingActions={buildTrailingActions(
-												expense,
-												relatedSplits,
-											)}
-										>
-											<ListItem disablePadding>
-												<ListItemButton
-													onClick={() => {
-														setOpenedExpense({ expense, relatedSplits });
-													}}
-												>
-													<ListItemAvatar>
-														<Avatar>
-															{categoryNameEmojiMap.get(expense.category)}
-														</Avatar>
-													</ListItemAvatar>
-													<div className="flex flex-1 flex-col">
-														<div className="flex flex-row">
-															<p className="flex-1">
-																{expense.notes || expense.category}
-															</p>
-															<span className="text-secondary">
-																{expense.currency}{' '}
-																{formatDecimal(yourSplit?.amount ?? 0)}
-															</span>
+										return (
+											<SwipeableListItem
+												key={expense.id}
+												leadingActions={buildLeadingActions(expense.id)}
+												trailingActions={buildTrailingActions(
+													expense,
+													relatedSplits,
+												)}
+											>
+												<ListItem disablePadding>
+													<ListItemButton
+														onClick={() => {
+															setOpenedExpense({ expense, relatedSplits });
+														}}
+													>
+														<ListItemAvatar>
+															<Avatar>
+																{categoryNameEmojiMap.get(expense.category)}
+															</Avatar>
+														</ListItemAvatar>
+														<div className="flex flex-1 flex-col">
+															<div className="flex flex-row">
+																<p className="flex-1">
+																	{expense.notes || expense.category}
+																</p>
+																<span className="text-secondary">
+																	{expense.currency}{' '}
+																	{formatDecimal(yourSplit?.amount ?? 0)}
+																</span>
+															</div>
+															<div className="flex flex-row">
+																<p className="flex-1 text-gray-500 text-sm">
+																	{expense.paidByMemberId ===
+																	currentUser.hashedId
+																		? `${otherSplits.length} people owe you`
+																		: yourSplit
+																			? `You owe ${memberIdNameMap.get(expense.paidByMemberId)}`
+																			: ''}
+																</p>
+																<p className="text-gray-500 text-sm">
+																	Total {formatDecimal(expense.amount)}
+																</p>
+															</div>
 														</div>
-														<div className="flex flex-row">
-															<p className="flex-1 text-gray-500 text-sm">
-																{expense.paidByMemberId === currentUser.hashedId
-																	? `${otherSplits.length} people owe you`
-																	: yourSplit
-																		? `You owe ${memberIdNameMap.get(expense.paidByMemberId)}`
-																		: ''}
-															</p>
-															<p className="text-gray-500 text-sm">
-																Total {formatDecimal(expense.amount)}
-															</p>
-														</div>
-													</div>
-												</ListItemButton>
-											</ListItem>
-										</SwipeableListItem>
-									);
-								})}
-							</SwipeableList>
-						</List>
-					))}
-					<SwipeHint icon={<Swipe fontSize="small" />} className="px-3 pt-2">
-						Swipe right to edit, left to delete the expense
-					</SwipeHint>
-				</div>
-			)}
+													</ListItemButton>
+												</ListItem>
+											</SwipeableListItem>
+										);
+									})}
+								</SwipeableList>
+							</List>
+						))}
+						<SwipeHint icon={<Swipe fontSize="small" />} className="px-3 pt-2">
+							Swipe right to edit, left to delete the expense
+						</SwipeHint>
+					</>
+				)}
+			</div>
 
 			<Dialog
 				open={!!openedExpense}
