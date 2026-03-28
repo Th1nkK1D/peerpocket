@@ -254,8 +254,21 @@ function RouteComponent() {
 				<DialogTitle>Deleting expense</DialogTitle>
 				<DialogContent>
 					<DialogContentText>
-						This expense will be deleted for everyone in the group. Are you
-						sure?
+						{expensePendingDelete ? (
+							<>
+								You are about to delete{' '}
+								<strong>
+									{expensePendingDelete.expense.notes ||
+										expensePendingDelete.expense.category}
+								</strong>{' '}
+								for{' '}
+								<strong>
+									{formatDecimal(expensePendingDelete.expense.amount)}
+								</strong>
+								. This expense will be deleted for everyone in the group. Are
+								you sure?
+							</>
+						) : null}
 					</DialogContentText>
 				</DialogContent>
 				<DialogActions>
