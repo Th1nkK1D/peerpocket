@@ -1,13 +1,8 @@
-# Local
 .DS_Store
 *.local
 *.log*
-
-# Dist
-node_modules
-dist/
-
-# IDE
 .idea
-
 .tanstack
+dist
+node_modules
+test-results

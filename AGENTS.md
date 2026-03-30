@@ -11,4 +11,5 @@ The project is monorepo managed by bun
 
 - Prefer Tailwind class over custom CSS
 - Always use tab for indent
-- Do not touch routeTree.gen.ts, it is auto generated
+- Do not edit routeTree.gen.ts directly, it is auto generated
+- Any edit on app source code should be tested by running `bun run test` in /app

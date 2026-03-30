@@ -2,8 +2,9 @@ import 'barcode-detector/polyfill';
 import { Alert, Snackbar } from '@mui/material';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { type IDetectedBarcode, Scanner } from '@yudiel/react-qr-scanner';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { AuthenticatedLayout } from '../components/authenticated-layout';
+import { getE2EConfig } from '../utils/e2e';
 
 interface JoinSearch {
 	id: string;
@@ -42,6 +43,7 @@ function RouteComponent() {
 	const hasMatchedScan = useRef(false);
 	const [cameraError, setCameraError] = useState<string | null>(null);
 	const [scanError, setScanError] = useState<string | null>(null);
+	const e2eScan = getE2EConfig()?.scan;
 
 	function handleScan(detectedCodes: IDetectedBarcode[]) {
 		if (hasMatchedScan.current) {
@@ -79,25 +81,49 @@ function RouteComponent() {
 		);
 	}
 
+	// biome-ignore lint: just for e2e test
+	useEffect(() => {
+		if (!e2eScan) {
+			return;
+		}
+
+		if (e2eScan.error) {
+			handleError(new Error(e2eScan.error));
+			return;
+		}
+
+		if (e2eScan.detectedCodes?.length) {
+			handleScan(
+				e2eScan.detectedCodes.map(
+					(rawValue) => ({ rawValue }) as IDetectedBarcode,
+				),
+			);
+		}
+	}, [e2eScan]);
+
 	return (
 		<AuthenticatedLayout title="Scan Group QR" userStore={user} className="p-3">
-			<Scanner
-				onScan={handleScan}
-				onError={handleError}
-				formats={['qr_code']}
-				sound={false}
-				styles={{
-					container: {
-						width: '100%',
-						height: '100%',
-					},
-					video: {
-						width: '100%',
-						height: '100%',
-						objectFit: 'cover',
-					},
-				}}
-			/>
+			{e2eScan ? (
+				<div data-testid="scanner-mock">Scanner mocked for e2e</div>
+			) : (
+				<Scanner
+					onScan={handleScan}
+					onError={handleError}
+					formats={['qr_code']}
+					sound={false}
+					styles={{
+						container: {
+							width: '100%',
+							height: '100%',
+						},
+						video: {
+							width: '100%',
+							height: '100%',
+							objectFit: 'cover',
+						},
+					}}
+				/>
+			)}
 			{cameraError ? <Alert severity="error">{cameraError}</Alert> : null}
 			<Snackbar
 				open={Boolean(scanError)}

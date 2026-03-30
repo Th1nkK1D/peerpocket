@@ -5,7 +5,8 @@
 	"scripts": {
 		"dev": "rsbuild dev --port 8000",
 		"build": "rsbuild build && tsc --noEmit",
-		"preview": "rsbuild preview"
+		"preview": "rsbuild preview",
+		"test": "playwright test"
 	},
 	"dependencies": {
 		"@emotion/react": "^11.14.0",
@@ -34,6 +35,7 @@
 	"devDependencies": {
 		"@rsbuild/core": "1.2.4",
 		"@rsbuild/plugin-react": "1.1.0",
+		"@playwright/test": "^1.55.0",
 		"@tailwindcss/postcss": "^4.1.10",
 		"@tanstack/router-plugin": "^1.121.13",
 		"@types/d3-array": "^3.2.1",
