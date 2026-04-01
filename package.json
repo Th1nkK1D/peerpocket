@@ -6,8 +6,9 @@
 	"scripts": {
 		"dev": "bun run --filter=\"@peerpocket/*\" dev",
 		"build": "bun run --filter=\"@peerpocket/*\" build",
+		"test": "bun run --filter=\"@peerpocket/*\" test",
 		"biome": "./node_modules/@biomejs/cli-linux-x64-musl/biome",
-		"prepack": "lefthook install"
+		"prepare": "lefthook install"
 	},
 	"workspaces": [
 		"app",

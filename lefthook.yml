@@ -3,6 +3,10 @@ pre-commit:
     check:
       run: bunx biome check --write --unsafe --no-errors-on-unmatched --files-ignore-unknown=true --colors=off {staged_files}
       stage_fixed: true
+pre-push:
+  commands:
+    test:
+      run: bun run test
 commit-msg:
   commands:
     check:
