@@ -1,7 +1,7 @@
-import { Card, Chip, Divider } from '@mui/material';
+import { Card, Chip, Divider, MenuItem, TextField } from '@mui/material';
 import { createFileRoute } from '@tanstack/react-router';
 import { groups } from 'd3-array';
-import { type ComponentProps, useMemo } from 'react';
+import { type ComponentProps, useEffect, useMemo, useState } from 'react';
 import { MemberAmountTable } from '../components/member-amount-table';
 import { StackHorizontalBarChart } from '../components/stack-horizontal-bar-chart';
 import { formatDecimal } from '../hooks/form';
@@ -18,6 +18,27 @@ function RouteComponent() {
 	const expenses = group.useTableRows('expenses');
 	const splits = group.useTableRows('splits');
 	const members = group.useTableRows('members');
+	const [selectedMemberId, setSelectedMemberId] = useState(
+		currentUser.hashedId,
+	);
+
+	useEffect(() => {
+		if (members.some((member) => member.id === selectedMemberId)) return;
+
+		setSelectedMemberId(
+			members.find((member) => member.id === currentUser.hashedId)?.id ??
+				members[0]?.id ??
+				currentUser.hashedId,
+		);
+	}, [currentUser.hashedId, members, selectedMemberId]);
+
+	const selectedMember = members.find(
+		(member) => member.id === selectedMemberId,
+	);
+	const selectedMemberName =
+		selectedMemberId === currentUser.hashedId
+			? 'you'
+			: (selectedMember?.name ?? 'selected member');
 
 	const splitsWithExpenseInfo = useMemo(
 		() =>
@@ -42,12 +63,12 @@ function RouteComponent() {
 				.map(([category, txs]) => ({
 					category,
 					myTotal: txs
-						.filter((tx) => tx.memberId === currentUser.hashedId)
+						.filter((tx) => tx.memberId === selectedMemberId)
 						.reduce((acc, tx) => acc + tx.amount, 0),
 					groupTotal: txs.reduce((acc, tx) => acc + tx.amount, 0),
 				}))
 				.sort((a, z) => z.myTotal - a.myTotal),
-		[splitsWithExpenseInfo, currentUser.hashedId],
+		[splitsWithExpenseInfo, selectedMemberId],
 	);
 
 	type OutstandBalance = ComponentProps<typeof MemberAmountTable>['items'];
@@ -56,13 +77,13 @@ function RouteComponent() {
 	const outstandingBalanceWithOtherMembers = useMemo(
 		() =>
 			members
-				.filter((member) => member.id !== currentUser.hashedId)
+				.filter((member) => member.id !== selectedMemberId)
 				.reduce(
 					(group, { id, name }) => {
 						const iPaidThem = splitsWithExpenseInfo
 							.filter(
 								(exp) =>
-									exp.paidByMemberId === currentUser.hashedId &&
+									exp.paidByMemberId === selectedMemberId &&
 									exp.memberId === id,
 							)
 							.reduce((sum, { amount }) => sum + amount, 0);
@@ -71,7 +92,7 @@ function RouteComponent() {
 							.filter(
 								(exp) =>
 									exp.paidByMemberId === id &&
-									exp.memberId === currentUser.hashedId,
+									exp.memberId === selectedMemberId,
 							)
 							.reduce((sum, { amount }) => sum + amount, 0);
 
@@ -93,16 +114,40 @@ function RouteComponent() {
 					},
 					{ toPayThem: [] as OutstandBalance, toPayMe: [] as OutstandBalance },
 				),
-		[splitsWithExpenseInfo, currentUser.hashedId],
+		[splitsWithExpenseInfo, members, selectedMemberId],
 	);
 
 	return (
 		<div className="flex flex-col gap-3 p-3">
+			<TextField
+				select
+				label="Member"
+				value={selectedMemberId}
+				onChange={(event) => setSelectedMemberId(event.target.value)}
+				fullWidth
+				size="small"
+			>
+				<MenuItem key={currentUser.hashedId} value={currentUser.hashedId}>
+					{currentUser.name}
+				</MenuItem>
+				{members
+					.filter((member) => member.id !== currentUser.hashedId)
+					.map((member) => (
+						<MenuItem key={member.id} value={member.id}>
+							{member.name}
+						</MenuItem>
+					))}
+			</TextField>
+
 			<div className="flex flex-col gap-3">
 				<div className="grid grid-cols-2 gap-2">
 					<TotalExpenseCard
 						className="text-secondary"
-						label="My expense"
+						label={
+							selectedMemberId === currentUser.hashedId
+								? 'My expense'
+								: `${selectedMemberName}'s expense`
+						}
 						value={expenseByCategories.reduce((acc, tx) => acc + tx.myTotal, 0)}
 					/>
 					<TotalExpenseCard
@@ -118,7 +163,13 @@ function RouteComponent() {
 			</div>
 
 			<Divider>
-				<Chip label="Who I need to pay to"></Chip>
+				<Chip
+					label={
+						selectedMemberId === currentUser.hashedId
+							? 'Who I need to pay to'
+							: `Who ${selectedMemberName} needs to pay to`
+					}
+				></Chip>
 			</Divider>
 
 			{outstandingBalanceWithOtherMembers.toPayThem.length ? (
@@ -131,7 +182,13 @@ function RouteComponent() {
 			)}
 
 			<Divider>
-				<Chip label="Who need to pay me"></Chip>
+				<Chip
+					label={
+						selectedMemberId === currentUser.hashedId
+							? 'Who needs to pay me'
+							: `Who needs to pay ${selectedMemberName}`
+					}
+				></Chip>
 			</Divider>
 
 			{outstandingBalanceWithOtherMembers.toPayMe.length ? (
