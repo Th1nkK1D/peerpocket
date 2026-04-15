@@ -2,7 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './app';
 import './index.css';
-import { initializeE2E } from './mocks/playwright';
+import { initializeE2E } from '../../tests/mocks/playwright';
 
 const rootEl = document.getElementById('root');
 

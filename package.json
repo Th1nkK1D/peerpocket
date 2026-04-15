@@ -6,8 +6,7 @@
 	"scripts": {
 		"dev": "bun run --filter=\"@peerpocket/*\" dev",
 		"build": "bun run --filter=\"@peerpocket/*\" build",
-		"test": "bun run --filter=\"@peerpocket/*\" test",
-		"biome": "./node_modules/@biomejs/cli-linux-x64-musl/biome",
+		"test": "playwright test",
 		"prepare": "lefthook install"
 	},
 	"workspaces": [
@@ -17,6 +16,7 @@
 	],
 	"devDependencies": {
 		"@biomejs/biome": "2.0.4",
+		"@playwright/test": "^1.55.0",
 		"@commitlint/cli": "^19.8.1",
 		"@commitlint/config-conventional": "^19.8.1",
 		"lefthook": "^1.11.13"

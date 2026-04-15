@@ -1,7 +1,7 @@
 pre-commit:
   commands:
     check:
-      run: bunx biome check --write --unsafe --no-errors-on-unmatched --files-ignore-unknown=true --colors=off {staged_files}
+      run: bun run biome check --write --unsafe --no-errors-on-unmatched --files-ignore-unknown=true --colors=off {staged_files}
       stage_fixed: true
 pre-push:
   commands:

@@ -1,7 +1,7 @@
 import { defineConfig, devices } from '@playwright/test';
 
 export default defineConfig({
-	testDir: './src/routes',
+	testDir: './tests/routes',
 	fullyParallel: true,
 	retries: 0,
 	use: {
@@ -12,7 +12,7 @@ export default defineConfig({
 		},
 	},
 	webServer: {
-		command: '../node_modules/.bin/rsbuild dev --host 127.0.0.1 --port 8000',
+		command: 'bun run --cwd app dev',
 		url: 'http://127.0.0.1:8000',
 		reuseExistingServer: true,
 		timeout: 120000,

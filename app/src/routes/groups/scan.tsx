@@ -3,8 +3,8 @@ import { Alert, Snackbar } from '@mui/material';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { type IDetectedBarcode, Scanner } from '@yudiel/react-qr-scanner';
 import { useEffect, useRef, useState } from 'react';
+import { getE2EConfig } from '../../../../tests/mocks/playwright';
 import { AuthenticatedLayout } from '../../components/authenticated-layout';
-import { getE2EConfig } from '../../mocks/playwright';
 
 interface JoinSearch {
 	id: string;

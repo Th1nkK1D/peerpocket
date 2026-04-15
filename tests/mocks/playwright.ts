@@ -1,8 +1,11 @@
 import type { Page } from '@playwright/test';
-import { GROUP_STORE_PREFIX, setupGroupStore } from '../stores/group';
-import { setupUserStore, USER_STORE_PREFIX } from '../stores/user';
-import { activeUserStoreId } from '../utils/active-user';
-import { idHelper } from '../utils/id';
+import {
+	GROUP_STORE_PREFIX,
+	setupGroupStore,
+} from '../../app/src/stores/group';
+import { setupUserStore, USER_STORE_PREFIX } from '../../app/src/stores/user';
+import { activeUserStoreId } from '../../app/src/utils/active-user';
+import { idHelper } from '../../app/src/utils/id';
 
 export type E2EMemberSeed = {
 	id: string;
