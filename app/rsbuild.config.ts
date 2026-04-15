@@ -6,7 +6,13 @@ export default defineConfig({
 	plugins: [pluginReact()],
 	tools: {
 		rspack: {
-			plugins: [tanstackRouter({ target: 'react', autoCodeSplitting: true })],
+			plugins: [
+				tanstackRouter({
+					target: 'react',
+					autoCodeSplitting: true,
+					routeFileIgnorePattern: '\\.spec\\.tsx?$',
+				}),
+			],
 		},
 	},
 	html: {

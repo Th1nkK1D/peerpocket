@@ -20,15 +20,15 @@ import {
 import { createFileRoute } from '@tanstack/react-router';
 import dayjs from 'dayjs';
 import { useState } from 'react';
-import { FabsContainer } from '../components/fabs-container';
-import { GroupSharing } from '../components/group-sharing';
+import { FabsContainer } from '../../../components/fabs-container';
+import { GroupSharing } from '../../../components/group-sharing';
 import {
 	SwipeActionButton,
 	SwipeableList,
 	SwipeableListItem,
 	SwipeHint,
 	TrailingActions,
-} from '../components/swipeable-list';
+} from '../../../components/swipeable-list';
 
 export const Route = createFileRoute('/groups/$groupId/members')({
 	component: RouteComponent,

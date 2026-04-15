@@ -4,7 +4,7 @@ import {
 	buildFullGroupSeed,
 	gotoSeededRoute,
 	installAppMocks,
-} from './helpers';
+} from '../mocks/playwright';
 
 test('creates a user and redirect to groups page', async ({ page }) => {
 	await installAppMocks(page);

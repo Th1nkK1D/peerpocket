@@ -1,5 +1,9 @@
 import { expect, test } from '@playwright/test';
-import { baseUser, gotoSeededRoute, installAppMocks } from './helpers';
+import {
+	baseUser,
+	gotoSeededRoute,
+	installAppMocks,
+} from '../../mocks/playwright';
 
 const joinUrl = '/groups/join?id=group-party&name=Party';
 

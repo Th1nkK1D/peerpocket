@@ -3,7 +3,7 @@ import {
 	buildFullGroupSeed,
 	gotoSeededRoute,
 	installAppMocks,
-} from './helpers';
+} from '../../mocks/playwright';
 
 test('redirects unauthenticated access to the login route with return params', async ({
 	page,

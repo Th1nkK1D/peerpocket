@@ -4,7 +4,7 @@ import {
 	buildFullGroupSeed,
 	gotoSeededRoute,
 	tripGroup,
-} from './helpers';
+} from '../../../mocks/playwright';
 
 test('shows the empty state for groups without expenses', async ({ page }) => {
 	await gotoSeededRoute(page, `/groups/${tripGroup.id}/expenses`, {

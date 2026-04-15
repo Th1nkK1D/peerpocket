@@ -6,7 +6,7 @@ import {
 	gotoSeededRoute,
 	openSpeedDialAction,
 	tripGroup,
-} from './helpers';
+} from '../../mocks/playwright';
 
 test('shows the empty state and speed dial actions', async ({ page }) => {
 	await createUserFromLanding(page);

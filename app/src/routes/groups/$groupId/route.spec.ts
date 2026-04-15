@@ -1,5 +1,9 @@
 import { expect, test } from '@playwright/test';
-import { buildFullGroupSeed, gotoSeededRoute, tripGroup } from './helpers';
+import {
+	buildFullGroupSeed,
+	gotoSeededRoute,
+	tripGroup,
+} from '../../../mocks/playwright';
 
 test('renders the group layout and tab navigation', async ({ page }) => {
 	await gotoSeededRoute(

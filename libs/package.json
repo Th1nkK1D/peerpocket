@@ -2,6 +2,9 @@
 	"name": "@peerpocket/libs",
 	"type": "module",
 	"private": true,
+	"exports": {
+		"./message": "./message.ts"
+	},
 	"devDependencies": {
 		"@types/bun": "latest"
 	},

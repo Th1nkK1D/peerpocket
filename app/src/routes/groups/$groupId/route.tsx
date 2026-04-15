@@ -2,10 +2,10 @@ import { ArrowDownward } from '@mui/icons-material';
 import { Paper } from '@mui/material';
 import { createFileRoute, Outlet, redirect } from '@tanstack/react-router';
 import ReactPullToRefresh from 'react-pull-to-refresh';
-import { AuthenticatedLayout } from '../components/authenticated-layout';
-import { NavigationTabs } from '../components/navigation-tabs';
-import { GROUP_STORE_PREFIX, setupGroupStore } from '../stores/group';
-import { idHelper } from '../utils/id';
+import { AuthenticatedLayout } from '../../../components/authenticated-layout';
+import { NavigationTabs } from '../../../components/navigation-tabs';
+import { GROUP_STORE_PREFIX, setupGroupStore } from '../../../stores/group';
+import { idHelper } from '../../../utils/id';
 
 export const Route = createFileRoute('/groups/$groupId')({
 	component: RouteComponent,

@@ -7,7 +7,7 @@ import {
 	clickSwipeAction,
 	gotoSeededRoute,
 	tripGroup,
-} from './helpers';
+} from '../../../mocks/playwright';
 
 test('shows members', async ({ page }) => {
 	await gotoSeededRoute(

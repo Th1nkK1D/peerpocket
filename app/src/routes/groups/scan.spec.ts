@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { baseUser, gotoSeededRoute, mockScan } from './helpers';
+import { baseUser, gotoSeededRoute, mockScan } from '../../mocks/playwright';
 
 test('shows an error when the camera cannot be accessed', async ({ page }) => {
 	await mockScan(page, { error: 'Camera blocked' });

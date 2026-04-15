@@ -4,7 +4,7 @@ import {
 	buildFullGroupSeed,
 	gotoSeededRoute,
 	tripGroup,
-} from './helpers';
+} from '../../../mocks/playwright';
 
 test('shows expense totals, category bars, and outstanding balances', async ({
 	page,

@@ -3,18 +3,18 @@ import { createFileRoute, redirect, useNavigate } from '@tanstack/react-router';
 import { zodValidator } from '@tanstack/zod-adapter';
 import dayjs, { type Dayjs } from 'dayjs';
 import { z } from 'zod/v4';
-import { AuthenticatedLayout } from '../components/authenticated-layout';
-import { LinkButton } from '../components/links';
-import { categories } from '../constants/expense';
+import { AuthenticatedLayout } from '../../components/authenticated-layout';
+import { LinkButton } from '../../components/links';
+import { categories } from '../../constants/expense';
 import {
 	BaseCurrencyField,
 	formatDecimal,
 	roundToTwoDecimal,
 	useMuiForm,
-} from '../hooks/form';
-import { useStepper } from '../hooks/stepper';
-import { GROUP_STORE_PREFIX, setupGroupStore } from '../stores/group';
-import { idHelper } from '../utils/id';
+} from '../../hooks/form';
+import { useStepper } from '../../hooks/stepper';
+import { GROUP_STORE_PREFIX, setupGroupStore } from '../../stores/group';
+import { idHelper } from '../../utils/id';
 
 const SMALLEST_FRACTION = 0.01;
 

@@ -1,13 +1,13 @@
 import { createFileRoute } from '@tanstack/react-router';
 import { useMemo } from 'react';
 import { z } from 'zod/v4';
-import { AuthenticatedLayout } from '../components/authenticated-layout';
-import { GroupSharing } from '../components/group-sharing';
-import { LinkButton } from '../components/links';
-import { useMuiForm } from '../hooks/form';
-import { useStepper } from '../hooks/stepper';
-import { GROUP_STORE_PREFIX, setupGroupStore } from '../stores/group';
-import { idHelper } from '../utils/id';
+import { AuthenticatedLayout } from '../../components/authenticated-layout';
+import { GroupSharing } from '../../components/group-sharing';
+import { LinkButton } from '../../components/links';
+import { useMuiForm } from '../../hooks/form';
+import { useStepper } from '../../hooks/stepper';
+import { GROUP_STORE_PREFIX, setupGroupStore } from '../../stores/group';
+import { idHelper } from '../../utils/id';
 
 export const Route = createFileRoute('/groups/create')({
 	component: RouteComponent,

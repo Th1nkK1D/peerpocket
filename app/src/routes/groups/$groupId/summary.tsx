@@ -2,9 +2,9 @@ import { Card, Chip, Divider, MenuItem, TextField } from '@mui/material';
 import { createFileRoute } from '@tanstack/react-router';
 import { groups } from 'd3-array';
 import { type ComponentProps, useEffect, useMemo, useState } from 'react';
-import { MemberAmountTable } from '../components/member-amount-table';
-import { StackHorizontalBarChart } from '../components/stack-horizontal-bar-chart';
-import { formatDecimal } from '../hooks/form';
+import { MemberAmountTable } from '../../../components/member-amount-table';
+import { StackHorizontalBarChart } from '../../../components/stack-horizontal-bar-chart';
+import { formatDecimal } from '../../../hooks/form';
 
 export const Route = createFileRoute('/groups/$groupId/summary')({
 	component: RouteComponent,

@@ -6,7 +6,7 @@ import {
 	fillSampleExpense,
 	gotoSeededRoute,
 	tripGroup,
-} from './helpers';
+} from '../../mocks/playwright';
 
 test('redirects back to groups for unknown group ids', async ({ page }) => {
 	await gotoSeededRoute(page, '/groups/expense?groupId=missing', {

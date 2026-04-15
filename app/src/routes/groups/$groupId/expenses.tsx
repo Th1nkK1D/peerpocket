@@ -24,20 +24,20 @@ import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { groups } from 'd3-array';
 import dayjs from 'dayjs';
 import { useState } from 'react';
-import { FabsContainer } from '../components/fabs-container';
-import { LinkButton, LinkFab } from '../components/links';
-import { MemberAmountTable } from '../components/member-amount-table';
+import { FabsContainer } from '../../../components/fabs-container';
+import { LinkButton, LinkFab } from '../../../components/links';
+import { MemberAmountTable } from '../../../components/member-amount-table';
 import {
 	SwipeActionButton,
 	SwipeableList,
 	SwipeableListItem,
 	SwipeHint,
 	TrailingActions,
-} from '../components/swipeable-list';
-import { categoryNameEmojiMap } from '../constants/expense';
-import { formatDecimal } from '../hooks/form';
+} from '../../../components/swipeable-list';
+import { categoryNameEmojiMap } from '../../../constants/expense';
+import { formatDecimal } from '../../../hooks/form';
 
-export const Route = createFileRoute('/groups/$groupId/expenses/')({
+export const Route = createFileRoute('/groups/$groupId/expenses')({
 	component: RouteComponent,
 	loader: ({ context }) => context,
 });

@@ -4,10 +4,10 @@ import { createFileRoute } from '@tanstack/react-router';
 import { zodValidator } from '@tanstack/zod-adapter';
 import { useState } from 'react';
 import { z } from 'zod/v4';
-import { AuthenticatedLayout } from '../components/authenticated-layout';
-import { LinkButton } from '../components/links';
-import { GROUP_STORE_PREFIX, setupGroupStore } from '../stores/group';
-import { idHelper } from '../utils/id';
+import { AuthenticatedLayout } from '../../components/authenticated-layout';
+import { LinkButton } from '../../components/links';
+import { GROUP_STORE_PREFIX, setupGroupStore } from '../../stores/group';
+import { idHelper } from '../../utils/id';
 
 export const Route = createFileRoute('/groups/join')({
 	component: RouteComponent,

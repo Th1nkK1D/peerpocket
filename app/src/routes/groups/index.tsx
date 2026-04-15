@@ -20,17 +20,17 @@ import SpeedDialIcon from '@mui/material/SpeedDialIcon';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import dayjs from 'dayjs';
 import { useState } from 'react';
-import { AuthenticatedLayout } from '../components/authenticated-layout';
-import { FabsContainer } from '../components/fabs-container';
+import { AuthenticatedLayout } from '../../components/authenticated-layout';
+import { FabsContainer } from '../../components/fabs-container';
 import {
 	SwipeActionButton,
 	SwipeableList,
 	SwipeableListItem,
 	SwipeHint,
 	TrailingActions,
-} from '../components/swipeable-list';
-import { GROUP_STORE_PREFIX } from '../stores/group';
-import { idHelper } from '../utils/id';
+} from '../../components/swipeable-list';
+import { GROUP_STORE_PREFIX } from '../../stores/group';
+import { idHelper } from '../../utils/id';
 
 export const Route = createFileRoute('/groups/')({
 	component: RouteComponent,
