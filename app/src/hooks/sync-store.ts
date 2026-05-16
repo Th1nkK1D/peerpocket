@@ -16,6 +16,16 @@ import {
 	type ValuesSchema,
 } from 'tinybase/with-schemas';
 
+function isE2EAndRelayDisabled(): boolean {
+	try {
+		const config = (window as any).__PEERPOCKET_E2E__;
+		if (config?.seed && config.seed.enableRelay !== true) {
+			return true;
+		}
+	} catch (_) {}
+	return false;
+}
+
 export async function createSyncStore<
 	VS extends ValuesSchema,
 	TS extends TablesSchema,
@@ -63,61 +73,66 @@ export async function createSyncStore<
 		const synchronizer = useRef<Synchronizer<any>>(null);
 		const messageReceiver = useRef<Receive>(() => {});
 		const [peerCount, setPeerCount] = useState(0);
+		const skipRelay = isE2EAndRelayDisabled();
 
-		const { sendMessage } = useWebSocket(import.meta.env.PUBLIC_RELAY_URL, {
-			retryOnError: true,
-			shouldReconnect: () => true,
-			onOpen() {
-				synchronizer.current = createCustomSynchronizer(
-					store,
-					function send(
-						toClientId: string | null,
-						...args: [requestId: string, message: Message, body: any]
-					) {
-						sendMessage(
-							formatMessage({
-								type: 'SYNC',
-								storeId: id,
-								payload: [toClientId, ...args],
-							}),
-						);
-					},
-					function registerReceive(receive: Receive) {
-						messageReceiver.current = receive;
-					},
-					() => {},
-					10000,
-				);
+		const { sendMessage } = useWebSocket(
+			import.meta.env.PUBLIC_RELAY_URL,
+			{
+				retryOnError: true,
+				shouldReconnect: () => !skipRelay,
+				onOpen() {
+					synchronizer.current = createCustomSynchronizer(
+						store,
+						function send(
+							toClientId: string | null,
+							...args: [requestId: string, message: Message, body: any]
+						) {
+							sendMessage(
+								formatMessage({
+									type: 'SYNC',
+									storeId: id,
+									payload: [toClientId, ...args],
+								}),
+							);
+						},
+						function registerReceive(receive: Receive) {
+							messageReceiver.current = receive;
+						},
+						() => {},
+						10000,
+					);
 
-				sendMessage(
-					formatMessage({
-						type: 'SUBSCRIBE',
-						storeId: id,
-					}),
-				);
+					sendMessage(
+						formatMessage({
+							type: 'SUBSCRIBE',
+							storeId: id,
+						}),
+					);
 
-				synchronizer.current.startSync();
+					synchronizer.current.startSync();
+				},
+				async onMessage(event: MessageEvent) {
+					const data = await parsedMessage(event.data);
+
+					if (data.storeId !== id) return;
+
+					switch (data.type) {
+						case 'SYNC':
+							return messageReceiver.current(...data.payload);
+						case 'PEER_CHANGE':
+							if (data.count > 1 && data.count > peerCount) {
+								await synchronizer.current?.startSync();
+							}
+							return setPeerCount(data.count);
+					}
+				},
+				onClose() {
+					setPeerCount(0);
+					synchronizer.current?.stopSync();
+				},
 			},
-			async onMessage(event: MessageEvent) {
-				const data = await parsedMessage(event.data);
-
-				if (data.storeId !== id) return;
-
-				switch (data.type) {
-					case 'SYNC':
-						return messageReceiver.current(...data.payload);
-					case 'PEER_CHANGE':
-						if (data.count > 1 && data.count > peerCount) {
-							await synchronizer.current?.startSync();
-						}
-						return setPeerCount(data.count);
-				}
-			},
-			onClose() {
-				setPeerCount(0);
-				synchronizer.current?.stopSync();
-			},
-		});
+			!skipRelay,
+		);
 
 		return peerCount;
 	}

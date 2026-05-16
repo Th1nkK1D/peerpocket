@@ -71,11 +71,13 @@ test('merges expenses from two peers via sync union', async ({ browser }) => {
 	await gotoSeededRoute(pageA, `/groups/${tripGroup.id}/expenses`, {
 		user: baseUser,
 		groups: [groupSeed],
+		enableRelay: true,
 	});
 
 	await gotoSeededRoute(pageB, `/groups/${tripGroup.id}/expenses`, {
 		user: { id: 'user-bob', hashedId: 'hashed-bob', name: 'Bob' },
 		groups: [groupSeed],
+		enableRelay: true,
 	});
 
 	await expect(pageA.getByText('Initial expense')).toBeVisible();
@@ -133,11 +135,13 @@ test('merges members from two peers joining independently', async ({
 	await gotoSeededRoute(pageA, `/groups/${tripGroup.id}/members`, {
 		user: baseUser,
 		groups: [groupSeed],
+		enableRelay: true,
 	});
 
 	await gotoSeededRoute(pageB, `/groups/${tripGroup.id}/members`, {
 		user: { id: 'user-bob', hashedId: 'hashed-bob', name: 'Bob' },
 		groups: [groupSeed],
+		enableRelay: true,
 	});
 
 	await expect(pageA.getByText('Members')).toBeVisible();

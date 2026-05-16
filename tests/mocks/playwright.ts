@@ -53,6 +53,7 @@ export type E2ESeed = {
 	reset?: boolean;
 	user?: E2EUserSeed;
 	groups?: E2EGroupSeed[];
+	enableRelay?: boolean;
 };
 
 export type E2EScanConfig = {
