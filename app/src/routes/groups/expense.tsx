@@ -124,7 +124,8 @@ function RouteComponent() {
 			})),
 		},
 		async onSubmit({ value }) {
-			const nextExpenseId = expenseId || group.addRow('expenses', {});
+			const nextExpenseId = expenseId || idHelper.generate();
+			group.setRow('expenses', nextExpenseId, {});
 
 			if (!nextExpenseId) return;
 
@@ -144,7 +145,7 @@ function RouteComponent() {
 			value.splits
 				.filter((s) => s.amount > 0)
 				.forEach(({ memberId, amount }) => {
-					group.addRow('splits', {
+					group.setRow('splits', idHelper.generate(), {
 						expenseId: nextExpenseId,
 						memberId,
 						amount,

@@ -11,12 +11,20 @@ export default defineConfig({
 			executablePath: '/etc/profiles/per-user/lkz/bin/chromium',
 		},
 	},
-	webServer: {
-		command: 'bun run --cwd app dev',
-		url: 'http://127.0.0.1:8000',
-		reuseExistingServer: true,
-		timeout: 120000,
-	},
+	webServer: [
+		{
+			command: 'bun run --cwd server dev',
+			url: 'http://127.0.0.1:3000',
+			reuseExistingServer: true,
+			timeout: 30000,
+		},
+		{
+			command: 'bun run --cwd app dev',
+			url: 'http://127.0.0.1:8000',
+			reuseExistingServer: true,
+			timeout: 120000,
+		},
+	],
 	projects: [
 		{
 			name: 'chromium',
