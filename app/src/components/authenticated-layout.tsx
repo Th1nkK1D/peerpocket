@@ -1,4 +1,9 @@
-import { AccountCircle, ChevronLeft, Logout } from '@mui/icons-material';
+import {
+	AccountCircle,
+	ChevronLeft,
+	Download,
+	Logout,
+} from '@mui/icons-material';
 import {
 	AppBar,
 	IconButton,
@@ -87,6 +92,17 @@ export function AuthenticatedLayout({
 						onClose={closeMenu}
 					>
 						<MenuItem disabled>Hi, {user.name}</MenuItem>
+						<MenuItem
+							onClick={() => {
+								closeMenu();
+								navigate({ to: '/groups/export' });
+							}}
+						>
+							<ListItemIcon>
+								<Download fontSize="small" />
+							</ListItemIcon>
+							<ListItemText>Export data</ListItemText>
+						</MenuItem>
 						<MenuItem onClick={logout}>
 							<ListItemIcon>
 								<Logout fontSize="small" />
