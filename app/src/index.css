@@ -289,6 +289,11 @@
 		font: var(--mui-font-body2);
 		letter-spacing: 0.01071em;
 	}
+
+	/* ReactPullToRefresh content */
+	.refresh-view {
+		@apply flex-1 flex flex-col;
+	}
 }
 
 /* Material UI typography utilities */
