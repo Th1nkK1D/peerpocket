@@ -1,12 +1,19 @@
 import {
-	AccountCircle,
 	ChevronLeft,
 	Download,
 	Logout,
+	ManageAccounts,
 } from '@mui/icons-material';
 import {
 	AppBar,
+	Button,
+	Dialog,
+	DialogActions,
+	DialogContent,
+	DialogContentText,
+	DialogTitle,
 	IconButton,
+	Link,
 	ListItemIcon,
 	ListItemText,
 	Menu,
@@ -14,7 +21,7 @@ import {
 	Toolbar,
 } from '@mui/material';
 import { useNavigate } from '@tanstack/react-router';
-import { type PropsWithChildren, useState } from 'react';
+import { type PropsWithChildren, useId, useState } from 'react';
 import type { UserStore } from '../stores/user';
 
 interface Props {
@@ -33,13 +40,21 @@ export function AuthenticatedLayout({
 	const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
 	const navigate = useNavigate();
+	const dialogTitleId = useId();
 
 	function closeMenu() {
 		setAnchorEl(null);
 	}
 
-	function logout() {
+	const [logoutDialogOpen, setLogoutDialogOpen] = useState(false);
+
+	function openLogoutDialog() {
 		closeMenu();
+		setLogoutDialogOpen(true);
+	}
+
+	function confirmLogout() {
+		setLogoutDialogOpen(false);
 		localStorage.clear();
 		navigate({ to: '/', replace: true });
 	}
@@ -74,7 +89,7 @@ export function AuthenticatedLayout({
 						color="inherit"
 						className="-mx-3"
 					>
-						<AccountCircle />
+						<ManageAccounts />
 					</IconButton>
 
 					<Menu
@@ -103,11 +118,11 @@ export function AuthenticatedLayout({
 							</ListItemIcon>
 							<ListItemText>Export data</ListItemText>
 						</MenuItem>
-						<MenuItem onClick={logout}>
+						<MenuItem onClick={openLogoutDialog}>
 							<ListItemIcon>
 								<Logout fontSize="small" />
 							</ListItemIcon>
-							<ListItemText>Destroy data</ListItemText>
+							<ListItemText>Log out</ListItemText>
 						</MenuItem>
 					</Menu>
 				</Toolbar>
@@ -116,6 +131,33 @@ export function AuthenticatedLayout({
 			<div className={`flex flex-1 flex-col overflow-y-scroll ${className}`}>
 				{children}
 			</div>
+
+			<Dialog
+				open={logoutDialogOpen}
+				onClose={() => setLogoutDialogOpen(false)}
+				aria-labelledby={dialogTitleId}
+			>
+				<DialogTitle id={dialogTitleId}>Log out?</DialogTitle>
+				<DialogContent>
+					<DialogContentText>
+						Logging out will destroy all data stored in this device. If you will
+						recover your data later, consider{' '}
+						<Link
+							href="/groups/export"
+							onClick={() => setLogoutDialogOpen(false)}
+						>
+							exporting your data
+						</Link>{' '}
+						first.
+					</DialogContentText>
+				</DialogContent>
+				<DialogActions>
+					<Button onClick={() => setLogoutDialogOpen(false)}>Cancel</Button>
+					<Button onClick={confirmLogout} color="error">
+						Log out
+					</Button>
+				</DialogActions>
+			</Dialog>
 		</div>
 	);
 }

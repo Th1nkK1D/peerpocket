@@ -44,7 +44,9 @@ test('destroys local data from the menu', async ({ page }) => {
 	await gotoSeededRoute(page, '/groups', buildFullGroupSeed());
 
 	await page.getByRole('button', { name: 'Menu' }).click();
-	await page.getByText('Destroy data').click();
+	await page.getByText('Log out').click();
+	await expect(page.getByRole('dialog')).toContainText('Log out?');
+	await page.getByRole('button', { name: 'Log out' }).click();
 	await expect(page).toHaveURL(/\/$/);
 	await expect
 		.poll(() =>
