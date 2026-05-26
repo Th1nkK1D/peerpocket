@@ -9,15 +9,15 @@ import {
 test('export page renders with mode selection', async ({ page }) => {
 	await gotoSeededRoute(page, '/groups/export', buildFullGroupSeed());
 
-	await expect(page.getByText('User Data Only')).toBeVisible();
+	await expect(page.getByRole('heading', { name: 'Identity' })).toBeVisible();
 	await expect(page.getByText('Full Export')).toBeVisible();
 	await expect(page.getByRole('button', { name: 'Export' })).toBeDisabled();
 });
 
-test('exports user data only JSON via download', async ({ page }) => {
+test('exports identity JSON via download', async ({ page }) => {
 	await gotoSeededRoute(page, '/groups/export', buildFullGroupSeed());
 
-	await page.getByText('User Data Only').click();
+	await page.getByRole('heading', { name: 'Identity' }).click();
 	await expect(page.getByRole('button', { name: 'Export' })).toBeEnabled();
 
 	const [download] = await Promise.all([
@@ -30,7 +30,7 @@ test('exports user data only JSON via download', async ({ page }) => {
 
 	expect(json.user.name).toBe(baseUser.name);
 	expect(json.user.id).toBe(baseUser.id);
-	expect(Object.keys(json.groups).length).toBeGreaterThan(0);
+	expect(json.groups).toBeUndefined();
 	expect(json.groupStores).toBeUndefined();
 	expect(typeof json.exportedAt).toBe('string');
 });

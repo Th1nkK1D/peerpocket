@@ -26,7 +26,7 @@ export const Route = createFileRoute('/groups/export')({
 
 function RouteComponent() {
 	const { user } = Route.useLoaderData();
-	const [mode, setMode] = React.useState<'user-data' | 'full' | ''>('');
+	const [mode, setMode] = React.useState<'identity' | 'full' | ''>('');
 	const [exporting, setExporting] = React.useState(false);
 
 	const userValues = user.useValues();
@@ -117,8 +117,10 @@ function RouteComponent() {
 					hashedId: userValues.hashedId ?? '',
 					name: userValues.name ?? '',
 				},
-				groups: groupsRecord,
-				groupStores: groupStoresData,
+				...(mode === 'full' && {
+					groups: groupsRecord,
+					groupStores: groupStoresData,
+				}),
 			};
 
 			const fileName = generateFilename(userValues.name ?? 'user', mode);
@@ -133,37 +135,36 @@ function RouteComponent() {
 	return (
 		<AuthenticatedLayout userStore={user} title="Export Data">
 			<div className="flex flex-1 flex-col gap-4 p-4">
+				<Typography variant="body1" color="text.secondary">
+					Export data for account recovery, changing device, or to log-in from
+					several places.
+				</Typography>
+
 				<FormControl component="fieldset">
 					<RadioGroup
 						value={mode}
-						onChange={(e) => setMode(e.target.value as 'user-data' | 'full')}
+						onChange={(e) => setMode(e.target.value as 'identity' | 'full')}
 					>
 						<Paper className="mb-3 p-4">
 							<FormControlLabel
-								value="user-data"
+								value="identity"
 								control={<Radio />}
 								label={
 									<div>
 										<Typography variant="subtitle1" fontWeight="bold">
-											User Data Only
+											Identity
 										</Typography>
 										<Typography variant="body2" color="text.secondary">
-											Export your profile and group list. Enough to recover your
-											identity but group data (members, expenses, splits) is not
-											included.
+											Export only your profile name and key. You will need an
+											invitation to rejoin groups and sync the data back from
+											your peers.
 										</Typography>
-										{mode === 'user-data' && (
-											<Alert severity="info" className="mt-2">
-												You will need to sync with your peers to restore group
-												members and expense data after importing.
-											</Alert>
-										)}
 									</div>
 								}
 							/>
 						</Paper>
 
-						<Paper className="mb-3 p-4">
+						<Paper className="p-4">
 							<FormControlLabel
 								value="full"
 								control={<Radio />}
@@ -183,21 +184,26 @@ function RouteComponent() {
 					</RadioGroup>
 				</FormControl>
 
-				<Paper className="p-4">
-					<div className="flex items-start gap-2">
-						<InfoOutlined className="mt-0.5 text-gray-500" />
-						<div>
-							<Typography variant="subtitle2" fontWeight="bold">
-								How to Import
-							</Typography>
-							<Typography variant="body2" color="text.secondary">
-								On the home page (when logged out), click "Import from file" and
-								select your exported JSON file. The import will replace your
-								current data.
-							</Typography>
-						</div>
+				<div className="flex items-start gap-2">
+					<InfoOutlined className="mt-0.5 text-gray-500" />
+					<div>
+						<Typography variant="subtitle2" fontWeight="bold">
+							How to import
+						</Typography>
+						<Typography variant="body2" color="text.secondary">
+							On the home page (when logged out or when using a new device),
+							click "Import from file" and select your exported JSON file. The
+							import will replace your current data.
+						</Typography>
 					</div>
-				</Paper>
+				</div>
+
+				{mode ? (
+					<Alert severity="warning" className="mt-2">
+						Keep this as a secret! Anyone who get this file can get all your
+						PeerPocket's identity and data.
+					</Alert>
+				) : null}
 
 				<Button
 					variant="contained"

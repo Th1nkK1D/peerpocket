@@ -45,7 +45,7 @@ export const exportDataSchema = z.object({
 		hashedId: z.string(),
 		name: z.string(),
 	}),
-	groups: z.record(groupRowSchema),
+	groups: z.record(groupRowSchema).optional(),
 	groupStores: z.record(groupStoreSchema).optional(),
 });
 
@@ -65,12 +65,12 @@ export function isFullExport(data: ExportData): boolean {
 /**
  * Generates export filename in format `{name}-{mode}-{timestamp}.json`.
  * @param userName - User's display name (lowercased in output)
- * @param mode - Export mode: 'user-data' or 'full'
+ * @param mode - Export mode: 'identity' or 'full'
  * @returns Filename string
  */
 export function generateFilename(
 	userName: string,
-	mode: 'user-data' | 'full',
+	mode: 'identity' | 'full',
 ): string {
 	const now = new Date();
 	const timestamp = [
@@ -117,8 +117,12 @@ export function performImport(data: ExportData, isFull: boolean): string {
 
 	writeStoreToLocalStorage(
 		userStoreId,
-		{ groups: data.groups },
-		{ id: data.user.id, hashedId: data.user.hashedId, name: data.user.name },
+		data.groups ? { groups: data.groups } : {},
+		{
+			id: data.user.id,
+			hashedId: data.user.hashedId,
+			name: data.user.name,
+		},
 	);
 
 	if (isFull && data.groupStores) {

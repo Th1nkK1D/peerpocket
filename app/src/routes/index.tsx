@@ -194,23 +194,26 @@ function RouteComponent() {
 								<div className="flex flex-col gap-2">
 									<div>
 										<strong>Mode:</strong>{' '}
-										{pendingImport.isFull ? 'Full Export' : 'User Data Only'}
+										{pendingImport.isFull ? 'Full Export' : 'Identity'}
 									</div>
 									<div>
 										<strong>User Name:</strong> {pendingImport.data.user.name}
 									</div>
-									<div>
-										<strong>Groups:</strong>{' '}
-										{Object.keys(pendingImport.data.groups).length}
-									</div>
+									{pendingImport.isFull ? (
+										<div>
+											<strong>Groups:</strong>{' '}
+											{Object.keys(pendingImport.data.groups ?? {}).length}
+										</div>
+									) : null}
+
 									<div>
 										<strong>Exported At:</strong>{' '}
 										{new Date(pendingImport.data.exportedAt).toLocaleString()}
 									</div>
 									{!pendingImport.isFull && (
 										<Alert severity="info" className="mt-2">
-											You will need to sync with your peers to restore group
-											members and expense data.
+											You will need an invitation to rejoin groups and sync the
+											data back from your peers.
 										</Alert>
 									)}
 									{pendingImport.isFull && (
