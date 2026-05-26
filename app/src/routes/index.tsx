@@ -1,4 +1,4 @@
-import { CloudUpload } from '@mui/icons-material';
+import { CloudUpload, Download } from '@mui/icons-material';
 import {
 	Alert,
 	Button,
@@ -19,8 +19,10 @@ import { useMuiForm } from '../hooks/form';
 import { setupUserStore, USER_STORE_PREFIX } from '../stores/user';
 import { activeUserStoreId } from '../utils/active-user';
 import {
+	downloadJson,
 	type ExportData,
 	exportDataSchema,
+	generateFilename,
 	isFullExport,
 	performImport,
 } from '../utils/export';
@@ -55,6 +57,12 @@ function RouteComponent() {
 		data: ExportData;
 		isFull: boolean;
 	} | null>(null);
+	const [showRecoveryModal, setShowRecoveryModal] = useState(false);
+	const [newUserData, setNewUserData] = useState<{
+		id: string;
+		hashedId: string;
+		name: string;
+	} | null>(null);
 
 	const form = useMuiForm({
 		defaultValues: {
@@ -67,21 +75,41 @@ function RouteComponent() {
 		},
 		onSubmit: async ({ value }) => {
 			const id = idHelper.generate();
+			const hashedId = await idHelper.hash(id);
 			const userStoreId = idHelper.createStoreId(USER_STORE_PREFIX, id);
 
 			const user = await setupUserStore(userStoreId);
 
 			user.setValues({
 				id,
-				hashedId: await idHelper.hash(id),
+				hashedId,
 				name: value.name,
 			});
 
 			activeUserStoreId.set(userStoreId);
 
-			navigate({ to: path || '/groups', search: params, replace: true });
+			setNewUserData({ id, hashedId, name: value.name });
+			setShowRecoveryModal(true);
 		},
 	});
+
+	function handleDownloadIdentity() {
+		if (!newUserData) return;
+
+		const data: ExportData = {
+			exportedAt: new Date().toISOString(),
+			user: newUserData,
+		};
+
+		const fileName = generateFilename(newUserData.name, 'identity');
+		downloadJson(data, fileName);
+
+		navigate({ to: path || '/groups', search: params, replace: true });
+	}
+
+	function handleSkipRecovery() {
+		navigate({ to: path || '/groups', search: params, replace: true });
+	}
 
 	function handleFileSelect(event: ChangeEvent<HTMLInputElement>) {
 		const file = event.target.files?.[0];
@@ -179,6 +207,41 @@ function RouteComponent() {
 				className="hidden"
 				onChange={handleFileSelect}
 			/>
+
+			<Dialog
+				open={showRecoveryModal}
+				onClose={handleSkipRecovery}
+				fullWidth
+				maxWidth="sm"
+			>
+				<DialogTitle>Save Your Identity</DialogTitle>
+				<DialogContent>
+					<DialogContentText component="div">
+						<div className="flex flex-col gap-4">
+							<div>
+								We recommend saving your identity data for account recovery. If
+								you lose access to this device, you can use this file to restore
+								your identity and rejoin your groups.
+							</div>
+							<Alert severity="info">
+								This file contains only your identity. You will need an
+								invitation to rejoin groups and sync the data back from your
+								peers.
+							</Alert>
+						</div>
+					</DialogContentText>
+				</DialogContent>
+				<DialogActions>
+					<Button onClick={handleSkipRecovery}>Skip</Button>
+					<Button
+						onClick={handleDownloadIdentity}
+						variant="contained"
+						startIcon={<Download />}
+					>
+						Save Identity
+					</Button>
+				</DialogActions>
+			</Dialog>
 
 			<Dialog
 				open={!!pendingImport}

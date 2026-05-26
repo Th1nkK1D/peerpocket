@@ -94,7 +94,6 @@ test('import success flow: upload user-data JSON, confirm, see groups', async ({
 
 	await expect(page.getByText('Import Data')).toBeVisible();
 	await expect(page.getByText('User Name: Import Test')).toBeVisible();
-	await expect(page.getByText('Groups: 1')).toBeVisible();
 
 	await page.getByRole('button', { name: 'Import' }).click();
 

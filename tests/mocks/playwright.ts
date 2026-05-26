@@ -217,6 +217,7 @@ export async function createUserFromLanding(page: Page, name = 'Alice') {
 	await page.goto('/');
 	await page.getByLabel('Enter your name').fill(name);
 	await page.getByRole('button', { name: 'Get started' }).click();
+	await page.getByRole('button', { name: 'Skip' }).click();
 }
 
 export async function openSpeedDialAction(page: Page, name: string) {

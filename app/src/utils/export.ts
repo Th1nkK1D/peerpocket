@@ -63,7 +63,7 @@ export function isFullExport(data: ExportData): boolean {
 }
 
 /**
- * Generates export filename in format `{name}-{mode}-{timestamp}.json`.
+ * Generates export filename in format `peerpocket-{name}-{mode}-{timestamp}.json`.
  * @param userName - User's display name (lowercased in output)
  * @param mode - Export mode: 'identity' or 'full'
  * @returns Filename string
@@ -83,7 +83,7 @@ export function generateFilename(
 		String(now.getSeconds()).padStart(2, '0'),
 	].join('');
 
-	return `${userName.toLowerCase()}-${mode}-${timestamp}.json`;
+	return `peerpocket-${userName.toLowerCase()}-${mode}-${timestamp}.json`;
 }
 
 /**
