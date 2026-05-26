@@ -12,5 +12,6 @@ The project is monorepo managed by bun
 
 - Prefer Tailwind class over custom CSS
 - Always use tab for indent
+- Always name new file using kebab-case
 - Do not edit routeTree.gen.ts directly, it is auto generated
 - Should run all test with `bun run test` in /app after finish the task related to /app package
