@@ -73,7 +73,18 @@ export async function createSyncStore<
 		const synchronizer = useRef<Synchronizer<any>>(null);
 		const messageReceiver = useRef<Receive>(() => {});
 		const [peerCount, setPeerCount] = useState(0);
+		const [isSyncing, setIsSyncing] = useState(false);
 		const skipRelay = isE2EAndRelayDisabled();
+		const syncDebounceRef = useRef<NodeJS.Timeout>(null);
+
+		const setDebouncedSyncing = (syncing: boolean) => {
+			if (syncDebounceRef.current) clearTimeout(syncDebounceRef.current);
+			if (syncing) {
+				setIsSyncing(true);
+			} else {
+				syncDebounceRef.current = setTimeout(() => setIsSyncing(false), 500);
+			}
+		};
 
 		const { sendMessage } = useWebSocket(
 			import.meta.env.PUBLIC_RELAY_URL,
@@ -102,6 +113,10 @@ export async function createSyncStore<
 						10000,
 					);
 
+					synchronizer.current.addStatusListener((_synchronizer, status) => {
+						setDebouncedSyncing(status !== 0);
+					});
+
 					sendMessage(
 						formatMessage({
 							type: 'SUBSCRIBE',
@@ -128,13 +143,14 @@ export async function createSyncStore<
 				},
 				onClose() {
 					setPeerCount(0);
+					setIsSyncing(false);
 					synchronizer.current?.stopSync();
 				},
 			},
 			!skipRelay,
 		);
 
-		return peerCount;
+		return { peerCount, isSyncing };
 	}
 
 	return {

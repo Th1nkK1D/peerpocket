@@ -1,7 +1,5 @@
-import { ArrowDownward } from '@mui/icons-material';
-import { Paper, Typography } from '@mui/material';
+import { CircularProgress, Paper, Typography } from '@mui/material';
 import { createFileRoute, Outlet, redirect } from '@tanstack/react-router';
-import ReactPullToRefresh from 'react-pull-to-refresh';
 import { AuthenticatedLayout } from '../../../components/authenticated-layout';
 import { NavigationTabs } from '../../../components/navigation-tabs';
 import { GROUP_STORE_PREFIX, setupGroupStore } from '../../../stores/group';
@@ -48,7 +46,7 @@ export const Route = createFileRoute('/groups/$groupId')({
 
 function RouteComponent() {
 	const { user, group, userGroupInfo } = Route.useLoaderData();
-	const peerCount = group.usePeerSync();
+	const { peerCount, isSyncing } = group.usePeerSync();
 
 	return (
 		<AuthenticatedLayout
@@ -58,23 +56,29 @@ function RouteComponent() {
 		>
 			<Paper elevation={1} className="rounded-none">
 				<div className="flex flex-row items-center justify-center gap-2 px-3 pt-2 pb-1">
-					<div
-						className={`size-2 rounded-full ${
-							peerCount === 0
-								? 'bg-error'
-								: peerCount === 1
-									? 'bg-warning'
-									: 'bg-success'
-						}`}
-					>
-						<div className="size-2 animate-ping rounded-full bg-inherit"></div>
-					</div>
+					{isSyncing && peerCount > 1 ? (
+						<CircularProgress size={8} className="text-success" />
+					) : (
+						<div
+							className={`size-2 rounded-full ${
+								peerCount === 0
+									? 'bg-error'
+									: peerCount === 1
+										? 'bg-warning'
+										: 'bg-success'
+							}`}
+						>
+							<div className="size-2 animate-ping rounded-full bg-inherit"></div>
+						</div>
+					)}
 					<Typography variant="caption" color="textSecondary">
-						{peerCount === 0
-							? 'No connection to the relay server'
-							: peerCount === 1
-								? 'Only you are online'
-								: `${peerCount - 1} peers connected`}
+						{isSyncing && peerCount > 1
+							? `Syncing with ${peerCount - 1} peer`
+							: peerCount === 0
+								? 'No connection to the relay server'
+								: peerCount === 1
+									? 'Only you are online'
+									: `Online with ${peerCount - 1} peer`}
 					</Typography>
 				</div>
 				<NavigationTabs
@@ -95,21 +99,7 @@ function RouteComponent() {
 				/>
 			</Paper>
 
-			<ReactPullToRefresh
-				className="flex flex-1 flex-col overflow-y-scroll"
-				disabled={peerCount <= 1}
-				onRefresh={async () => location.reload()}
-				icon={
-					<div className="relative w-full">
-						<div className="absolute inset-x-0 bottom-0 flex flex-col items-center opacity-50">
-							<ArrowDownward />
-							<span className="text-xs">Pull to reload and sync data</span>
-						</div>
-					</div>
-				}
-			>
-				<Outlet />
-			</ReactPullToRefresh>
+			<Outlet />
 		</AuthenticatedLayout>
 	);
 }
