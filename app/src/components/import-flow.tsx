@@ -95,7 +95,7 @@ export function ImportFlow({ onImportSuccess }: ImportFlowProps) {
 				onClick={() => fileInputRef.current?.click()}
 				disabled={importing}
 			>
-				{importing ? 'Processing...' : 'Import from file'}
+				{importing ? 'Importing' : 'Import your data'}
 			</Button>
 
 			<input
