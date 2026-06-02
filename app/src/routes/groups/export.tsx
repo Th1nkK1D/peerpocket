@@ -9,7 +9,7 @@ import {
 	RadioGroup,
 	Typography,
 } from '@mui/material';
-import { createFileRoute } from '@tanstack/react-router';
+import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import React from 'react';
 import { AuthenticatedLayout } from '../../components/authenticated-layout';
 import { GROUP_STORE_PREFIX } from '../../stores/group';
@@ -26,6 +26,7 @@ export const Route = createFileRoute('/groups/export')({
 
 function RouteComponent() {
 	const { user } = Route.useLoaderData();
+	const navigate = useNavigate();
 	const [mode, setMode] = React.useState<'identity' | 'full' | ''>('');
 	const [exporting, setExporting] = React.useState(false);
 
@@ -125,6 +126,7 @@ function RouteComponent() {
 
 			const fileName = generateFilename(userValues.name ?? 'user', mode);
 			downloadJson(data, fileName);
+			navigate({ to: '..', replace: true });
 		} catch (error) {
 			console.error('Export failed:', error);
 		} finally {
