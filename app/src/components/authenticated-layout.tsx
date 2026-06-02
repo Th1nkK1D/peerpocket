@@ -1,4 +1,5 @@
 import {
+	AccountBoxOutlined,
 	ChevronLeft,
 	DarkMode,
 	Download,
@@ -29,7 +30,8 @@ import type { UserStore } from '../stores/user';
 
 interface Props {
 	userStore: UserStore;
-	title?: string;
+	title: string;
+	hideBackButton?: boolean;
 	className?: string;
 }
 
@@ -37,6 +39,7 @@ export function AuthenticatedLayout({
 	title,
 	userStore,
 	children,
+	hideBackButton = false,
 	className = '',
 }: PropsWithChildren<Props>) {
 	const user = userStore.useValues();
@@ -67,22 +70,18 @@ export function AuthenticatedLayout({
 		<div className="flex h-dvh flex-col">
 			<AppBar position="static" className="z-20">
 				<Toolbar className="flex items-center justify-between">
-					{title ? (
-						<>
-							<IconButton
-								className="-ml-3 text-white"
-								onClick={() => navigate({ to: '..' })}
-							>
-								<ChevronLeft />
-							</IconButton>
-							<h1 className="font-bold text-xl">{title}</h1>
-						</>
+					{hideBackButton ? (
+						<img src="/favicon-72x72.png" alt="" className="size-6 rounded" />
 					) : (
-						<div className="flex flex-row items-center gap-3">
-							<img src="/favicon-72x72.png" alt="" className="size-6 rounded" />
-							<h1 className="font-bold text-xl">PeerPocket</h1>
-						</div>
+						<IconButton
+							className="-ml-3 text-white"
+							onClick={() => navigate({ to: '..' })}
+						>
+							<ChevronLeft />
+						</IconButton>
 					)}
+
+					<h1 className="font-bold text-xl">{title}</h1>
 
 					<IconButton
 						size="large"
@@ -110,7 +109,12 @@ export function AuthenticatedLayout({
 						open={!!anchorEl}
 						onClose={closeMenu}
 					>
-						<MenuItem disabled>Hi, {user.name}</MenuItem>
+						<MenuItem disabled>
+							<ListItemIcon>
+								<AccountBoxOutlined fontSize="small" />
+							</ListItemIcon>
+							<ListItemText>{user.name}</ListItemText>
+						</MenuItem>
 						<MenuItem
 							onClick={() => {
 								setMode(mode === 'light' ? 'dark' : 'light');

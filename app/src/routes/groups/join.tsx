@@ -48,7 +48,11 @@ function RouteComponent() {
 	}
 
 	return (
-		<AuthenticatedLayout userStore={user} className="justify-center">
+		<AuthenticatedLayout
+			title="PeerPocket"
+			userStore={user}
+			className="justify-center"
+		>
 			<div className="flex flex-col items-center gap-8 px-4">
 				<Avatar
 					className={`size-16 ${hasJoined ? 'bg-success' : 'bg-secondary'}`}

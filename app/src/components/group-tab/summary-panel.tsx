@@ -126,6 +126,7 @@ export function SummaryPanel({ user, group }: PanelProps) {
 				onChange={(event) => setSelectedMemberId(event.target.value)}
 				fullWidth
 				size="small"
+				className="mt-1"
 			>
 				<MenuItem key={currentUser.hashedId} value={currentUser.hashedId}>
 					{currentUser.name}
@@ -215,15 +216,23 @@ export function SummaryPanel({ user, group }: PanelProps) {
 	);
 }
 
-function TotalExpenseCard(props: {
+function TotalExpenseCard({
+	label,
+	value,
+	className = '',
+}: {
 	label: string;
 	value: number;
 	className?: string;
 }) {
 	return (
-		<Card className={`p-2 ${props.className ?? ''}`}>
-			<span className="text-sm">{props.label}</span>
-			<p className="text-2xl">{formatDecimal(props.value)}</p>
+		<Card className="p-2" variant="outlined">
+			<Typography variant="body2" className={className}>
+				{label}
+			</Typography>
+			<Typography className={`text-2xl ${className}`}>
+				{formatDecimal(value)}
+			</Typography>
 		</Card>
 	);
 }

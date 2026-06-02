@@ -1,5 +1,5 @@
 import { CssBaseline } from '@mui/material';
-import { deepPurple, grey, orange } from '@mui/material/colors';
+import { amber, deepPurple, grey, orange } from '@mui/material/colors';
 import GlobalStyles from '@mui/material/GlobalStyles';
 import {
 	createTheme,
@@ -18,7 +18,7 @@ const theme = createTheme({
 					main: deepPurple[500],
 				},
 				secondary: {
-					main: orange.A700,
+					main: amber[800],
 				},
 			},
 		},
@@ -28,7 +28,7 @@ const theme = createTheme({
 					main: deepPurple[300],
 				},
 				secondary: {
-					main: orange.A200,
+					main: orange[600],
 				},
 			},
 		},
@@ -74,12 +74,9 @@ function MetaThemeColor() {
 	const { mode } = useColorScheme();
 
 	useEffect(() => {
-		const meta = document.querySelector('meta[name="theme-color"]');
-		console.log(mode, theme.palette);
-		meta?.setAttribute(
-			'content',
-			mode === 'dark' ? grey[900] : deepPurple[500],
-		);
+		document
+			.querySelector('meta[name="theme-color"]')
+			?.setAttribute('content', mode === 'dark' ? grey[900] : deepPurple[500]);
 	}, [mode]);
 
 	return null;

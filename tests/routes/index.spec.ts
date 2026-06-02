@@ -53,5 +53,7 @@ test('redirects away from the landing route when there is an active user', async
 	await gotoSeededRoute(page, '/', buildFullGroupSeed());
 
 	await expect(page).toHaveURL(/\/groups$/);
-	await expect(page.getByRole('heading', { name: 'PeerPocket' })).toBeVisible();
+	await expect(
+		page.getByRole('heading', { name: 'Your Groups' }),
+	).toBeVisible();
 });

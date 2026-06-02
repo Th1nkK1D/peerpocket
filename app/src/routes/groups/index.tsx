@@ -52,12 +52,12 @@ function RouteComponent() {
 	}
 
 	return (
-		<AuthenticatedLayout userStore={user}>
+		<AuthenticatedLayout title="Your Groups" userStore={user} hideBackButton>
 			<div className="m-3 mb-0 flex flex-1 flex-col gap-3">
 				{groups.length ? (
 					<div className="flex flex-col gap-3">
 						{groups.map(({ id, name, joinedAt }) => (
-							<Card key={id} className="w-full">
+							<Card key={id} className="w-full" elevation={2}>
 								<CardContent className="flex items-start gap-2 py-3 pr-2 pl-5">
 									<Link
 										to="/groups/$groupId"

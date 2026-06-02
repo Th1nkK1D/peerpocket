@@ -100,7 +100,7 @@ test('import success flow: upload user-data JSON, confirm, see groups', async ({
 	await expect(page).toHaveURL(/\/groups$/);
 
 	await page.getByLabel('Menu').click();
-	await expect(page.getByText('Hi, Import Test')).toBeVisible();
+	await expect(page.getByText('Import Test')).toBeVisible();
 });
 
 test('import shows dialog for full export and confirms with replace warning', async ({
@@ -152,7 +152,7 @@ test('import shows dialog for full export and confirms with replace warning', as
 
 	await expect(page).toHaveURL(/\/groups$/);
 	await page.getByLabel('Menu').click();
-	await expect(page.getByText('Hi, Full Import')).toBeVisible();
+	await expect(page.getByText('Full Import')).toBeVisible();
 });
 
 test('import cancel closes dialog without navigating', async ({ page }) => {
@@ -301,7 +301,7 @@ test('full round-trip: export full, then import on fresh landing', async ({
 	await expect(freshPage.getByRole('heading', { name: 'Trip' })).toBeVisible();
 
 	await freshPage.getByLabel('Menu').click();
-	await expect(freshPage.getByText(`Hi, ${baseUser.name}`)).toBeVisible();
+	await expect(freshPage.getByText(baseUser.name)).toBeVisible();
 
 	await freshContext.close();
 });

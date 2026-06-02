@@ -262,7 +262,11 @@ function RouteComponent() {
 							)}
 						</detailsForm.AppField>
 						<StepNavigations>
-							<LinkButton to="/groups/$groupId" params={{ groupId }}>
+							<LinkButton
+								to="/groups/$groupId"
+								params={{ groupId }}
+								color="inherit"
+							>
 								Cancel
 							</LinkButton>
 							<detailsForm.AppForm>
@@ -372,19 +376,30 @@ function RouteComponent() {
 									<>
 										<Button
 											variant="outlined"
+											color="secondary"
 											disabled={!splits.some((s) => s.isSelected)}
 											onClick={splitSelectionsEqually}
 										>
 											Split selections equally
 										</Button>
-										<Button onClick={() => setAllSplitSelection(willSelectAll)}>
+										<Button
+											color="secondary"
+											onClick={() => setAllSplitSelection(willSelectAll)}
+										>
 											Select {willSelectAll ? 'all' : 'none'}
 										</Button>
-										<Button disabled={!sumSplit} onClick={resetSplit}>
+										<Button
+											color="secondary"
+											disabled={!sumSplit}
+											onClick={resetSplit}
+										>
 											Reset
 										</Button>
 										<StepNavigations>
-											<Button onClick={() => setActiveStep(activeStep - 1)}>
+											<Button
+												onClick={() => setActiveStep(activeStep - 1)}
+												color="inherit"
+											>
 												Back
 											</Button>
 											<splitsForm.AppForm>
