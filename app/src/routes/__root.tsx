@@ -1,12 +1,14 @@
 import { CssBaseline } from '@mui/material';
-import { deepPurple, orange } from '@mui/material/colors';
+import { deepPurple, grey, orange } from '@mui/material/colors';
 import GlobalStyles from '@mui/material/GlobalStyles';
 import {
 	createTheme,
 	StyledEngineProvider,
 	ThemeProvider,
+	useColorScheme,
 } from '@mui/material/styles';
 import { createRootRoute, Outlet } from '@tanstack/react-router';
+import { useEffect } from 'react';
 
 const theme = createTheme({
 	colorSchemes: {
@@ -61,8 +63,24 @@ function RootComponent() {
 
 			<ThemeProvider theme={theme}>
 				<CssBaseline />
+				<MetaThemeColor />
 				<Outlet />
 			</ThemeProvider>
 		</StyledEngineProvider>
 	);
+}
+
+function MetaThemeColor() {
+	const { mode } = useColorScheme();
+
+	useEffect(() => {
+		const meta = document.querySelector('meta[name="theme-color"]');
+		console.log(mode, theme.palette);
+		meta?.setAttribute(
+			'content',
+			mode === 'dark' ? grey[900] : deepPurple[500],
+		);
+	}, [mode]);
+
+	return null;
 }
