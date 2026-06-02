@@ -1,7 +1,7 @@
 import {
 	Close,
 	Create,
-	DeleteOutline,
+	DeleteOutlined,
 	Edit,
 	SwipeLeft,
 } from '@mui/icons-material';
@@ -125,7 +125,7 @@ function RouteComponent() {
 														/>
 														<SwipeActionButton
 															label="Delete"
-															icon={<DeleteOutline />}
+															icon={<DeleteOutlined />}
 															onClick={() =>
 																setExpensePendingDelete({
 																	expense,

@@ -1,6 +1,6 @@
 import {
 	ArrowForward,
-	DeleteOutline,
+	DeleteOutlined,
 	GroupAdd,
 	QrCodeScannerOutlined,
 	SwipeLeft,
@@ -71,7 +71,7 @@ function RouteComponent() {
 									<TrailingActions>
 										<SwipeActionButton
 											label="Remove"
-											icon={<DeleteOutline />}
+											icon={<DeleteOutlined />}
 											onClick={() => setSelectedGroup({ id, name })}
 											className="bg-error text-error-contrast"
 										/>
@@ -141,17 +141,19 @@ function RouteComponent() {
 				>
 					<SpeedDialAction
 						icon={<GroupAdd />}
-						tooltipTitle="Create"
-						tooltipOpen
 						onClick={() => navigate({ to: '/groups/create' })}
-						slotProps={{ fab: { color: 'primary' } }}
+						slotProps={{
+							tooltip: { title: 'Create', open: true },
+							fab: { color: 'primary' },
+						}}
 					/>
 					<SpeedDialAction
 						icon={<QrCodeScannerOutlined />}
-						tooltipTitle="Join"
-						tooltipOpen
 						onClick={() => navigate({ to: '/groups/scan' })}
-						slotProps={{ fab: { color: 'secondary' } }}
+						slotProps={{
+							tooltip: { title: 'Join', open: true },
+							fab: { color: 'secondary' },
+						}}
 					/>
 				</SpeedDial>
 			</FabsContainer>

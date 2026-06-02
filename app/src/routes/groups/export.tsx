@@ -151,7 +151,7 @@ function RouteComponent() {
 								control={<Radio />}
 								label={
 									<div>
-										<Typography variant="subtitle1" fontWeight="bold">
+										<Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>
 											Identity
 										</Typography>
 										<Typography variant="body2" color="text.secondary">
@@ -170,7 +170,7 @@ function RouteComponent() {
 								control={<Radio />}
 								label={
 									<div>
-										<Typography variant="subtitle1" fontWeight="bold">
+										<Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>
 											Full Export
 										</Typography>
 										<Typography variant="body2" color="text.secondary">
@@ -187,7 +187,7 @@ function RouteComponent() {
 				<div className="flex items-start gap-2">
 					<InfoOutlined className="mt-0.5 text-gray-500" />
 					<div>
-						<Typography variant="subtitle2" fontWeight="bold">
+						<Typography variant="subtitle2" sx={{ fontWeight: 'bold' }}>
 							How to import
 						</Typography>
 						<Typography variant="body2" color="text.secondary">

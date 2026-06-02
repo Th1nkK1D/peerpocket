@@ -1,5 +1,5 @@
 import {
-	DeleteOutline,
+	DeleteOutlined,
 	Person,
 	PersonAdd,
 	SwipeLeft,
@@ -77,7 +77,7 @@ function RouteComponent() {
 							<TrailingActions>
 								<SwipeActionButton
 									label="Delete"
-									icon={<DeleteOutline />}
+									icon={<DeleteOutlined />}
 									onClick={() =>
 										setSelectedMember({ id: member.id, name: member.name })
 									}
