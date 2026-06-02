@@ -1,5 +1,5 @@
 import { ArrowDownward } from '@mui/icons-material';
-import { Paper } from '@mui/material';
+import { Paper, Typography } from '@mui/material';
 import { createFileRoute, Outlet, redirect } from '@tanstack/react-router';
 import ReactPullToRefresh from 'react-pull-to-refresh';
 import { AuthenticatedLayout } from '../../../components/authenticated-layout';
@@ -69,13 +69,13 @@ function RouteComponent() {
 					>
 						<div className="size-2 animate-ping rounded-full bg-inherit"></div>
 					</div>
-					<span className="text-gray-400 text-xs">
+					<Typography variant="caption" color="textSecondary">
 						{peerCount === 0
 							? 'No connection to the relay server'
 							: peerCount === 1
 								? 'Only you are online'
 								: `${peerCount - 1} peers connected`}
-					</span>
+					</Typography>
 				</div>
 				<NavigationTabs
 					variant="fullWidth"

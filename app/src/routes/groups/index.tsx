@@ -17,6 +17,7 @@ import DialogTitle from '@mui/material/DialogTitle';
 import SpeedDial from '@mui/material/SpeedDial';
 import SpeedDialAction from '@mui/material/SpeedDialAction';
 import SpeedDialIcon from '@mui/material/SpeedDialIcon';
+import Typography from '@mui/material/Typography';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import dayjs from 'dayjs';
 import { useState } from 'react';
@@ -90,9 +91,9 @@ function RouteComponent() {
 										<CardContent className="flex items-center gap-2">
 											<div className="flex-1">
 												<h2 className="font-bold text-xl">{name}</h2>
-												<p className="text-gray-500 text-sm">
+												<Typography variant="body2" color="textSecondary">
 													Joined {dayjs(joinedAt).format('DD MMM YY')}
-												</p>
+												</Typography>
 											</div>
 											<ArrowForward />
 										</CardContent>

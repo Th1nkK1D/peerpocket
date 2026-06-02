@@ -1,6 +1,8 @@
 import {
 	ChevronLeft,
+	DarkMode,
 	Download,
+	LightMode,
 	Logout,
 	ManageAccounts,
 } from '@mui/icons-material';
@@ -20,6 +22,7 @@ import {
 	MenuItem,
 	Toolbar,
 } from '@mui/material';
+import { useColorScheme } from '@mui/material/styles';
 import { useNavigate } from '@tanstack/react-router';
 import { type PropsWithChildren, useId, useState } from 'react';
 import type { UserStore } from '../stores/user';
@@ -38,6 +41,7 @@ export function AuthenticatedLayout({
 }: PropsWithChildren<Props>) {
 	const user = userStore.useValues();
 	const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+	const { mode, setMode } = useColorScheme();
 
 	const navigate = useNavigate();
 	const dialogTitleId = useId();
@@ -66,7 +70,7 @@ export function AuthenticatedLayout({
 					{title ? (
 						<>
 							<IconButton
-								className="-ml-3"
+								className="-ml-3 text-white"
 								onClick={() => navigate({ to: '..' })}
 							>
 								<ChevronLeft />
@@ -107,6 +111,23 @@ export function AuthenticatedLayout({
 						onClose={closeMenu}
 					>
 						<MenuItem disabled>Hi, {user.name}</MenuItem>
+						<MenuItem
+							onClick={() => {
+								setMode(mode === 'light' ? 'dark' : 'light');
+								closeMenu();
+							}}
+						>
+							<ListItemIcon>
+								{mode === 'light' ? (
+									<DarkMode fontSize="small" />
+								) : (
+									<LightMode fontSize="small" />
+								)}
+							</ListItemIcon>
+							<ListItemText>
+								{mode === 'light' ? 'Dark mode' : 'Light mode'}
+							</ListItemText>
+						</MenuItem>
 						<MenuItem
 							onClick={() => {
 								closeMenu();

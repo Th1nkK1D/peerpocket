@@ -12,7 +12,9 @@ const theme = createTheme({
 		light: true,
 		dark: true,
 	},
-	cssVariables: true,
+	cssVariables: {
+		colorSchemeSelector: 'class',
+	},
 });
 
 export const Route = createRootRoute({

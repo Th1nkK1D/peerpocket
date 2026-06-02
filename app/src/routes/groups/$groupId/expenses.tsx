@@ -19,6 +19,7 @@ import {
 	ListItemAvatar,
 	ListItemButton,
 	ListSubheader,
+	Typography,
 } from '@mui/material';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { groups } from 'd3-array';
@@ -159,17 +160,24 @@ function RouteComponent() {
 																</span>
 															</div>
 															<div className="flex flex-row">
-																<p className="flex-1 text-gray-500 text-sm">
+																<Typography
+																	variant="body2"
+																	color="textSecondary"
+																	className="flex-1"
+																>
 																	{expense.paidByMemberId ===
 																	currentUser.hashedId
 																		? `${otherSplits.length} people owe you`
 																		: yourSplit
 																			? `You owe ${memberIdNameMap.get(expense.paidByMemberId)}`
 																			: ''}
-																</p>
-																<p className="text-gray-500 text-sm">
+																</Typography>
+																<Typography
+																	variant="body2"
+																	color="textSecondary"
+																>
 																	Total {formatDecimal(expense.amount)}
-																</p>
+																</Typography>
 															</div>
 														</div>
 													</ListItemButton>

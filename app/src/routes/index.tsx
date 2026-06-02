@@ -94,7 +94,7 @@ function RouteComponent() {
 				</form.AppForm>
 			</form>
 
-			<Divider className="w-64 text-neutral-500">or</Divider>
+			<Divider className="w-64">or</Divider>
 
 			<ImportFlow
 				onImportSuccess={(userStoreId) => {

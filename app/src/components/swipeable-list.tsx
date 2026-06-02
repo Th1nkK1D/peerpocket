@@ -1,3 +1,4 @@
+import Typography from '@mui/material/Typography';
 import type { PropsWithChildren, ReactNode } from 'react';
 import {
 	SwipeableList as BaseSwipeableList,
@@ -52,11 +53,13 @@ export function SwipeableList({ children, className }: SwipeListProps) {
 
 export function SwipeHint({ icon, children, className = '' }: SwipeHintProps) {
 	return (
-		<p
-			className={`flex flex-col items-center justify-center gap-2 text-gray-600 text-xs italic ${className}`}
+		<Typography
+			variant="caption"
+			color="textSecondary"
+			className={`flex flex-col items-center justify-center gap-2 italic ${className}`}
 		>
 			{icon}
 			{children}
-		</p>
+		</Typography>
 	);
 }

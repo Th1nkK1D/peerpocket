@@ -135,7 +135,7 @@ function RouteComponent() {
 	return (
 		<AuthenticatedLayout userStore={user} title="Export Data">
 			<div className="flex flex-1 flex-col gap-4 p-4">
-				<Typography variant="body1" color="text.secondary">
+				<Typography variant="body1" color="textSecondary">
 					Export data for account recovery, changing device, or to log-in from
 					several places.
 				</Typography>
@@ -154,7 +154,7 @@ function RouteComponent() {
 										<Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>
 											Identity
 										</Typography>
-										<Typography variant="body2" color="text.secondary">
+										<Typography variant="body2" color="textSecondary">
 											Export only your profile name and key. You will need an
 											invitation to rejoin groups and sync the data back from
 											your peers.
@@ -173,7 +173,7 @@ function RouteComponent() {
 										<Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>
 											Full Export
 										</Typography>
-										<Typography variant="body2" color="text.secondary">
+										<Typography variant="body2" color="textSecondary">
 											Export everything: your profile, group list, and all group
 											data including members, expenses, and splits.
 										</Typography>
@@ -185,12 +185,12 @@ function RouteComponent() {
 				</FormControl>
 
 				<div className="flex items-start gap-2">
-					<InfoOutlined className="mt-0.5 text-gray-500" />
+					<InfoOutlined className="mt-0.5" color="action" />
 					<div>
 						<Typography variant="subtitle2" sx={{ fontWeight: 'bold' }}>
 							How to import
 						</Typography>
-						<Typography variant="body2" color="text.secondary">
+						<Typography variant="body2" color="textSecondary">
 							On the home page (when logged out or when using a new device),
 							click "Import from file" and select your exported JSON file. The
 							import will replace your current data.

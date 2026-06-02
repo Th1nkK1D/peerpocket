@@ -1,6 +1,8 @@
 @import "tailwindcss";
 @import "react-swipeable-list/dist/styles.css";
 
+@custom-variant dark (&:is(.dark *));
+
 @theme inline {
 	/* Material UI typography */
 	--font-h1: var(--mui-font-h1);

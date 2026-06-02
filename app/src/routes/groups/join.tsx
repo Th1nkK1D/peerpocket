@@ -56,7 +56,7 @@ function RouteComponent() {
 					<HandshakeOutlined className="size-8" />
 				</Avatar>
 				<div className="text-center">
-					<Typography variant="subtitle1" className="text-gray-200">
+					<Typography variant="subtitle1" color="textSecondary">
 						{hasJoined ? `You've joined` : `You've been invited to`}
 					</Typography>
 					<Typography variant="h6" component="h1">

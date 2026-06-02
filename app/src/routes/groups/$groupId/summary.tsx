@@ -1,4 +1,11 @@
-import { Card, Chip, Divider, MenuItem, TextField } from '@mui/material';
+import {
+	Card,
+	Chip,
+	Divider,
+	MenuItem,
+	TextField,
+	Typography,
+} from '@mui/material';
 import { createFileRoute } from '@tanstack/react-router';
 import { groups } from 'd3-array';
 import { type ComponentProps, useEffect, useMemo, useState } from 'react';
@@ -178,7 +185,13 @@ function RouteComponent() {
 					items={outstandingBalanceWithOtherMembers.toPayThem}
 				/>
 			) : (
-				<p className="text-center text-gray-500 text-sm italic">No one</p>
+				<Typography
+					variant="body2"
+					color="textSecondary"
+					className="text-center italic"
+				>
+					No one
+				</Typography>
 			)}
 
 			<Divider>
@@ -197,7 +210,13 @@ function RouteComponent() {
 					items={outstandingBalanceWithOtherMembers.toPayMe}
 				/>
 			) : (
-				<p className="text-center text-gray-500 text-sm italic">No one</p>
+				<Typography
+					variant="body2"
+					color="textSecondary"
+					className="text-center italic"
+				>
+					No one
+				</Typography>
 			)}
 		</div>
 	);

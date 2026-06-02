@@ -35,7 +35,7 @@ export function GroupSharing({ id, name, label }: GroupSharingProps) {
 
 	return (
 		<div className="flex flex-col gap-3">
-			<Typography variant="body2" color="text.secondary">
+			<Typography variant="body2" color="textSecondary">
 				{label}
 			</Typography>
 			<Box className="flex flex-col items-center gap-3">

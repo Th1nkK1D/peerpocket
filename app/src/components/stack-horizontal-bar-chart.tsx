@@ -1,3 +1,4 @@
+import Typography from '@mui/material/Typography';
 import { categoryNameEmojiMap } from '../constants/expense';
 import { formatDecimal } from '../hooks/form';
 
@@ -19,18 +20,18 @@ export function StackHorizontalBarChart({
 			{data.map(({ category, myTotal, groupTotal }) => (
 				<div className="flex flex-col gap-1" key={category}>
 					<div className="flex flex-row">
-						<p className="flex-1">
+						<Typography className="flex-1">
 							{categoryNameEmojiMap.get(category)} {category}
-						</p>
-						<p>
+						</Typography>
+						<Typography>
 							<span className="text-secondary">{formatDecimal(myTotal)}</span>{' '}
-							<span className="text-gray-600">
+							<Typography component="span" color="textSecondary">
 								/ {formatDecimal(groupTotal)}
-							</span>
-						</p>
+							</Typography>
+						</Typography>
 					</div>
 					<div
-						className="flex h-3 flex-row gap-[1px] rounded-sm bg-gray-600"
+						className="flex h-3 flex-row gap-[1px] rounded-sm bg-[var(--mui-palette-divider)]"
 						style={{ width: `${(groupTotal * 100) / max}%` }}
 					>
 						<div
