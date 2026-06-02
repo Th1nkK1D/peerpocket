@@ -9,7 +9,8 @@
 		"isolatedModules": true,
 		"resolveJsonModule": true,
 		"moduleResolution": "bundler",
-		"useDefineForClassFields": true
+		"useDefineForClassFields": true,
+		"types": ["vite-plugin-pwa/react", "node"]
 	},
 	"include": ["src"]
 }

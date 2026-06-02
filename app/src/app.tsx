@@ -1,5 +1,6 @@
 import { createRouter, RouterProvider } from '@tanstack/react-router';
 
+import ReloadPrompt from './components/pwa-cache-prompt';
 import { routeTree } from './routeTree.gen';
 
 // Set up a Router instance
@@ -16,7 +17,12 @@ declare module '@tanstack/react-router' {
 	}
 }
 const App = () => {
-	return <RouterProvider router={router} />;
+	return (
+		<>
+			<RouterProvider router={router} />
+			<ReloadPrompt />
+		</>
+	);
 };
 
 export default App;
