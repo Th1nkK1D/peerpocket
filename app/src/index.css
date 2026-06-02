@@ -1,5 +1,4 @@
 @import "tailwindcss";
-@import "react-swipeable-list/dist/styles.css";
 
 @custom-variant dark (&:is(.dark *));
 

@@ -1,13 +1,10 @@
 import {
-	ArrowForward,
 	DeleteOutlined,
 	GroupAdd,
 	QrCodeScannerOutlined,
-	SwipeLeft,
 } from '@mui/icons-material';
 import Button from '@mui/material/Button';
 import Card from '@mui/material/Card';
-import CardActionArea from '@mui/material/CardActionArea';
 import CardContent from '@mui/material/CardContent';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
@@ -18,18 +15,12 @@ import SpeedDial from '@mui/material/SpeedDial';
 import SpeedDialAction from '@mui/material/SpeedDialAction';
 import SpeedDialIcon from '@mui/material/SpeedDialIcon';
 import Typography from '@mui/material/Typography';
-import { createFileRoute, useNavigate } from '@tanstack/react-router';
+import { createFileRoute, Link, useNavigate } from '@tanstack/react-router';
 import dayjs from 'dayjs';
 import { useState } from 'react';
+import { ActionMenu } from '../../components/action-menu';
 import { AuthenticatedLayout } from '../../components/authenticated-layout';
 import { FabsContainer } from '../../components/fabs-container';
-import {
-	SwipeActionButton,
-	SwipeableList,
-	SwipeableListItem,
-	SwipeHint,
-	TrailingActions,
-} from '../../components/swipeable-list';
 import { GROUP_STORE_PREFIX } from '../../stores/group';
 import { idHelper } from '../../utils/id';
 
@@ -64,47 +55,39 @@ function RouteComponent() {
 		<AuthenticatedLayout userStore={user}>
 			<div className="m-3 mb-0 flex flex-1 flex-col gap-3">
 				{groups.length ? (
-					<SwipeableList className="flex flex-col gap-3">
+					<div className="flex flex-col gap-3">
 						{groups.map(({ id, name, joinedAt }) => (
-							<SwipeableListItem
-								key={id}
-								trailingActions={
-									<TrailingActions>
-										<SwipeActionButton
-											label="Remove"
-											icon={<DeleteOutlined />}
-											onClick={() => setSelectedGroup({ id, name })}
-											className="bg-error text-error-contrast"
-										/>
-									</TrailingActions>
-								}
-							>
-								<Card className="w-full">
-									<CardActionArea
-										onClick={() =>
-											navigate({
-												to: '/groups/$groupId',
-												params: { groupId: id },
-											})
-										}
+							<Card key={id} className="w-full">
+								<CardContent className="flex items-start gap-2 py-3 pr-2 pl-5">
+									<Link
+										to="/groups/$groupId"
+										params={{ groupId: id }}
+										className="flex flex-1 flex-col"
 									>
-										<CardContent className="flex items-center gap-2">
-											<div className="flex-1">
-												<h2 className="font-bold text-xl">{name}</h2>
-												<Typography variant="body2" color="textSecondary">
-													Joined {dayjs(joinedAt).format('DD MMM YY')}
-												</Typography>
-											</div>
-											<ArrowForward />
-										</CardContent>
-									</CardActionArea>
-								</Card>
-							</SwipeableListItem>
+										<h2 className="font-bold text-xl">{name}</h2>
+										<Typography variant="body2" color="textSecondary">
+											Joined {dayjs(joinedAt).format('DD MMM YY')}
+										</Typography>
+									</Link>
+									<ActionMenu
+										ariaLabel="Group options"
+										items={[
+											{
+												label: 'Remove',
+												icon: (
+													<DeleteOutlined
+														fontSize="small"
+														className="text-error"
+													/>
+												),
+												onClick: () => setSelectedGroup({ id, name }),
+											},
+										]}
+									/>
+								</CardContent>
+							</Card>
 						))}
-						<SwipeHint icon={<SwipeLeft fontSize="small" />} className="pt-2">
-							Swipe left to remove the group
-						</SwipeHint>
-					</SwipeableList>
+					</div>
 				) : (
 					<p className="m-auto text-center">
 						You have no groups yet. <br /> Add one or join one!

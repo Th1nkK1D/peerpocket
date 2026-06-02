@@ -1,7 +1,6 @@
 import { expect, test } from '@playwright/test';
 import {
 	buildFullGroupSeed,
-	clickSwipeAction,
 	createUserFromLanding,
 	gotoSeededRoute,
 	openSpeedDialAction,
@@ -31,7 +30,8 @@ test('opens groups from the list', async ({ page }) => {
 test('removes groups from the list', async ({ page }) => {
 	await gotoSeededRoute(page, '/groups', buildFullGroupSeed());
 
-	await clickSwipeAction(page, 'Remove', { itemText: tripGroup.name });
+	await page.getByRole('button', { name: 'Group options' }).click();
+	await page.getByRole('menuitem', { name: 'Remove' }).click();
 	await expect(page.getByRole('dialog')).toContainText(
 		`Remove ${tripGroup.name}?`,
 	);

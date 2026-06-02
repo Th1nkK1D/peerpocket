@@ -1,10 +1,4 @@
-import {
-	Close,
-	Create,
-	DeleteOutlined,
-	Edit,
-	SwipeLeft,
-} from '@mui/icons-material';
+import { Close, Create } from '@mui/icons-material';
 import {
 	Avatar,
 	Button,
@@ -28,13 +22,6 @@ import { useState } from 'react';
 import { FabsContainer } from '../../../components/fabs-container';
 import { LinkButton, LinkFab } from '../../../components/links';
 import { MemberAmountTable } from '../../../components/member-amount-table';
-import {
-	SwipeActionButton,
-	SwipeableList,
-	SwipeableListItem,
-	SwipeHint,
-	TrailingActions,
-} from '../../../components/swipeable-list';
 import { categoryNameEmojiMap } from '../../../constants/expense';
 import { formatDecimal } from '../../../hooks/form';
 
@@ -46,7 +33,7 @@ export const Route = createFileRoute('/groups/$groupId/expenses')({
 function RouteComponent() {
 	const { user, group } = Route.useLoaderData();
 	const { groupId } = Route.useParams();
-	const navigate = useNavigate();
+	const _navigate = useNavigate();
 	const currentUser = user.useValues();
 
 	const expenseByDays = group.useTableRows('expenses', (expenses) =>
@@ -93,108 +80,64 @@ function RouteComponent() {
 						Look like no one has taking a note just yet.
 					</p>
 				) : (
-					<>
-						{expenseByDays.map(([day, expenses]) => (
-							<List key={day} subheader={<ListSubheader>{day}</ListSubheader>}>
-								<SwipeableList>
-									{expenses.map((expense) => {
-										const relatedSplits = splits.filter(
-											(split) => split.expenseId === expense.id,
-										);
-										const yourSplit = relatedSplits.find(
-											(split) => split.memberId === currentUser.hashedId,
-										);
-										const otherSplits = relatedSplits.filter(
-											(split) => split.memberId !== currentUser.hashedId,
-										);
+					expenseByDays.map(([day, expenses]) => (
+						<List key={day} subheader={<ListSubheader>{day}</ListSubheader>}>
+							{expenses.map((expense) => {
+								const relatedSplits = splits.filter(
+									(split) => split.expenseId === expense.id,
+								);
+								const yourSplit = relatedSplits.find(
+									(split) => split.memberId === currentUser.hashedId,
+								);
+								const otherSplits = relatedSplits.filter(
+									(split) => split.memberId !== currentUser.hashedId,
+								);
 
-										return (
-											<SwipeableListItem
-												key={expense.id}
-												trailingActions={
-													<TrailingActions>
-														<SwipeActionButton
-															label="Edit"
-															icon={<Edit />}
-															onClick={() =>
-																navigate({
-																	to: '/groups/expense',
-																	search: { groupId, expenseId: expense.id },
-																})
-															}
-															className="bg-warning text-warning-contrast"
-														/>
-														<SwipeActionButton
-															label="Delete"
-															icon={<DeleteOutlined />}
-															onClick={() =>
-																setExpensePendingDelete({
-																	expense,
-																	relatedSplits,
-																})
-															}
-															className="bg-error text-error-contrast"
-														/>
-													</TrailingActions>
-												}
-											>
-												<ListItem disablePadding>
-													<ListItemButton
-														onClick={() => {
-															setOpenedExpense({ expense, relatedSplits });
-														}}
+								return (
+									<ListItem key={expense.id} disablePadding>
+										<ListItemButton
+											onClick={() => {
+												setOpenedExpense({ expense, relatedSplits });
+											}}
+										>
+											<ListItemAvatar>
+												<Avatar>
+													{categoryNameEmojiMap.get(expense.category)}
+												</Avatar>
+											</ListItemAvatar>
+											<div className="flex flex-1 flex-col">
+												<div className="flex flex-row">
+													<p className="flex-1">
+														{expense.notes || expense.category}
+													</p>
+													<span className="text-secondary">
+														{expense.currency}{' '}
+														{formatDecimal(yourSplit?.amount ?? 0)}
+													</span>
+												</div>
+												<div className="flex flex-row">
+													<Typography
+														variant="body2"
+														color="textSecondary"
+														className="flex-1"
 													>
-														<ListItemAvatar>
-															<Avatar>
-																{categoryNameEmojiMap.get(expense.category)}
-															</Avatar>
-														</ListItemAvatar>
-														<div className="flex flex-1 flex-col">
-															<div className="flex flex-row">
-																<p className="flex-1">
-																	{expense.notes || expense.category}
-																</p>
-																<span className="text-secondary">
-																	{expense.currency}{' '}
-																	{formatDecimal(yourSplit?.amount ?? 0)}
-																</span>
-															</div>
-															<div className="flex flex-row">
-																<Typography
-																	variant="body2"
-																	color="textSecondary"
-																	className="flex-1"
-																>
-																	{expense.paidByMemberId ===
-																	currentUser.hashedId
-																		? `${otherSplits.length} people owe you`
-																		: yourSplit
-																			? `You owe ${memberIdNameMap.get(expense.paidByMemberId)}`
-																			: ''}
-																</Typography>
-																<Typography
-																	variant="body2"
-																	color="textSecondary"
-																>
-																	Total {formatDecimal(expense.amount)}
-																</Typography>
-															</div>
-														</div>
-													</ListItemButton>
-												</ListItem>
-											</SwipeableListItem>
-										);
-									})}
-								</SwipeableList>
-							</List>
-						))}
-						<SwipeHint
-							icon={<SwipeLeft fontSize="small" />}
-							className="px-3 pt-2"
-						>
-							Swipe left to edit or delete the expense
-						</SwipeHint>
-					</>
+														{expense.paidByMemberId === currentUser.hashedId
+															? `${otherSplits.length} people owe you`
+															: yourSplit
+																? `You owe ${memberIdNameMap.get(expense.paidByMemberId)}`
+																: ''}
+													</Typography>
+													<Typography variant="body2" color="textSecondary">
+														Total {formatDecimal(expense.amount)}
+													</Typography>
+												</div>
+											</div>
+										</ListItemButton>
+									</ListItem>
+								);
+							})}
+						</List>
+					))
 				)}
 			</div>
 

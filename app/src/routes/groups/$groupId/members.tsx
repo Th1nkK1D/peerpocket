@@ -1,9 +1,4 @@
-import {
-	DeleteOutlined,
-	Person,
-	PersonAdd,
-	SwipeLeft,
-} from '@mui/icons-material';
+import { DeleteOutlined, Person, PersonAdd } from '@mui/icons-material';
 import {
 	Avatar,
 	Button,
@@ -20,15 +15,9 @@ import {
 import { createFileRoute } from '@tanstack/react-router';
 import dayjs from 'dayjs';
 import { useState } from 'react';
+import { ActionMenu } from '../../../components/action-menu';
 import { FabsContainer } from '../../../components/fabs-container';
 import { GroupSharing } from '../../../components/group-sharing';
-import {
-	SwipeActionButton,
-	SwipeableList,
-	SwipeableListItem,
-	SwipeHint,
-	TrailingActions,
-} from '../../../components/swipeable-list';
 
 export const Route = createFileRoute('/groups/$groupId/members')({
 	component: RouteComponent,
@@ -57,52 +46,50 @@ function RouteComponent() {
 		setSelectedMember(null);
 	}
 
-	const deleteBlockedReason = selectedMember
+	const removeBlockedReason = selectedMember
 		? selectedMember.id === currentUser.hashedId
-			? 'You cannot delete yourself from the group.'
+			? 'You cannot remove yourself from the group.'
 			: expenses.some(
 						(expense) => expense.paidByMemberId === selectedMember.id,
 					) || splits.some((split) => split.memberId === selectedMember.id)
-				? 'This member cannot be deleted because they are related to an expense or split.'
+				? 'This member cannot be removed because they are related to an expense or split.'
 				: null
 		: null;
 
 	return (
 		<>
-			<SwipeableList>
+			<div className="flex flex-1 flex-col">
 				{members.map((member) => (
-					<SwipeableListItem
+					<ListItem
 						key={member.id}
-						trailingActions={
-							<TrailingActions>
-								<SwipeActionButton
-									label="Delete"
-									icon={<DeleteOutlined />}
-									onClick={() =>
-										setSelectedMember({ id: member.id, name: member.name })
-									}
-									className="bg-error text-error-contrast"
-								/>
-							</TrailingActions>
+						secondaryAction={
+							<ActionMenu
+								ariaLabel="Member actions"
+								items={[
+									{
+										label: 'Remove',
+										icon: (
+											<DeleteOutlined fontSize="small" className="text-error" />
+										),
+										onClick: () =>
+											setSelectedMember({ id: member.id, name: member.name }),
+									},
+								]}
+							/>
 						}
 					>
-						<ListItem>
-							<ListItemAvatar>
-								<Avatar>
-									<Person />
-								</Avatar>
-							</ListItemAvatar>
-							<ListItemText
-								primary={member.name}
-								secondary={`Joined on ${dayjs(member.joinedAt).format('DD MMMM YYYY')}`}
-							/>
-						</ListItem>
-					</SwipeableListItem>
+						<ListItemAvatar>
+							<Avatar>
+								<Person />
+							</Avatar>
+						</ListItemAvatar>
+						<ListItemText
+							primary={member.name}
+							secondary={`Joined on ${dayjs(member.joinedAt).format('DD MMMM YYYY')}`}
+						/>
+					</ListItem>
 				))}
-				<SwipeHint icon={<SwipeLeft fontSize="small" />} className="px-3 pt-2">
-					Swipe left to delete a member
-				</SwipeHint>
-			</SwipeableList>
+			</div>
 
 			<FabsContainer>
 				<Fab
@@ -141,23 +128,23 @@ function RouteComponent() {
 				{selectedMember ? (
 					<>
 						<DialogTitle>
-							{deleteBlockedReason
-								? `Cannot delete ${selectedMember.name}`
-								: `Delete ${selectedMember.name}?`}
+							{removeBlockedReason
+								? `Cannot remove ${selectedMember.name}`
+								: `Remove ${selectedMember.name}?`}
 						</DialogTitle>
 						<DialogContent>
 							<DialogContentText>
-								{deleteBlockedReason ??
+								{removeBlockedReason ??
 									'They can be added back later by sharing the group again.'}
 							</DialogContentText>
 						</DialogContent>
 						<DialogActions>
 							<Button color="inherit" onClick={() => setSelectedMember(null)}>
-								{deleteBlockedReason ? 'Close' : 'Cancel'}
+								{removeBlockedReason ? 'Close' : 'Cancel'}
 							</Button>
-							{deleteBlockedReason ? null : (
+							{removeBlockedReason ? null : (
 								<Button color="error" onClick={removeMember}>
-									Delete
+									Remove
 								</Button>
 							)}
 						</DialogActions>

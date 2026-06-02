@@ -225,26 +225,6 @@ export async function openSpeedDialAction(page: Page, name: string) {
 	await page.getByRole('menuitem', { name }).click();
 }
 
-export async function clickSwipeAction(
-	page: Page,
-	label: string,
-	options?: { itemText?: string; index?: number },
-) {
-	const scope = options?.itemText
-		? page
-				.locator('.swipeable-list-item')
-				.filter({ hasText: options.itemText })
-				.first()
-		: page;
-
-	await scope
-		.locator('.swipe-action', { hasText: label })
-		.nth(options?.index ?? 0)
-		.evaluate((element: HTMLElement) => {
-			element.click();
-		});
-}
-
 export async function fillSampleExpense(
 	page: Page,
 	values?: { notes?: string },

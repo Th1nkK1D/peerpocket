@@ -4,10 +4,22 @@ import {
 	bob,
 	buildFullGroupSeed,
 	chloe,
-	clickSwipeAction,
 	gotoSeededRoute,
 	tripGroup,
 } from '../../../mocks/playwright';
+
+async function clickMemberAction(
+	page: import('@playwright/test').Page,
+	memberName: string,
+	action: string,
+) {
+	await page
+		.getByRole('listitem')
+		.filter({ hasText: memberName })
+		.getByRole('button', { name: 'Member actions' })
+		.click();
+	await page.getByRole('menuitem', { name: action }).click();
+}
 
 test('shows members', async ({ page }) => {
 	await gotoSeededRoute(
@@ -50,8 +62,8 @@ test('shows delete guardrails for the current user', async ({ page }) => {
 		buildFullGroupSeed(),
 	);
 
-	await clickSwipeAction(page, 'Delete', { itemText: baseUser.name });
-	await expect(page.getByRole('dialog')).toContainText('Cannot delete Alice');
+	await clickMemberAction(page, baseUser.name, 'Remove');
+	await expect(page.getByRole('dialog')).toContainText('Cannot remove Alice');
 	await page.getByRole('button', { name: 'Close' }).click();
 });
 
@@ -64,10 +76,10 @@ test('shows delete guardrails for members tied to expenses', async ({
 		buildFullGroupSeed(),
 	);
 
-	await clickSwipeAction(page, 'Delete', { itemText: bob.name });
-	await expect(page.getByRole('dialog')).toContainText('Cannot delete Bob');
+	await clickMemberAction(page, bob.name, 'Remove');
+	await expect(page.getByRole('dialog')).toContainText('Cannot remove Bob');
 	await expect(page.getByRole('dialog')).toContainText(
-		'This member cannot be deleted because they are related to an expense or split.',
+		'This member cannot be removed because they are related to an expense or split.',
 	);
 	await page.getByRole('button', { name: 'Close' }).click();
 });
@@ -79,10 +91,10 @@ test('shows delete guardrails for members tied to splits', async ({ page }) => {
 		buildFullGroupSeed(),
 	);
 
-	await clickSwipeAction(page, 'Delete', { itemText: chloe.name });
-	await expect(page.getByRole('dialog')).toContainText('Cannot delete Chloe');
+	await clickMemberAction(page, chloe.name, 'Remove');
+	await expect(page.getByRole('dialog')).toContainText('Cannot remove Chloe');
 	await expect(page.getByRole('dialog')).toContainText(
-		'This member cannot be deleted because they are related to an expense or split.',
+		'This member cannot be removed because they are related to an expense or split.',
 	);
 	await page.getByRole('button', { name: 'Close' }).click();
 });
@@ -103,9 +115,9 @@ test('deletes members that are not tied to expenses or the current user', async 
 		],
 	});
 
-	await clickSwipeAction(page, 'Delete', { itemText: 'Dan' });
-	await expect(page.getByRole('dialog')).toContainText('Delete Dan?');
-	await page.getByRole('button', { name: 'Delete' }).click();
+	await clickMemberAction(page, 'Dan', 'Remove');
+	await expect(page.getByRole('dialog')).toContainText('Remove Dan?');
+	await page.getByRole('button', { name: 'Remove' }).click();
 
 	await expect(page.getByText('Dan')).toHaveCount(0);
 });
