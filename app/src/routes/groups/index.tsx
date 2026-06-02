@@ -126,7 +126,9 @@ function RouteComponent() {
 							</DialogContentText>
 						</DialogContent>
 						<DialogActions>
-							<Button onClick={() => setSelectedGroup(null)}>Cancel</Button>
+							<Button color="inherit" onClick={() => setSelectedGroup(null)}>
+								Cancel
+							</Button>
 							<Button color="error" onClick={removeGroup}>
 								Remove
 							</Button>

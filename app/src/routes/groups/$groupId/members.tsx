@@ -152,7 +152,7 @@ function RouteComponent() {
 							</DialogContentText>
 						</DialogContent>
 						<DialogActions>
-							<Button onClick={() => setSelectedMember(null)}>
+							<Button color="inherit" onClick={() => setSelectedMember(null)}>
 								{deleteBlockedReason ? 'Close' : 'Cancel'}
 							</Button>
 							{deleteBlockedReason ? null : (

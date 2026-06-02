@@ -173,7 +173,9 @@ export function AuthenticatedLayout({
 					</DialogContentText>
 				</DialogContent>
 				<DialogActions>
-					<Button onClick={() => setLogoutDialogOpen(false)}>Cancel</Button>
+					<Button onClick={() => setLogoutDialogOpen(false)} color="inherit">
+						Cancel
+					</Button>
 					<Button onClick={confirmLogout} color="error">
 						Log out
 					</Button>

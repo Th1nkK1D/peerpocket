@@ -280,7 +280,9 @@ function RouteComponent() {
 					</DialogContentText>
 				</DialogContent>
 				<DialogActions>
-					<Button onClick={() => setExpensePendingDelete(null)}>Cancel</Button>
+					<Button color="inherit" onClick={() => setExpensePendingDelete(null)}>
+						Cancel
+					</Button>
 					<Button color="error" onClick={deleteExpense}>
 						Yes, delete it
 					</Button>

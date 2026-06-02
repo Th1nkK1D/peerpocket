@@ -151,7 +151,9 @@ export function ImportFlow({ onImportSuccess }: ImportFlowProps) {
 							</DialogContentText>
 						</DialogContent>
 						<DialogActions>
-							<Button onClick={() => setPendingImport(null)}>Cancel</Button>
+							<Button color="inherit" onClick={() => setPendingImport(null)}>
+								Cancel
+							</Button>
 							<Button onClick={handleConfirmImport} variant="contained">
 								Import
 							</Button>
