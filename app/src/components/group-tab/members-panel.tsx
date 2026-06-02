@@ -12,20 +12,14 @@ import {
 	ListItemAvatar,
 	ListItemText,
 } from '@mui/material';
-import { createFileRoute } from '@tanstack/react-router';
 import dayjs from 'dayjs';
 import { useState } from 'react';
-import { ActionMenu } from '../../../components/action-menu';
-import { FabsContainer } from '../../../components/fabs-container';
-import { GroupSharing } from '../../../components/group-sharing';
+import { ActionMenu } from '../action-menu';
+import { FabsContainer } from '../fabs-container';
+import { GroupSharing } from '../group-sharing';
+import type { PanelProps } from './types';
 
-export const Route = createFileRoute('/groups/$groupId/members')({
-	component: RouteComponent,
-	loader: ({ context }) => context,
-});
-
-function RouteComponent() {
-	const { user, userGroupInfo, group } = Route.useLoaderData();
+export function MembersPanel({ user, userGroupInfo, group }: PanelProps) {
 	const currentUser = user.useValues();
 	const members = group.useTableRows('members', (members) =>
 		members.sort((a, z) => z.joinedAt - a.joinedAt),

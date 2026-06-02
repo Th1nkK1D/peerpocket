@@ -7,7 +7,7 @@ import {
 } from '../../../mocks/playwright';
 
 test('shows the empty state for groups without expenses', async ({ page }) => {
-	await gotoSeededRoute(page, `/groups/${tripGroup.id}/expenses`, {
+	await gotoSeededRoute(page, `/groups/${tripGroup.id}?tab=expenses`, {
 		user: baseUser,
 		groups: [
 			{
@@ -25,7 +25,7 @@ test('shows the empty state for groups without expenses', async ({ page }) => {
 test('opens expense details', async ({ page }) => {
 	await gotoSeededRoute(
 		page,
-		`/groups/${tripGroup.id}/expenses`,
+		`/groups/${tripGroup.id}?tab=expenses`,
 		buildFullGroupSeed(),
 	);
 
@@ -37,7 +37,7 @@ test('opens expense details', async ({ page }) => {
 test('navigates to edit expense', async ({ page }) => {
 	await gotoSeededRoute(
 		page,
-		`/groups/${tripGroup.id}/expenses`,
+		`/groups/${tripGroup.id}?tab=expenses`,
 		buildFullGroupSeed(),
 	);
 
@@ -55,7 +55,7 @@ test('navigates to edit expense', async ({ page }) => {
 test('deletes an expense', async ({ page }) => {
 	await gotoSeededRoute(
 		page,
-		`/groups/${tripGroup.id}/expenses`,
+		`/groups/${tripGroup.id}?tab=expenses`,
 		buildFullGroupSeed(),
 	);
 

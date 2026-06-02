@@ -8,30 +8,32 @@ import {
 } from '../../../mocks/playwright';
 
 test('renders the group layout and tab navigation', async ({ page }) => {
-	await gotoSeededRoute(
-		page,
-		`/groups/${tripGroup.id}/expenses`,
-		buildFullGroupSeed(),
-	);
+	await gotoSeededRoute(page, `/groups/${tripGroup.id}`, buildFullGroupSeed());
 
 	await expect(
 		page.getByRole('heading', { name: tripGroup.name }),
 	).toBeVisible();
 
 	await page.getByRole('tab', { name: 'Summary' }).click();
-	await expect(page).toHaveURL(new RegExp(`/groups/${tripGroup.id}/summary$`));
+	await expect(page).toHaveURL(
+		new RegExp(`/groups/${tripGroup.id}[?&]tab=summary`),
+	);
 
 	await page.getByRole('tab', { name: 'Expenses' }).click();
-	await expect(page).toHaveURL(new RegExp(`/groups/${tripGroup.id}/expenses$`));
+	await expect(page).toHaveURL(
+		new RegExp(`/groups/${tripGroup.id}[?&]tab=expenses`),
+	);
 
 	await page.getByRole('tab', { name: 'Members' }).click();
-	await expect(page).toHaveURL(new RegExp(`/groups/${tripGroup.id}/members$`));
+	await expect(page).toHaveURL(
+		new RegExp(`/groups/${tripGroup.id}[?&]tab=members`),
+	);
 });
 
 test('redirects away when the active user is not in the group list', async ({
 	page,
 }) => {
-	await gotoSeededRoute(page, `/groups/${tripGroup.id}/expenses`, {
+	await gotoSeededRoute(page, `/groups/${tripGroup.id}`, {
 		user: {
 			id: 'user-alice',
 			hashedId: 'hashed-alice',
@@ -68,13 +70,13 @@ test('merges expenses from two peers via sync union', async ({ browser }) => {
 	const pageA = await contextA.newPage();
 	const pageB = await contextB.newPage();
 
-	await gotoSeededRoute(pageA, `/groups/${tripGroup.id}/expenses`, {
+	await gotoSeededRoute(pageA, `/groups/${tripGroup.id}?tab=expenses`, {
 		user: baseUser,
 		groups: [groupSeed],
 		enableRelay: true,
 	});
 
-	await gotoSeededRoute(pageB, `/groups/${tripGroup.id}/expenses`, {
+	await gotoSeededRoute(pageB, `/groups/${tripGroup.id}?tab=expenses`, {
 		user: { id: 'user-bob', hashedId: 'hashed-bob', name: 'Bob' },
 		groups: [groupSeed],
 		enableRelay: true,
@@ -132,13 +134,13 @@ test('merges members from two peers joining independently', async ({
 	const pageA = await contextA.newPage();
 	const pageB = await contextB.newPage();
 
-	await gotoSeededRoute(pageA, `/groups/${tripGroup.id}/members`, {
+	await gotoSeededRoute(pageA, `/groups/${tripGroup.id}?tab=members`, {
 		user: baseUser,
 		groups: [groupSeed],
 		enableRelay: true,
 	});
 
-	await gotoSeededRoute(pageB, `/groups/${tripGroup.id}/members`, {
+	await gotoSeededRoute(pageB, `/groups/${tripGroup.id}?tab=members`, {
 		user: { id: 'user-bob', hashedId: 'hashed-bob', name: 'Bob' },
 		groups: [groupSeed],
 		enableRelay: true,

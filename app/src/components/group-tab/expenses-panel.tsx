@@ -15,25 +15,17 @@ import {
 	ListSubheader,
 	Typography,
 } from '@mui/material';
-import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { groups } from 'd3-array';
 import dayjs from 'dayjs';
 import { useState } from 'react';
-import { FabsContainer } from '../../../components/fabs-container';
-import { LinkButton, LinkFab } from '../../../components/links';
-import { MemberAmountTable } from '../../../components/member-amount-table';
-import { categoryNameEmojiMap } from '../../../constants/expense';
-import { formatDecimal } from '../../../hooks/form';
+import { categoryNameEmojiMap } from '../../constants/expense';
+import { formatDecimal } from '../../hooks/form';
+import { FabsContainer } from '../fabs-container';
+import { LinkButton, LinkFab } from '../links';
+import { MemberAmountTable } from '../member-amount-table';
+import type { PanelProps } from './types';
 
-export const Route = createFileRoute('/groups/$groupId/expenses')({
-	component: RouteComponent,
-	loader: ({ context }) => context,
-});
-
-function RouteComponent() {
-	const { user, group } = Route.useLoaderData();
-	const { groupId } = Route.useParams();
-	const _navigate = useNavigate();
+export function ExpensesPanel({ user, group, groupId }: PanelProps) {
 	const currentUser = user.useValues();
 
 	const expenseByDays = group.useTableRows('expenses', (expenses) =>

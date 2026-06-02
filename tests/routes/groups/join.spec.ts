@@ -19,7 +19,7 @@ test('joins a shared group and exposes navigation actions', async ({
 
 	await expect(page.getByText("You've joined")).toBeVisible();
 	await page.getByRole('link', { name: 'Go to the group' }).click();
-	await expect(page).toHaveURL(/\/groups\/group-party\/expenses$/);
+	await expect(page).toHaveURL(/\/groups\/group-party[?&]tab=expenses/);
 });
 
 test('shows the already-joined state for existing members', async ({

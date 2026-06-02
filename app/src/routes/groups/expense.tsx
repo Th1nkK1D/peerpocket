@@ -44,7 +44,7 @@ export const Route = createFileRoute('/groups/expense')({
 
 		if (expenseId && !expense) {
 			throw redirect({
-				to: '/groups/$groupId/expenses',
+				to: '/groups/$groupId',
 				params: { groupId },
 				replace: true,
 			});
@@ -153,7 +153,7 @@ function RouteComponent() {
 				});
 
 			navigate({
-				to: '/groups/$groupId/expenses',
+				to: '/groups/$groupId',
 				params: { groupId },
 				replace: true,
 			});
@@ -262,7 +262,7 @@ function RouteComponent() {
 							)}
 						</detailsForm.AppField>
 						<StepNavigations>
-							<LinkButton to="/groups/$groupId/expenses" params={{ groupId }}>
+							<LinkButton to="/groups/$groupId" params={{ groupId }}>
 								Cancel
 							</LinkButton>
 							<detailsForm.AppForm>

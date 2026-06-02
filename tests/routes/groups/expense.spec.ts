@@ -42,7 +42,7 @@ test('adds a new expense and uses the split controls', async ({ page }) => {
 
 	await expectOnExpenses(page);
 	await expect(page.getByText('Lunch')).toBeVisible();
-	await expect(page.getByText('45.00')).toBeVisible();
+	await expect(page.getByText('45.00').first()).toBeVisible();
 });
 
 test('edits an existing expense', async ({ page }) => {

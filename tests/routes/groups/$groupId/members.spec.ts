@@ -24,22 +24,22 @@ async function clickMemberAction(
 test('shows members', async ({ page }) => {
 	await gotoSeededRoute(
 		page,
-		`/groups/${tripGroup.id}/members`,
+		`/groups/${tripGroup.id}?tab=members`,
 		buildFullGroupSeed(),
 	);
 
 	await expect(
-		page.getByRole('listitem').filter({ hasText: baseUser.name }),
+		page.getByRole('listitem').filter({ hasText: baseUser.name }).last(),
 	).toBeVisible();
 	await expect(
-		page.getByRole('listitem').filter({ hasText: bob.name }),
+		page.getByRole('listitem').filter({ hasText: bob.name }).last(),
 	).toBeVisible();
 });
 
 test('shares group invite link', async ({ page }) => {
 	await gotoSeededRoute(
 		page,
-		`/groups/${tripGroup.id}/members`,
+		`/groups/${tripGroup.id}?tab=members`,
 		buildFullGroupSeed(),
 	);
 
@@ -58,7 +58,7 @@ test('shares group invite link', async ({ page }) => {
 test('shows delete guardrails for the current user', async ({ page }) => {
 	await gotoSeededRoute(
 		page,
-		`/groups/${tripGroup.id}/members`,
+		`/groups/${tripGroup.id}?tab=members`,
 		buildFullGroupSeed(),
 	);
 
@@ -72,7 +72,7 @@ test('shows delete guardrails for members tied to expenses', async ({
 }) => {
 	await gotoSeededRoute(
 		page,
-		`/groups/${tripGroup.id}/members`,
+		`/groups/${tripGroup.id}?tab=members`,
 		buildFullGroupSeed(),
 	);
 
@@ -87,7 +87,7 @@ test('shows delete guardrails for members tied to expenses', async ({
 test('shows delete guardrails for members tied to splits', async ({ page }) => {
 	await gotoSeededRoute(
 		page,
-		`/groups/${tripGroup.id}/members`,
+		`/groups/${tripGroup.id}?tab=members`,
 		buildFullGroupSeed(),
 	);
 
@@ -102,7 +102,7 @@ test('shows delete guardrails for members tied to splits', async ({ page }) => {
 test('deletes members that are not tied to expenses or the current user', async ({
 	page,
 }) => {
-	await gotoSeededRoute(page, `/groups/${tripGroup.id}/members`, {
+	await gotoSeededRoute(page, `/groups/${tripGroup.id}?tab=members`, {
 		user: baseUser,
 		groups: [
 			{

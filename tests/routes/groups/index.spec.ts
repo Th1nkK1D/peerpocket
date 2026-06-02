@@ -24,7 +24,9 @@ test('opens groups from the list', async ({ page }) => {
 	await gotoSeededRoute(page, '/groups', buildFullGroupSeed());
 
 	await page.getByRole('heading', { name: tripGroup.name }).click();
-	await expect(page).toHaveURL(new RegExp(`/groups/${tripGroup.id}/expenses$`));
+	await expect(page).toHaveURL(
+		new RegExp(`/groups/${tripGroup.id}[?&]tab=expenses`),
+	);
 });
 
 test('removes groups from the list', async ({ page }) => {

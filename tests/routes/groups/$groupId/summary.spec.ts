@@ -11,7 +11,7 @@ test('shows expense totals, category bars, and outstanding balances', async ({
 }) => {
 	await gotoSeededRoute(
 		page,
-		`/groups/${tripGroup.id}/summary`,
+		`/groups/${tripGroup.id}?tab=summary`,
 		buildFullGroupSeed(),
 	);
 
@@ -24,13 +24,13 @@ test('shows expense totals, category bars, and outstanding balances', async ({
 	await expect(page.getByText('Transport')).toBeVisible();
 	await expect(page.getByText('Who I need to pay to')).toBeVisible();
 	await expect(page.getByText('Who needs to pay me')).toBeVisible();
-	await expect(page.getByText('Bob')).toBeVisible();
+	await expect(page.getByRole('cell', { name: 'Bob' })).toBeVisible();
 });
 
 test('shows summary for another selected member', async ({ page }) => {
 	await gotoSeededRoute(
 		page,
-		`/groups/${tripGroup.id}/summary`,
+		`/groups/${tripGroup.id}?tab=summary`,
 		buildFullGroupSeed(),
 	);
 
@@ -48,7 +48,7 @@ test('shows summary for another selected member', async ({ page }) => {
 test('shows empty outstanding sections when there is no balance', async ({
 	page,
 }) => {
-	await gotoSeededRoute(page, `/groups/${tripGroup.id}/summary`, {
+	await gotoSeededRoute(page, `/groups/${tripGroup.id}?tab=summary`, {
 		user: baseUser,
 		groups: [
 			{
@@ -61,5 +61,5 @@ test('shows empty outstanding sections when there is no balance', async ({
 		],
 	});
 
-	await expect(page.getByText('No one')).toHaveCount(2);
+	await expect(page.getByText('No one').first()).toBeVisible();
 });

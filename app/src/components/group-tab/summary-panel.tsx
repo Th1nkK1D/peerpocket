@@ -6,20 +6,14 @@ import {
 	TextField,
 	Typography,
 } from '@mui/material';
-import { createFileRoute } from '@tanstack/react-router';
 import { groups } from 'd3-array';
 import { type ComponentProps, useEffect, useMemo, useState } from 'react';
-import { MemberAmountTable } from '../../../components/member-amount-table';
-import { StackHorizontalBarChart } from '../../../components/stack-horizontal-bar-chart';
-import { formatDecimal } from '../../../hooks/form';
+import { formatDecimal } from '../../hooks/form';
+import { MemberAmountTable } from '../member-amount-table';
+import { StackHorizontalBarChart } from '../stack-horizontal-bar-chart';
+import type { PanelProps } from './types';
 
-export const Route = createFileRoute('/groups/$groupId/summary')({
-	component: RouteComponent,
-	loader: ({ context }) => context,
-});
-
-function RouteComponent() {
-	const { user, group } = Route.useLoaderData();
+export function SummaryPanel({ user, group }: PanelProps) {
 	const currentUser = user.useValues();
 
 	const expenses = group.useTableRows('expenses');
@@ -80,7 +74,6 @@ function RouteComponent() {
 
 	type OutstandBalance = ComponentProps<typeof MemberAmountTable>['items'];
 
-	// biome-ignore lint/correctness/useExhaustiveDependencies: false positive
 	const outstandingBalanceWithOtherMembers = useMemo(
 		() =>
 			members

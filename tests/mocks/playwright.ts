@@ -235,7 +235,7 @@ export async function fillSampleExpense(
 }
 
 export async function expectOnExpenses(page: Page, groupId = tripGroup.id) {
-	await page.waitForURL(new RegExp(`/groups/${groupId}/expenses$`));
+	await page.waitForURL(new RegExp(`/groups/${groupId}[?&]tab=expenses`));
 }
 
 export function buildFullGroupSeed(): E2ESeed {
