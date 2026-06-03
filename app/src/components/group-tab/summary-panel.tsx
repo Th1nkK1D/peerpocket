@@ -68,7 +68,9 @@ export function SummaryPanel({ user, group }: PanelProps) {
 		() =>
 			groups(
 				splitsWithExpenseInfo,
-				groupBy === 'category' ? (tx) => tx.category : (tx) => `${tx.paidOn}`,
+				groupBy === 'category'
+					? (tx) => tx.category
+					: (tx) => dayjs(tx.paidOn).format('YYYY-MM-DD'),
 			)
 				.map(([key, txs]) => ({
 					category: key,
@@ -79,7 +81,7 @@ export function SummaryPanel({ user, group }: PanelProps) {
 				}))
 				.sort((a, z) =>
 					groupBy === 'category'
-						? a.category.localeCompare(z.category)
+						? z.myTotal - a.myTotal
 						: z.category.localeCompare(a.category),
 				),
 		[splitsWithExpenseInfo, selectedMemberId, groupBy],
@@ -181,7 +183,7 @@ export function SummaryPanel({ user, group }: PanelProps) {
 						data={chartData}
 						formatLabel={
 							groupBy === 'date'
-								? (date) => dayjs(+date).format('ddd, D MMM YY')
+								? (date) => dayjs(date).format('ddd, D MMM YY')
 								: (category) =>
 										`${categoryNameEmojiMap.get(category)} ${category}`
 						}
