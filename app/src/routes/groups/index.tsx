@@ -72,7 +72,7 @@ function RouteComponent() {
 
 	return (
 		<AuthenticatedLayout title="PeerPockets" userStore={user} hideBackButton>
-			<div className="m-3 mb-0 flex flex-1 flex-col gap-3">
+			<div className="m-3 mb-24 flex flex-1 flex-col gap-3">
 				<div className="flex justify-between">
 					<Typography variant="h5">Groups</Typography>
 					<ActionMenu
@@ -192,7 +192,7 @@ function RouteComponent() {
 					</>
 				) : null}
 			</Dialog>
-			<FabsContainer>
+			<FabsContainer position="fixed">
 				<SpeedDial
 					ariaLabel="Group actions"
 					icon={<SpeedDialIcon />}
