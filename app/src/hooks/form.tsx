@@ -1,6 +1,9 @@
+import { CalculateOutlined } from '@mui/icons-material';
 import {
 	Button,
 	FormControlLabel,
+	IconButton,
+	InputAdornment,
 	MenuItem,
 	Checkbox as MuiCheckbox,
 	TextField as MuiTextField,
@@ -15,6 +18,7 @@ import {
 } from '@tanstack/react-form';
 import type { Dayjs } from 'dayjs';
 import { type ComponentProps, useEffect, useState } from 'react';
+import { CalculatorDialog } from '../components/calculator-dialog';
 
 const { fieldContext, formContext, useFieldContext, useFormContext } =
 	createFormHookContexts();
@@ -43,33 +47,70 @@ function TextField(props: ComponentProps<typeof MuiTextField>) {
 function CurrencyField(props: ComponentProps<typeof BaseCurrencyField>) {
 	const field = useFieldContext<number>();
 	const [temporaryValue, setTemporaryValue] = useState<string | null>(null);
+	const [calculatorOpen, setCalculatorOpen] = useState(false);
 
 	useEffect(() => {
 		setTemporaryValue(formatDecimal(field.state.value, 0));
 	}, [field.state.value]);
 
+	function handleCalculatorConfirm(value: number) {
+		const rounded = roundToTwoDecimal(value);
+		field.handleChange(rounded);
+		setTemporaryValue(formatDecimal(rounded, 0));
+		setCalculatorOpen(false);
+	}
+
 	return (
-		<BaseCurrencyField
-			name={field.name}
-			value={temporaryValue ?? formatDecimal(field.state.value)}
-			error={!field.state.meta.isValid}
-			helperText={field.state.meta.errors.map((e) => e.message).at(0)}
-			onChange={(e) => setTemporaryValue(e.target.value)}
-			onFocus={() => {
-				setTemporaryValue(
-					field.state.value ? formatDecimal(field.state.value, 0) : '',
-				);
-			}}
-			onBlur={() => {
-				if (temporaryValue) {
-					field.handleChange(
-						roundToTwoDecimal(+temporaryValue.replaceAll(',', '')),
+		<>
+			<BaseCurrencyField
+				name={field.name}
+				value={temporaryValue ?? formatDecimal(field.state.value)}
+				error={!field.state.meta.isValid}
+				helperText={field.state.meta.errors.map((e) => e.message).at(0)}
+				onChange={(e) => setTemporaryValue(e.target.value)}
+				onFocus={() => {
+					setTemporaryValue(
+						field.state.value ? formatDecimal(field.state.value, 0) : '',
 					);
-				}
-				field.handleBlur();
-			}}
-			{...props}
-		></BaseCurrencyField>
+				}}
+				onBlur={() => {
+					if (temporaryValue) {
+						field.handleChange(
+							roundToTwoDecimal(+temporaryValue.replaceAll(',', '')),
+						);
+					}
+					field.handleBlur();
+				}}
+				{...props}
+				slotProps={{
+					...props.slotProps,
+					input: {
+						...props.slotProps?.input,
+						endAdornment: (
+							<InputAdornment position="end">
+								<IconButton
+									edge="end"
+									size="small"
+									onClick={(e) => {
+										e.stopPropagation();
+										setCalculatorOpen(true);
+									}}
+									aria-label="Open calculator"
+								>
+									<CalculateOutlined fontSize="small" />
+								</IconButton>
+							</InputAdornment>
+						),
+					},
+				}}
+			></BaseCurrencyField>
+			<CalculatorDialog
+				open={calculatorOpen}
+				value={field.state.value}
+				onConfirm={handleCalculatorConfirm}
+				onClose={() => setCalculatorOpen(false)}
+			/>
+		</>
 	);
 }
 
