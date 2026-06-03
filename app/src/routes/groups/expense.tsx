@@ -270,7 +270,15 @@ function RouteComponent() {
 								Cancel
 							</LinkButton>
 							<detailsForm.AppForm>
-								<detailsForm.SubmitButton>Next</detailsForm.SubmitButton>
+								<detailsForm.Subscribe
+									selector={(state) => state.values.amount}
+								>
+									{(amount) => (
+										<detailsForm.SubmitButton disabled={amount === 0}>
+											Next
+										</detailsForm.SubmitButton>
+									)}
+								</detailsForm.Subscribe>
 							</detailsForm.AppForm>
 						</StepNavigations>
 					</form>
