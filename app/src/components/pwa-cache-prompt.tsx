@@ -1,5 +1,6 @@
 import { useRegisterSW } from 'virtual:pwa-register/react';
-import { Button, Snackbar } from '@mui/material';
+import { Close } from '@mui/icons-material';
+import { Button, IconButton, Snackbar } from '@mui/material';
 
 export default function ReloadPrompt() {
 	const {
@@ -12,31 +13,41 @@ export default function ReloadPrompt() {
 		<>
 			<Snackbar
 				open={offlineReady}
-				message="App ready to work offline"
+				message="App is ready to work offline"
 				autoHideDuration={2500}
 				onClose={() => setOfflineReady(false)}
 				anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+				action={
+					<IconButton
+						aria-label="Close"
+						size="small"
+						color="inherit"
+						onClick={() => setOfflineReady(false)}
+					>
+						<Close />
+					</IconButton>
+				}
 			/>
 			<Snackbar
 				open={needRefresh}
-				message="New app version available"
+				message="New app version is available, reload to update."
 				onClose={() => setNeedRefresh(false)}
 				anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
 				action={
 					<>
 						<Button
-							color="secondary"
-							size="small"
-							onClick={() => updateServiceWorker(true)}
-						>
-							Update
-						</Button>
-						<Button
 							color="inherit"
 							size="small"
 							onClick={() => setNeedRefresh(false)}
 						>
-							Ignore
+							Later
+						</Button>
+						<Button
+							color="primary"
+							size="small"
+							onClick={() => updateServiceWorker(true)}
+						>
+							Reload
 						</Button>
 					</>
 				}

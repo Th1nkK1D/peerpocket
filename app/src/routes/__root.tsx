@@ -9,6 +9,7 @@ import {
 } from '@mui/material/styles';
 import { createRootRoute, Outlet } from '@tanstack/react-router';
 import { useEffect } from 'react';
+import PwaCachePrompt from '../components/pwa-cache-prompt';
 
 const theme = createTheme({
 	colorSchemes: {
@@ -64,6 +65,7 @@ function RootComponent() {
 			<ThemeProvider theme={theme}>
 				<CssBaseline />
 				<MetaThemeColor />
+				<PwaCachePrompt />
 				<Outlet />
 			</ThemeProvider>
 		</StyledEngineProvider>
