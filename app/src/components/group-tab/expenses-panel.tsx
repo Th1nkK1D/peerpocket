@@ -18,8 +18,9 @@ import {
 import { groups } from 'd3-array';
 import dayjs from 'dayjs';
 import { useState } from 'react';
-import { categoryNameEmojiMap } from '../../constants/expense';
+import { categories, categoryNameEmojiMap } from '../../constants/expense';
 import { formatDecimal } from '../../hooks/form';
+import { ExpenseGroupByBar } from '../expense-groupby-bar';
 import { FabsContainer } from '../fabs-container';
 import { LinkButton, LinkFab } from '../links';
 import { MemberAmountTable } from '../member-amount-table';
@@ -28,12 +29,24 @@ import type { PanelProps } from './types';
 export function ExpensesPanel({ user, group, groupId }: PanelProps) {
 	const currentUser = user.useValues();
 
-	const expenseByDays = group.useTableRows('expenses', (expenses) =>
-		groups(
-			expenses.sort((a, z) => z.paidOn - a.paidOn),
-			(expense) => dayjs(expense.paidOn).format('ddd, D MMM YY'),
-		),
+	const [groupBy, setGroupBy] = useState<'date' | 'category'>('date');
+
+	const categoryEmojiNameMap = new Map(
+		categories.map((cat) => [cat.name, `${cat.emoji} ${cat.name}`]),
 	);
+
+	const expenseByGroups = group.useTableRows('expenses', (expenses) =>
+		groupBy === 'date'
+			? groups(
+					[...expenses].sort((a, z) => z.paidOn - a.paidOn),
+					(expense) => dayjs(expense.paidOn).format('ddd, D MMM YY'),
+				)
+			: groups(
+					[...expenses].sort((a, z) => a.category.localeCompare(z.category)),
+					(expense) => expense.category,
+				),
+	);
+
 	const splits = group.useTableRows('splits');
 	const memberIdNameMap = group.useTableRows(
 		'members',
@@ -41,7 +54,7 @@ export function ExpensesPanel({ user, group, groupId }: PanelProps) {
 	);
 
 	type ExpenseSelection = {
-		expense: (typeof expenseByDays)[number][1][number];
+		expense: (typeof expenseByGroups)[number][1][number];
 		relatedSplits: typeof splits;
 	};
 
@@ -67,69 +80,90 @@ export function ExpensesPanel({ user, group, groupId }: PanelProps) {
 	return (
 		<>
 			<div className="flex flex-1 flex-col">
-				{expenseByDays.length === 0 ? (
-					<p className="m-auto p-3 text-center">
-						Look like no one has taking a note just yet.
-					</p>
+				{expenseByGroups.length === 0 ? (
+					<Typography variant="body2" className="m-auto max-w-48 text-center">
+						Look like no one has taking a note just yet
+					</Typography>
 				) : (
-					expenseByDays.map(([day, expenses]) => (
-						<List key={day} subheader={<ListSubheader>{day}</ListSubheader>}>
-							{expenses.map((expense) => {
-								const relatedSplits = splits.filter(
-									(split) => split.expenseId === expense.id,
-								);
-								const yourSplit = relatedSplits.find(
-									(split) => split.memberId === currentUser.hashedId,
-								);
-								const otherSplits = relatedSplits.filter(
-									(split) => split.memberId !== currentUser.hashedId,
-								);
+					<>
+						<ExpenseGroupByBar
+							count={expenseByGroups.reduce(
+								(sum, [, expenses]) => sum + expenses.length,
+								0,
+							)}
+							label="records"
+							groupBy={groupBy}
+							onGroupByChange={setGroupBy}
+							className="pt-1 pr-2 pl-4"
+						/>
+						{expenseByGroups.map(([groupKey, expenses]) => (
+							<List
+								key={groupKey}
+								subheader={
+									<ListSubheader>
+										{groupBy === 'category'
+											? (categoryEmojiNameMap.get(groupKey) ?? groupKey)
+											: groupKey}
+									</ListSubheader>
+								}
+							>
+								{expenses.map((expense) => {
+									const relatedSplits = splits.filter(
+										(split) => split.expenseId === expense.id,
+									);
+									const yourSplit = relatedSplits.find(
+										(split) => split.memberId === currentUser.hashedId,
+									);
+									const otherSplits = relatedSplits.filter(
+										(split) => split.memberId !== currentUser.hashedId,
+									);
 
-								return (
-									<ListItem key={expense.id} disablePadding>
-										<ListItemButton
-											onClick={() => {
-												setOpenedExpense({ expense, relatedSplits });
-											}}
-										>
-											<ListItemAvatar>
-												<Avatar>
-													{categoryNameEmojiMap.get(expense.category)}
-												</Avatar>
-											</ListItemAvatar>
-											<div className="flex flex-1 flex-col">
-												<div className="flex flex-row">
-													<p className="flex-1">
-														{expense.notes || expense.category}
-													</p>
-													<span className="text-secondary">
-														{expense.currency}{' '}
-														{formatDecimal(yourSplit?.amount ?? 0)}
-													</span>
+									return (
+										<ListItem key={expense.id} disablePadding>
+											<ListItemButton
+												onClick={() => {
+													setOpenedExpense({ expense, relatedSplits });
+												}}
+											>
+												<ListItemAvatar>
+													<Avatar>
+														{categoryNameEmojiMap.get(expense.category)}
+													</Avatar>
+												</ListItemAvatar>
+												<div className="flex flex-1 flex-col">
+													<div className="flex flex-row">
+														<Typography className="flex-1">
+															{expense.notes || expense.category}
+														</Typography>
+														<Typography className="text-secondary">
+															{expense.currency}{' '}
+															{formatDecimal(yourSplit?.amount ?? 0)}
+														</Typography>
+													</div>
+													<div className="flex flex-row">
+														<Typography
+															variant="body2"
+															color="textSecondary"
+															className="flex-1"
+														>
+															{expense.paidByMemberId === currentUser.hashedId
+																? `${otherSplits.length} people owe you`
+																: yourSplit
+																	? `You owe ${memberIdNameMap.get(expense.paidByMemberId)}`
+																	: ''}
+														</Typography>
+														<Typography variant="body2" color="textSecondary">
+															Total {formatDecimal(expense.amount)}
+														</Typography>
+													</div>
 												</div>
-												<div className="flex flex-row">
-													<Typography
-														variant="body2"
-														color="textSecondary"
-														className="flex-1"
-													>
-														{expense.paidByMemberId === currentUser.hashedId
-															? `${otherSplits.length} people owe you`
-															: yourSplit
-																? `You owe ${memberIdNameMap.get(expense.paidByMemberId)}`
-																: ''}
-													</Typography>
-													<Typography variant="body2" color="textSecondary">
-														Total {formatDecimal(expense.amount)}
-													</Typography>
-												</div>
-											</div>
-										</ListItemButton>
-									</ListItem>
-								);
-							})}
-						</List>
-					))
+											</ListItemButton>
+										</ListItem>
+									);
+								})}
+							</List>
+						))}
+					</>
 				)}
 			</div>
 

@@ -7,8 +7,11 @@ import {
 	Typography,
 } from '@mui/material';
 import { groups } from 'd3-array';
+import dayjs from 'dayjs';
 import { type ComponentProps, useEffect, useMemo, useState } from 'react';
+import { categoryNameEmojiMap } from '../../constants/expense';
 import { formatDecimal } from '../../hooks/form';
+import { ExpenseGroupByBar } from '../expense-groupby-bar';
 import { MemberAmountTable } from '../member-amount-table';
 import { StackHorizontalBarChart } from '../stack-horizontal-bar-chart';
 import type { PanelProps } from './types';
@@ -41,6 +44,8 @@ export function SummaryPanel({ user, group }: PanelProps) {
 			? 'you'
 			: (selectedMember?.name ?? 'selected member');
 
+	const [groupBy, setGroupBy] = useState<'category' | 'date'>('category');
+
 	const splitsWithExpenseInfo = useMemo(
 		() =>
 			expenses.flatMap((exp) =>
@@ -48,6 +53,7 @@ export function SummaryPanel({ user, group }: PanelProps) {
 					.filter((split) => split.expenseId === exp.id)
 					.map((split) => ({
 						category: exp.category,
+						paidOn: exp.paidOn,
 						paidByMemberId: exp.paidByMemberId,
 						memberId: split.memberId,
 						amount: split.amount,
@@ -56,20 +62,27 @@ export function SummaryPanel({ user, group }: PanelProps) {
 		[expenses, splits],
 	);
 
-	const expenseByCategories = useMemo<
+	const chartData = useMemo<
 		ComponentProps<typeof StackHorizontalBarChart>['data']
 	>(
 		() =>
-			groups(splitsWithExpenseInfo, (tx) => tx.category)
-				.map(([category, txs]) => ({
-					category,
+			groups(
+				splitsWithExpenseInfo,
+				groupBy === 'category' ? (tx) => tx.category : (tx) => `${tx.paidOn}`,
+			)
+				.map(([key, txs]) => ({
+					category: key,
 					myTotal: txs
 						.filter((tx) => tx.memberId === selectedMemberId)
 						.reduce((acc, tx) => acc + tx.amount, 0),
 					groupTotal: txs.reduce((acc, tx) => acc + tx.amount, 0),
 				}))
-				.sort((a, z) => z.myTotal - a.myTotal),
-		[splitsWithExpenseInfo, selectedMemberId],
+				.sort((a, z) =>
+					groupBy === 'category'
+						? a.category.localeCompare(z.category)
+						: z.category.localeCompare(a.category),
+				),
+		[splitsWithExpenseInfo, selectedMemberId, groupBy],
 	);
 
 	type OutstandBalance = ComponentProps<typeof MemberAmountTable>['items'];
@@ -149,18 +162,31 @@ export function SummaryPanel({ user, group }: PanelProps) {
 								? 'My expense'
 								: `${selectedMemberName}'s expense`
 						}
-						value={expenseByCategories.reduce((acc, tx) => acc + tx.myTotal, 0)}
+						value={chartData.reduce((acc, tx) => acc + tx.myTotal, 0)}
 					/>
 					<TotalExpenseCard
 						className="opacity-70"
 						label="Group expense"
-						value={expenseByCategories.reduce(
-							(acc, tx) => acc + tx.groupTotal,
-							0,
-						)}
+						value={chartData.reduce((acc, tx) => acc + tx.groupTotal, 0)}
 					/>
 				</div>
-				<StackHorizontalBarChart data={expenseByCategories} />
+				<div className="flex flex-col">
+					<ExpenseGroupByBar
+						count={chartData.length}
+						label={groupBy === 'category' ? 'categories' : 'dates'}
+						groupBy={groupBy}
+						onGroupByChange={setGroupBy}
+					/>
+					<StackHorizontalBarChart
+						data={chartData}
+						formatLabel={
+							groupBy === 'date'
+								? (date) => dayjs(+date).format('ddd, D MMM YY')
+								: (category) =>
+										`${categoryNameEmojiMap.get(category)} ${category}`
+						}
+					/>
+				</div>
 			</div>
 
 			<Divider>

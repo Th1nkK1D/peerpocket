@@ -3,6 +3,8 @@ import {
 	DeleteOutlined,
 	FilterList,
 	GroupAdd,
+	Inventory2Outlined,
+	MarkChatUnreadOutlined,
 	QrCodeScannerOutlined,
 	UnarchiveOutlined,
 } from '@mui/icons-material';
@@ -76,11 +78,13 @@ function RouteComponent() {
 						items={[
 							{
 								label: 'Active',
+								icon: <MarkChatUnreadOutlined fontSize="small" />,
 								selected: filter === 'active',
 								onClick: () => setFilter('active'),
 							},
 							{
 								label: 'Archived',
+								icon: <Inventory2Outlined fontSize="small" />,
 								selected: filter === 'archived',
 								onClick: () => setFilter('archived'),
 							},

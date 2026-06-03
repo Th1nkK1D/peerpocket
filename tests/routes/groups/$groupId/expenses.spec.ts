@@ -18,7 +18,7 @@ test('shows the empty state for groups without expenses', async ({ page }) => {
 	});
 
 	await expect(
-		page.getByText('Look like no one has taking a note just yet.'),
+		page.getByText('Look like no one has taking a note just yet'),
 	).toBeVisible();
 });
 
@@ -67,4 +67,35 @@ test('deletes an expense', async ({ page }) => {
 	await page.getByRole('button', { name: 'Yes, delete it' }).click();
 
 	await expect(page.getByText('Dinner')).toHaveCount(0);
+});
+
+test('group expenses by date (default)', async ({ page }) => {
+	await gotoSeededRoute(
+		page,
+		`/groups/${tripGroup.id}?tab=expenses`,
+		buildFullGroupSeed(),
+	);
+
+	await expect(
+		page.getByRole('button', { name: 'Group expenses by' }).first(),
+	).toBeVisible();
+});
+
+test('group expenses by category', async ({ page }) => {
+	await gotoSeededRoute(
+		page,
+		`/groups/${tripGroup.id}?tab=expenses`,
+		buildFullGroupSeed(),
+	);
+
+	await page.getByRole('button', { name: 'Group expenses by' }).first().click();
+	await page.getByRole('menuitem', { name: 'By category' }).click();
+
+	await expect(page.getByText('Dinner')).toBeVisible();
+	await expect(page.getByText('Cab')).toBeVisible();
+
+	await page.getByRole('button', { name: 'Group expenses by' }).first().click();
+	await expect(page.getByRole('menuitem', { name: 'By category' })).toHaveClass(
+		/Mui-selected/,
+	);
 });

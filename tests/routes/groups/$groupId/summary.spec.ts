@@ -27,6 +27,25 @@ test('shows expense totals, category bars, and outstanding balances', async ({
 	await expect(page.getByRole('cell', { name: 'Bob' })).toBeVisible();
 });
 
+test('groups summary by date', async ({ page }) => {
+	await gotoSeededRoute(
+		page,
+		`/groups/${tripGroup.id}?tab=summary`,
+		buildFullGroupSeed(),
+	);
+
+	await page.getByRole('button', { name: 'Group expenses by' }).last().click();
+	await page.getByRole('menuitem', { name: 'By date' }).click();
+
+	await expect(page.getByText('Thu, 21 Mar 24')).toBeVisible();
+	await expect(page.getByText('Wed, 20 Mar 24')).toBeVisible();
+
+	await page.getByRole('button', { name: 'Group expenses by' }).last().click();
+	await expect(page.getByRole('menuitem', { name: 'By date' })).toHaveClass(
+		/Mui-selected/,
+	);
+});
+
 test('shows summary for another selected member', async ({ page }) => {
 	await gotoSeededRoute(
 		page,
