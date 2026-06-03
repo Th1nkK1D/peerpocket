@@ -2,6 +2,9 @@
 	"name": "@peerpocket/libs",
 	"type": "module",
 	"private": true,
+	"scripts": {
+		"check": "tsc --noEmit"
+	},
 	"exports": {
 		"./message": "./message.ts"
 	},

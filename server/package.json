@@ -5,7 +5,8 @@
 	"private": true,
 	"scripts": {
 		"dev": "bun run --hot index.ts",
-		"build": "bun build --minify ./index.ts --outfile dist/server.js --target node"
+		"build": "bun build --minify ./index.ts --outfile dist/server.js --target node",
+		"check": "tsc --noEmit"
 	},
 	"dependencies": {
 		"@peerpocket/libs": "workspace:*",

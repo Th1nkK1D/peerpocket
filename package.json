@@ -6,6 +6,8 @@
 	"scripts": {
 		"dev": "bun run --filter=\"@peerpocket/*\" dev",
 		"build": "bun run --filter=\"@peerpocket/*\" build",
+		"check": "bun run --filter=\"@peerpocket/*\" --elide-lines=0 check",
+		"lint": "bun run biome check --write",
 		"test": "playwright test",
 		"prepare": "lefthook install"
 	},
@@ -19,8 +21,6 @@
 		"@commitlint/cli": "^19.8.1",
 		"@commitlint/config-conventional": "^19.8.1",
 		"@playwright/test": "^1.55.0",
-		"lefthook": "^1.11.13",
-		"vite-plugin-pwa": "^1.3.0",
-		"workbox-window": "^7.4.1"
+		"lefthook": "^1.11.13"
 	}
 }
