@@ -1,7 +1,10 @@
 import {
+	ArchiveOutlined,
 	DeleteOutlined,
+	FilterList,
 	GroupAdd,
 	QrCodeScannerOutlined,
+	UnarchiveOutlined,
 } from '@mui/icons-material';
 import Button from '@mui/material/Button';
 import Card from '@mui/material/Card';
@@ -36,10 +39,21 @@ function RouteComponent() {
 		id: string;
 		name: string;
 	} | null>(null);
+	const [filter, setFilter] = useState<'active' | 'archived'>('active');
 
 	const groups = user.useTableRows('groups', (groups) =>
-		groups.sort((a, z) => z.joinedAt - a.joinedAt),
+		groups
+			.filter((g) => (filter === 'active' ? !g.archivedAt : g.archivedAt))
+			.sort((a, z) => z.joinedAt - a.joinedAt),
 	);
+
+	function archiveGroup(id: string) {
+		user.setCell('groups', id, 'archivedAt', Date.now());
+	}
+
+	function unarchiveGroup(id: string) {
+		user.delCell('groups', id, 'archivedAt');
+	}
 
 	function removeGroup() {
 		if (!selectedGroup) return;
@@ -52,19 +66,43 @@ function RouteComponent() {
 	}
 
 	return (
-		<AuthenticatedLayout title="Your Groups" userStore={user} hideBackButton>
+		<AuthenticatedLayout title="PeerPockets" userStore={user} hideBackButton>
 			<div className="m-3 mb-0 flex flex-1 flex-col gap-3">
+				<div className="flex justify-between">
+					<Typography variant="h5">Groups</Typography>
+					<ActionMenu
+						ariaLabel="Filter groups"
+						triggerIcon={<FilterList fontSize="small" />}
+						items={[
+							{
+								label: 'Active',
+								selected: filter === 'active',
+								onClick: () => setFilter('active'),
+							},
+							{
+								label: 'Archived',
+								selected: filter === 'archived',
+								onClick: () => setFilter('archived'),
+							},
+						]}
+					/>
+				</div>
 				{groups.length ? (
 					<div className="flex flex-col gap-3">
-						{groups.map(({ id, name, joinedAt }) => (
-							<Card key={id} className="w-full" elevation={2}>
+						{groups.map(({ id, name, joinedAt, archivedAt }) => (
+							<Card
+								key={id}
+								className="w-full"
+								elevation={2}
+								variant={archivedAt ? 'outlined' : 'elevation'}
+							>
 								<CardContent className="flex items-start gap-2 py-3 pr-2 pl-5">
 									<Link
 										to="/groups/$groupId"
 										params={{ groupId: id }}
 										className="flex flex-1 flex-col"
 									>
-										<h2 className="font-bold text-xl">{name}</h2>
+										<Typography variant="h6">{name}</Typography>
 										<Typography variant="body2" color="textSecondary">
 											Joined {dayjs(joinedAt).format('DD MMM YY')}
 										</Typography>
@@ -72,6 +110,27 @@ function RouteComponent() {
 									<ActionMenu
 										ariaLabel="Group options"
 										items={[
+											archivedAt
+												? {
+														label: 'Unarchive',
+														icon: (
+															<UnarchiveOutlined
+																fontSize="small"
+																className="text-warning"
+															/>
+														),
+														onClick: () => unarchiveGroup(id),
+													}
+												: {
+														label: 'Archive',
+														icon: (
+															<ArchiveOutlined
+																fontSize="small"
+																className="text-warning"
+															/>
+														),
+														onClick: () => archiveGroup(id),
+													},
 											{
 												label: 'Remove',
 												icon: (
@@ -89,9 +148,11 @@ function RouteComponent() {
 						))}
 					</div>
 				) : (
-					<p className="m-auto text-center">
-						You have no groups yet. <br /> Add one or join one!
-					</p>
+					<Typography variant="body2" className="m-auto max-w-48 text-center">
+						{filter === 'active'
+							? 'You have no active group yet, create one or join one'
+							: 'No archived groups'}
+					</Typography>
 				)}
 			</div>
 			<Dialog

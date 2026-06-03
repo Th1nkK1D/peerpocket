@@ -17,7 +17,7 @@ test('creates a user and redirect to groups page', async ({ page }) => {
 	await page.getByRole('button', { name: 'Skip' }).click();
 
 	await expect(page).toHaveURL(/\/groups$/);
-	await expect(page.getByText('You have no groups yet.')).toBeVisible();
+	await expect(page.getByText('You have no active group yet')).toBeVisible();
 });
 
 test('creates a user and downloads identity file', async ({ page }) => {
@@ -53,7 +53,5 @@ test('redirects away from the landing route when there is an active user', async
 	await gotoSeededRoute(page, '/', buildFullGroupSeed());
 
 	await expect(page).toHaveURL(/\/groups$/);
-	await expect(
-		page.getByRole('heading', { name: 'Your Groups' }),
-	).toBeVisible();
+	await expect(page.getByRole('heading', { name: 'PeerPocket' })).toBeVisible();
 });

@@ -10,7 +10,7 @@ import {
 test('shows the empty state and speed dial actions', async ({ page }) => {
 	await createUserFromLanding(page);
 
-	await expect(page.getByText('You have no groups yet.')).toBeVisible();
+	await expect(page.getByText('You have no active group yet')).toBeVisible();
 
 	await openSpeedDialAction(page, 'Create');
 	await expect(page).toHaveURL(/\/groups\/create$/);
@@ -39,7 +39,45 @@ test('removes groups from the list', async ({ page }) => {
 	);
 	await page.getByRole('button', { name: 'Remove' }).click();
 
-	await expect(page.getByText('You have no groups yet.')).toBeVisible();
+	await expect(page.getByText('You have no active group yet')).toBeVisible();
+});
+
+test('archives a group', async ({ page }) => {
+	await gotoSeededRoute(page, '/groups', buildFullGroupSeed());
+
+	await page.getByRole('button', { name: 'Group options' }).click();
+	await page.getByRole('menuitem', { name: 'Archive' }).click();
+
+	await expect(page.getByText('You have no active group yet')).toBeVisible();
+
+	await page.getByLabel('Filter groups').click();
+	await page.getByRole('menuitem', { name: 'Archived' }).click();
+
+	await expect(
+		page.getByRole('heading', { name: tripGroup.name }),
+	).toBeVisible();
+});
+
+test('unarchives a group', async ({ page }) => {
+	await gotoSeededRoute(page, '/groups', buildFullGroupSeed());
+
+	await page.getByRole('button', { name: 'Group options' }).click();
+	await page.getByRole('menuitem', { name: 'Archive' }).click();
+
+	await page.getByLabel('Filter groups').click();
+	await page.getByRole('menuitem', { name: 'Archived' }).click();
+
+	await page.getByRole('button', { name: 'Group options' }).click();
+	await page.getByRole('menuitem', { name: 'Unarchive' }).click();
+
+	await expect(page.getByText('No archived groups')).toBeVisible();
+
+	await page.getByLabel('Filter groups').click();
+	await page.getByRole('menuitem', { name: 'Active' }).click();
+
+	await expect(
+		page.getByRole('heading', { name: tripGroup.name }),
+	).toBeVisible();
 });
 
 test('destroys local data from the menu', async ({ page }) => {

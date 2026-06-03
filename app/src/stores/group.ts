@@ -8,7 +8,6 @@ const tablesSchema = {
 	members: {
 		name: { type: 'string', default: '' },
 		joinedAt: { type: 'number', default: 0 },
-		archivedAt: { type: 'number' },
 	},
 	expenses: {
 		amount: { type: 'number', default: 0 },

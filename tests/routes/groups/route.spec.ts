@@ -21,7 +21,5 @@ test('loads authenticated child routes when an active user exists', async ({
 	await gotoSeededRoute(page, '/groups', buildFullGroupSeed());
 
 	await expect(page).toHaveURL(/\/groups$/);
-	await expect(
-		page.getByRole('heading', { name: 'Your Groups' }),
-	).toBeVisible();
+	await expect(page.getByRole('heading', { name: 'PeerPocket' })).toBeVisible();
 });

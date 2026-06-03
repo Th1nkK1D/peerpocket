@@ -116,7 +116,6 @@ export async function initializeE2E() {
 			groupStore.setRow('members', member.id, {
 				name: member.name,
 				joinedAt: member.joinedAt ?? joinedAt,
-				archivedAt: member.archivedAt,
 			});
 		}
 
