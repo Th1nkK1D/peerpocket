@@ -1,4 +1,4 @@
-import { Close, Create } from '@mui/icons-material';
+import { Close, Create, ShoppingBasketTwoTone } from '@mui/icons-material';
 import {
 	Avatar,
 	Button,
@@ -20,6 +20,7 @@ import dayjs from 'dayjs';
 import { useState } from 'react';
 import { categories, categoryNameEmojiMap } from '../../constants/expense';
 import { formatDecimal } from '../../hooks/form';
+import { EmptyState } from '../empty-state';
 import { ExpenseGroupByBar } from '../expense-groupby-bar';
 import { FabsContainer } from '../fabs-container';
 import { LinkButton, LinkFab } from '../links';
@@ -81,9 +82,9 @@ export function ExpensesPanel({ user, group, groupId }: PanelProps) {
 		<>
 			<div className="flex flex-1 flex-col">
 				{expenseByGroups.length === 0 ? (
-					<Typography variant="body2" className="m-auto max-w-48 text-center">
-						Look like no one has taking a note just yet
-					</Typography>
+					<EmptyState icon={<ShoppingBasketTwoTone fontSize="large" />}>
+						Nothing here yet, spending time!
+					</EmptyState>
 				) : (
 					<>
 						<ExpenseGroupByBar

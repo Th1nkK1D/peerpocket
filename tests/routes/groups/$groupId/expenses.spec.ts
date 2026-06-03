@@ -18,7 +18,7 @@ test('shows the empty state for groups without expenses', async ({ page }) => {
 	});
 
 	await expect(
-		page.getByText('Look like no one has taking a note just yet'),
+		page.getByText('Nothing here yet, spending time!'),
 	).toBeVisible();
 });
 

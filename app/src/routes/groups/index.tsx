@@ -3,9 +3,11 @@ import {
 	DeleteOutlined,
 	FilterList,
 	GroupAdd,
+	HourglassFullTwoTone,
 	Inventory2Outlined,
 	MarkChatUnreadOutlined,
 	QrCodeScannerOutlined,
+	TourTwoTone,
 	UnarchiveOutlined,
 } from '@mui/icons-material';
 import Button from '@mui/material/Button';
@@ -25,6 +27,7 @@ import dayjs from 'dayjs';
 import { useState } from 'react';
 import { ActionMenu } from '../../components/action-menu';
 import { AuthenticatedLayout } from '../../components/authenticated-layout';
+import { EmptyState } from '../../components/empty-state';
 import { FabsContainer } from '../../components/fabs-container';
 import { GROUP_STORE_PREFIX } from '../../stores/group';
 import { idHelper } from '../../utils/id';
@@ -151,12 +154,17 @@ function RouteComponent() {
 							</Card>
 						))}
 					</div>
+				) : filter === 'active' ? (
+					<EmptyState icon={<TourTwoTone fontSize="large" />}>
+						No active group yet, create one or join one. <br />
+						<br />
+						No friend? sorry can't help.
+					</EmptyState>
 				) : (
-					<Typography variant="body2" className="m-auto max-w-48 text-center">
-						{filter === 'active'
-							? 'You have no active group yet, create one or join one'
-							: 'No archived groups'}
-					</Typography>
+					<EmptyState icon={<HourglassFullTwoTone fontSize="large" />}>
+						No archived groups, <br />
+						but just the matter of time.
+					</EmptyState>
 				)}
 			</div>
 			<Dialog

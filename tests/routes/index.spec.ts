@@ -17,7 +17,7 @@ test('creates a user and redirect to groups page', async ({ page }) => {
 	await page.getByRole('button', { name: 'Skip' }).click();
 
 	await expect(page).toHaveURL(/\/groups$/);
-	await expect(page.getByText('You have no active group yet')).toBeVisible();
+	await expect(page.getByText('No active group yet')).toBeVisible();
 });
 
 test('creates a user and downloads identity file', async ({ page }) => {

@@ -10,7 +10,7 @@ import {
 test('shows the empty state and speed dial actions', async ({ page }) => {
 	await createUserFromLanding(page);
 
-	await expect(page.getByText('You have no active group yet')).toBeVisible();
+	await expect(page.getByText('No active group yet')).toBeVisible();
 
 	await openSpeedDialAction(page, 'Create');
 	await expect(page).toHaveURL(/\/groups\/create$/);
@@ -39,7 +39,7 @@ test('removes groups from the list', async ({ page }) => {
 	);
 	await page.getByRole('button', { name: 'Remove' }).click();
 
-	await expect(page.getByText('You have no active group yet')).toBeVisible();
+	await expect(page.getByText('No active group yet')).toBeVisible();
 });
 
 test('archives a group', async ({ page }) => {
@@ -48,7 +48,7 @@ test('archives a group', async ({ page }) => {
 	await page.getByRole('button', { name: 'Group options' }).click();
 	await page.getByRole('menuitem', { name: 'Archive' }).click();
 
-	await expect(page.getByText('You have no active group yet')).toBeVisible();
+	await expect(page.getByText('No active group yet')).toBeVisible();
 
 	await page.getByLabel('Filter groups').click();
 	await page.getByRole('menuitem', { name: 'Archived' }).click();
