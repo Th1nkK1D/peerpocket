@@ -1,19 +1,43 @@
-import { CircularProgress, Paper, Tab, Tabs, Typography } from '@mui/material';
+import PeopleIcon from '@mui/icons-material/People';
+import ReceiptLongIcon from '@mui/icons-material/ReceiptLong';
+import StackedBarChartOutlined from '@mui/icons-material/StackedBarChartOutlined';
+import {
+	BottomNavigation,
+	BottomNavigationAction,
+	CircularProgress,
+	Paper,
+	Typography,
+} from '@mui/material';
 import { createFileRoute, redirect } from '@tanstack/react-router';
 import { zodValidator } from '@tanstack/zod-adapter';
 import { useCallback, useEffect, useRef } from 'react';
 import { z } from 'zod/v4';
-import { AuthenticatedLayout } from '../../../components/authenticated-layout';
-import { ExpensesPanel } from '../../../components/group-tab/expenses-panel';
-import { MembersPanel } from '../../../components/group-tab/members-panel';
-import { SummaryPanel } from '../../../components/group-tab/summary-panel';
-import { GROUP_STORE_PREFIX, setupGroupStore } from '../../../stores/group';
-import { idHelper } from '../../../utils/id';
+import { AuthenticatedLayout } from '../../components/authenticated-layout';
+import { ExpensesPanel } from '../../components/group-tab/expenses-panel';
+import { MembersPanel } from '../../components/group-tab/members-panel';
+import { SummaryPanel } from '../../components/group-tab/summary-panel';
+import { GROUP_STORE_PREFIX, setupGroupStore } from '../../stores/group';
+import { idHelper } from '../../utils/id';
 
 const tabs = [
-	{ key: 'summary', label: 'Summary', Panel: SummaryPanel },
-	{ key: 'expenses', label: 'Expenses', Panel: ExpensesPanel },
-	{ key: 'members', label: 'Members', Panel: MembersPanel },
+	{
+		key: 'summary',
+		label: 'Summary',
+		Panel: SummaryPanel,
+		icon: <StackedBarChartOutlined />,
+	},
+	{
+		key: 'expenses',
+		label: 'Expenses',
+		Panel: ExpensesPanel,
+		icon: <ReceiptLongIcon />,
+	},
+	{
+		key: 'members',
+		label: 'Members',
+		Panel: MembersPanel,
+		icon: <PeopleIcon />,
+	},
 ] as const;
 
 const searchSchema = z.object({
@@ -174,11 +198,6 @@ function RouteComponent() {
 									: `Online with ${peerCount - 1} peer`}
 					</Typography>
 				</div>
-				<Tabs value={activeTab} onChange={handleTabChange} variant="fullWidth">
-					{tabs.map(({ key, label }) => (
-						<Tab key={key} label={label} />
-					))}
-				</Tabs>
 			</Paper>
 
 			<div
@@ -201,6 +220,26 @@ function RouteComponent() {
 					</div>
 				))}
 			</div>
+
+			<Paper
+				elevation={1}
+				className="rounded-none"
+				sx={{
+					borderTop: 1,
+					borderColor: 'divider',
+				}}
+			>
+				<BottomNavigation
+					showLabels
+					value={activeTab}
+					onChange={handleTabChange}
+					sx={{ background: 'none' }}
+				>
+					{tabs.map(({ key, label, icon }) => (
+						<BottomNavigationAction key={key} label={label} icon={icon} />
+					))}
+				</BottomNavigation>
+			</Paper>
 		</AuthenticatedLayout>
 	);
 }

@@ -14,17 +14,26 @@ test('renders the group layout and tab navigation', async ({ page }) => {
 		page.getByRole('heading', { name: tripGroup.name }),
 	).toBeVisible();
 
-	await page.getByRole('tab', { name: 'Summary' }).click();
+	await page
+		.locator('.MuiBottomNavigation-root')
+		.getByRole('button', { name: 'Summary' })
+		.click();
 	await expect(page).toHaveURL(
 		new RegExp(`/groups/${tripGroup.id}[?&]tab=summary`),
 	);
 
-	await page.getByRole('tab', { name: 'Expenses' }).click();
+	await page
+		.locator('.MuiBottomNavigation-root')
+		.getByRole('button', { name: 'Expenses' })
+		.click();
 	await expect(page).toHaveURL(
 		new RegExp(`/groups/${tripGroup.id}[?&]tab=expenses`),
 	);
 
-	await page.getByRole('tab', { name: 'Members' }).click();
+	await page
+		.locator('.MuiBottomNavigation-root')
+		.getByRole('button', { name: 'Members' })
+		.click();
 	await expect(page).toHaveURL(
 		new RegExp(`/groups/${tripGroup.id}[?&]tab=members`),
 	);
