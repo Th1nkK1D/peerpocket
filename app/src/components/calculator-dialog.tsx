@@ -29,7 +29,7 @@ interface CalculatorDialogProps {
 	onClose: () => void;
 }
 
-type Operator = '+' | '-' | '×' | '÷' | null;
+type Operator = '+' | '-' | '×' | '÷';
 
 export function CalculatorDialog({
 	open,
@@ -37,108 +37,116 @@ export function CalculatorDialog({
 	onConfirm,
 	onClose,
 }: CalculatorDialogProps) {
-	const [display, setDisplay] = useState(() => formatInput(value));
-	const [previousValue, setPreviousValue] = useState<number | null>(null);
-	const [operator, setOperator] = useState<Operator>(null);
-	const [waitingForOperand, setWaitingForOperand] = useState(false);
+	const [expression, setExpression] = useState(() => formatInput(value));
+	const [secondaryDisplay, setSecondaryDisplay] = useState('');
+	const [isResult, setIsResult] = useState(false);
 
 	useEffect(() => {
 		if (open) {
-			setDisplay(formatInput(value));
-			setPreviousValue(null);
-			setOperator(null);
-			setWaitingForOperand(false);
+			setExpression(formatInput(value));
+			setSecondaryDisplay('');
+			setIsResult(false);
 		}
 	}, [open, value]);
 
 	const reset = useCallback(() => {
-		setDisplay('0');
-		setPreviousValue(null);
-		setOperator(null);
-		setWaitingForOperand(false);
+		setExpression('0');
+		setSecondaryDisplay('');
+		setIsResult(false);
 	}, []);
 
 	const handleDigit = useCallback(
 		(digit: string) => {
-			if (waitingForOperand) {
-				setDisplay(digit);
-				setWaitingForOperand(false);
+			if (isResult) {
+				setExpression(digit);
+				setSecondaryDisplay('');
+				setIsResult(false);
 			} else {
-				setDisplay((prev) => (prev === '0' ? digit : prev + digit));
+				setExpression((prev) => (prev === '0' ? digit : prev + digit));
 			}
 		},
-		[waitingForOperand],
+		[isResult],
 	);
 
 	const handleDecimal = useCallback(() => {
-		if (waitingForOperand) {
-			setDisplay('0.');
-			setWaitingForOperand(false);
+		if (isResult) {
+			setExpression('0.');
+			setSecondaryDisplay('');
+			setIsResult(false);
 			return;
 		}
-		if (!display.includes('.')) {
-			setDisplay((prev) => `${prev}.`);
+		// Get current operand (after last operator)
+		const lastOp = Math.max(
+			expression.lastIndexOf('+'),
+			expression.lastIndexOf('-'),
+			expression.lastIndexOf('×'),
+			expression.lastIndexOf('÷'),
+		);
+		const currentOperand = expression.slice(lastOp + 1);
+		if (!currentOperand.includes('.')) {
+			setExpression((prev) => `${prev}.`);
 		}
-	}, [display, waitingForOperand]);
+	}, [expression, isResult]);
 
 	const handleBackspace = useCallback(() => {
-		setDisplay((prev) => (prev.length <= 1 ? '0' : prev.slice(0, -1)));
-	}, []);
-
-	const calculate = useCallback(
-		(left: number, right: number, op: Operator): number => {
-			switch (op) {
-				case '+':
-					return left + right;
-				case '-':
-					return left - right;
-				case '×':
-					return left * right;
-				case '÷':
-					return right === 0 ? 0 : left / right;
-				default:
-					return right;
-			}
-		},
-		[],
-	);
+		if (isResult) {
+			setExpression('0');
+			setSecondaryDisplay('');
+			setIsResult(false);
+			return;
+		}
+		setExpression((prev) => {
+			if (prev.length <= 1) return '0';
+			return prev.slice(0, -1);
+		});
+	}, [isResult]);
 
 	const handleOperator = useCallback(
-		(nextOp: Operator) => {
-			const currentValue = parseFloat(display.replaceAll(',', ''));
+		(op: Operator) => {
+			const lastChar = expression.at(-1);
+			const isOperator = (c: string) =>
+				c === '+' || c === '-' || c === '×' || c === '÷';
 
-			if (previousValue !== null && operator && !waitingForOperand) {
-				const result = calculate(previousValue, currentValue, operator);
-				setDisplay(formatResult(result));
-				setPreviousValue(result);
-			} else {
-				setPreviousValue(currentValue);
+			if (isResult) {
+				setExpression(`${evaluateExpression(expression)}${op}`);
+				setSecondaryDisplay('');
+				setIsResult(false);
+				return;
 			}
 
-			setOperator(nextOp);
-			setWaitingForOperand(true);
+			if (isOperator(lastChar ?? '')) {
+				// Replace trailing operator
+				setExpression((prev) => prev.slice(0, -1) + op);
+			} else {
+				setExpression((prev) => prev + op);
+			}
 		},
-		[display, previousValue, operator, waitingForOperand, calculate],
+		[expression, isResult],
 	);
 
 	const handleEquals = useCallback(() => {
-		if (previousValue === null || !operator) return;
+		const lastChar = expression.at(-1);
+		const isOperator = (c: string) =>
+			c === '+' || c === '-' || c === '×' || c === '÷';
+		if (isOperator(lastChar ?? '')) return;
 
-		const currentValue = parseFloat(display.replaceAll(',', ''));
-		const result = calculate(previousValue, currentValue, operator);
-		setDisplay(formatResult(result));
-		setPreviousValue(null);
-		setOperator(null);
-		setWaitingForOperand(true);
-	}, [display, previousValue, operator, calculate]);
+		const result = evaluateExpression(expression);
+		if (result === null) return;
+
+		setSecondaryDisplay(`${formatExpression(expression)}=`);
+		setExpression(String(result));
+		setIsResult(true);
+	}, [expression]);
 
 	const handleConfirm = useCallback(() => {
-		const result = parseFloat(display.replaceAll(',', ''));
-		onConfirm(Number.isFinite(result) ? result : 0);
-	}, [display, onConfirm]);
+		const result = evaluateExpression(expression);
+		onConfirm(result ?? 0);
+	}, [expression, onConfirm]);
 
-	const numericValue = parseFloat(display.replaceAll(',', ''));
-	const canConfirm = Number.isFinite(numericValue);
+	const displayValue = isResult
+		? formatNumber(expression)
+		: formatExpression(expression);
+	const canConfirm = evaluateExpression(expression) !== null;
 
 	return (
 		<Dialog
@@ -163,7 +171,7 @@ export function CalculatorDialog({
 						color="inherit"
 						variant="text"
 					>
-						Done
+						Apply
 					</Button>
 				</Toolbar>
 			</AppBar>
@@ -171,15 +179,11 @@ export function CalculatorDialog({
 			<Box className="flex flex-1 flex-col gap-3 p-4">
 				<div className="p-4 text-right">
 					<Typography variant="body1" color="text.secondary">
-						{previousValue !== null && operator ? (
-							`${formatResult(previousValue)} ${operator}`
-						) : (
-							<span>&nbsp;</span>
-						)}
+						{secondaryDisplay || <span>&nbsp;</span>}
 					</Typography>
 
 					<Typography variant="h2" fontWeight={500} fontFamily="monospace">
-						{formatDisplay(display)}
+						{displayValue}
 					</Typography>
 				</div>
 
@@ -262,22 +266,117 @@ function CalButton({
 	);
 }
 
+const OPERATORS = new Set(['+', '-', '×', '÷']);
+
 function formatInput(value: number): string {
 	if (!value) return '0';
 	const str = value.toString();
-	// Avoid scientific notation for display
 	if (str.includes('e')) return value.toFixed(2);
 	return str;
 }
 
-function formatDisplay(value: string): string {
-	const [intPart, decPart] = value.split('.');
-	const formattedInt = Number.parseInt(intPart, 10).toLocaleString(undefined);
+function formatNumber(value: string): string {
+	const num = parseFloat(value);
+	if (!Number.isFinite(num)) return value;
+	const rounded = Math.round(num * 100) / 100;
+	return rounded.toLocaleString(undefined, { maximumFractionDigits: 2 });
+}
+
+function formatExpression(expr: string): string {
+	let result = '';
+	let numberBuffer = '';
+
+	for (const ch of expr) {
+		if (OPERATORS.has(ch)) {
+			if (numberBuffer) {
+				result += formatNumberBuffer(numberBuffer);
+				numberBuffer = '';
+			}
+			result += ch;
+		} else {
+			numberBuffer += ch;
+		}
+	}
+
+	if (numberBuffer) {
+		result += formatNumberBuffer(numberBuffer);
+	}
+
+	return result;
+}
+
+function formatNumberBuffer(buf: string): string {
+	const [intPart, decPart] = buf.split('.');
+	const formattedInt = Number.parseInt(intPart || '0', 10).toLocaleString(
+		undefined,
+	);
 	return decPart !== undefined ? `${formattedInt}.${decPart}` : formattedInt;
 }
 
-function formatResult(value: number): string {
-	if (!Number.isFinite(value)) return '0';
-	const rounded = Math.round(value * 100) / 100;
-	return rounded.toLocaleString(undefined, { maximumFractionDigits: 2 });
+function evaluateExpression(expr: string): number | null {
+	// Tokenize: split into numbers and operators
+	const tokens: (number | Operator)[] = [];
+	let num = '';
+
+	for (const ch of expr) {
+		if (OPERATORS.has(ch)) {
+			if (num) {
+				const parsed = parseFloat(num);
+				if (!Number.isFinite(parsed)) return null;
+				tokens.push(parsed);
+				num = '';
+			}
+			tokens.push(ch as Operator);
+		} else {
+			num += ch;
+		}
+	}
+
+	if (num) {
+		const parsed = parseFloat(num);
+		if (!Number.isFinite(parsed)) return null;
+		tokens.push(parsed);
+	}
+
+	if (tokens.length === 0) return null;
+	if (tokens.length === 1) {
+		return typeof tokens[0] === 'number' ? tokens[0] : null;
+	}
+
+	// Process × and ÷ first (higher precedence)
+	const reduced: (number | '+' | '-')[] = [];
+	let i = 0;
+
+	while (i < tokens.length) {
+		const token = tokens[i];
+
+		if (typeof token === 'number') {
+			let result = token;
+			while (
+				i + 2 < tokens.length &&
+				(tokens[i + 1] === '×' || tokens[i + 1] === '÷')
+			) {
+				const op = tokens[i + 1] as Operator;
+				const right = tokens[i + 2];
+				if (typeof right !== 'number') break;
+				result = op === '×' ? result * right : right === 0 ? 0 : result / right;
+				i += 2;
+			}
+			reduced.push(result);
+		} else {
+			reduced.push(token as '+' | '-');
+		}
+		i++;
+	}
+
+	// Process + and -
+	let result = reduced[0] as number;
+	for (let j = 1; j < reduced.length; j += 2) {
+		const op = reduced[j];
+		const right = reduced[j + 1] as number;
+		result = op === '+' ? result + right : result - right;
+	}
+
+	const rounded = Math.round(result * 100) / 100;
+	return Number.isFinite(rounded) ? rounded : null;
 }
