@@ -94,6 +94,14 @@ test('merges expenses from two peers via sync union', async ({ browser }) => {
 	await expect(pageA.getByText('Initial expense')).toBeVisible();
 	await expect(pageB.getByText('Initial expense')).toBeVisible();
 
+	// Verify sync UI states - peers are online via relay
+	await expect(
+		pageA.getByText(/peers available|Connected to|Only you are online/),
+	).toBeVisible({ timeout: 10000 });
+	await expect(
+		pageB.getByText(/peers available|Connected to|Only you are online/),
+	).toBeVisible({ timeout: 10000 });
+
 	// Peer A creates expense
 	await pageA.goto(`/groups/expense?groupId=${tripGroup.id}`);
 	await pageA.getByLabel('Total').fill('200');
@@ -117,6 +125,14 @@ test('merges expenses from two peers via sync union', async ({ browser }) => {
 	// Wait for sync - expect synced data to appear
 	await expect(pageA.getByText('Expense B')).toBeVisible({ timeout: 10000 });
 	await expect(pageB.getByText('Expense A')).toBeVisible({ timeout: 10000 });
+
+	// Both peers should show online state after sync
+	await expect(
+		pageA.getByText(/peers available|Connected to|Only you are online/),
+	).toBeVisible();
+	await expect(
+		pageB.getByText(/peers available|Connected to|Only you are online/),
+	).toBeVisible();
 
 	// Both peers should have all 3 expenses
 	await expect(pageA.getByText('Initial expense')).toBeVisible();
@@ -173,6 +189,14 @@ test('merges members from two peers joining independently', async ({
 	await expect(
 		pageB.locator('li').filter({ hasText: baseUser.name }).first(),
 	).toBeVisible({ timeout: 10000 });
+
+	// Both peers should show online state after sync
+	await expect(
+		pageA.getByText(/peers available|Connected to|Only you are online/),
+	).toBeVisible();
+	await expect(
+		pageB.getByText(/peers available|Connected to|Only you are online/),
+	).toBeVisible();
 
 	// Both peers should see both members
 	await expect(

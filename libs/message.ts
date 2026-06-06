@@ -17,10 +17,33 @@ interface SyncMessage {
 	payload: [any, any, any, any];
 }
 
+interface SignalMessage {
+	type: 'SIGNAL';
+	storeId: string;
+	toPeerId: string;
+	fromPeerId: string;
+	signal: any;
+}
+
+interface PeerJoinMessage {
+	type: 'PEER_JOIN';
+	storeId: string;
+	peerId: string;
+}
+
+interface PeerLeaveMessage {
+	type: 'PEER_LEAVE';
+	storeId: string;
+	peerId: string;
+}
+
 export type WebsocketMessage =
 	| SubscribeMessage
 	| PeerChangeMessage
-	| SyncMessage;
+	| SyncMessage
+	| SignalMessage
+	| PeerJoinMessage
+	| PeerLeaveMessage;
 
 export function formatMessage(message: WebsocketMessage) {
 	return encode(message);

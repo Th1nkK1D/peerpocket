@@ -11,16 +11,61 @@ serve({
 			switch (data.type) {
 				case 'SUBSCRIBE':
 					peer.subscribe(data.storeId);
+					peer.publish(
+						data.storeId,
+						formatMessage({
+							type: 'PEER_JOIN',
+							storeId: data.storeId,
+							peerId: peer.id,
+						}),
+					);
+					// Self-join so the new peer discovers its own id
+					peer.send(
+						formatMessage({
+							type: 'PEER_JOIN',
+							storeId: data.storeId,
+							peerId: peer.id,
+						}),
+					);
+					for (const p of peer.peers) {
+						if (p !== peer && p.topics.has(data.storeId)) {
+							peer.send(
+								formatMessage({
+									type: 'PEER_JOIN',
+									storeId: data.storeId,
+									peerId: p.id,
+								}),
+							);
+						}
+					}
 					broadcastPeerChange(peer, data.storeId);
 					return;
 				case 'SYNC':
 					peer.publish(data.storeId, rawData);
 					return;
+				case 'SIGNAL':
+					for (const p of peer.peers) {
+						if (p.id === data.toPeerId && p.topics.has(data.storeId)) {
+							p.send(rawData);
+							break;
+						}
+					}
+					return;
 			}
 		},
 
 		close(peer: Peer) {
-			peer.topics.forEach((storeId) => broadcastPeerChange(peer, storeId));
+			peer.topics.forEach((storeId) => {
+				peer.publish(
+					storeId,
+					formatMessage({
+						type: 'PEER_LEAVE',
+						storeId,
+						peerId: peer.id,
+					}),
+				);
+				broadcastPeerChange(peer, storeId);
+			});
 		},
 	},
 	fetch: () => new Response('PeerPocket relay server is running'),

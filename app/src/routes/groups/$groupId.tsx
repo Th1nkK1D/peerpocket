@@ -86,7 +86,8 @@ export const Route = createFileRoute('/groups/$groupId')({
 
 function RouteComponent() {
 	const { user, group, userGroupInfo } = Route.useLoaderData();
-	const { peerCount, isSyncing } = group.usePeerSync();
+	const { onlinePeerCount, connectedPeerCount, isSyncing } =
+		group.usePeerSync();
 	const { groupId } = Route.useParams();
 	const { tab } = Route.useSearch();
 	const navigate = Route.useNavigate();
@@ -173,29 +174,31 @@ function RouteComponent() {
 		>
 			<Paper elevation={1} className="rounded-none">
 				<div className="flex flex-row items-center justify-center gap-2 px-3 pt-2 pb-1">
-					{isSyncing && peerCount > 1 ? (
+					{isSyncing && connectedPeerCount > 0 ? (
 						<CircularProgress size={8} className="text-success" />
 					) : (
 						<div
 							className={`size-2 rounded-full ${
-								peerCount === 0
+								onlinePeerCount === 0
 									? 'bg-error'
-									: peerCount === 1
-										? 'bg-warning'
-										: 'bg-success'
+									: connectedPeerCount > 0
+										? 'bg-success'
+										: 'bg-warning'
 							}`}
 						>
 							<div className="size-2 animate-ping rounded-full bg-inherit"></div>
 						</div>
 					)}
 					<Typography variant="caption" color="textSecondary">
-						{isSyncing && peerCount > 1
-							? `Syncing with ${peerCount - 1} peer`
-							: peerCount === 0
-								? 'No connection to the relay server'
-								: peerCount === 1
-									? 'Only you are online'
-									: `Online with ${peerCount - 1} peer`}
+						{onlinePeerCount === 0
+							? 'No connection to the relay server'
+							: onlinePeerCount === 1
+								? 'Only you are online'
+								: isSyncing && connectedPeerCount > 0
+									? `Syncing with ${connectedPeerCount} of ${onlinePeerCount - 1} peers`
+									: connectedPeerCount > 0
+										? `Connected to ${connectedPeerCount} of ${onlinePeerCount - 1} peers`
+										: `${onlinePeerCount - 1} peers available`}
 					</Typography>
 				</div>
 			</Paper>
