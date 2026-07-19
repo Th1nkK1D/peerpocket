@@ -11,7 +11,15 @@ export type E2EMemberSeed = {
 	id: string;
 	name: string;
 	joinedAt?: number;
+	isPlaceholder?: boolean;
+	claimedAt?: number;
 	archivedAt?: number;
+};
+
+export type E2EClaimSeed = {
+	placeholderId: string;
+	hashedId: string;
+	claimedAt?: number;
 };
 
 export type E2EExpenseSeed = {
@@ -39,6 +47,7 @@ export type E2EGroupSeed = {
 	name: string;
 	joinedAt?: number;
 	members?: E2EMemberSeed[];
+	claims?: E2EClaimSeed[];
 	expenses?: E2EExpenseSeed[];
 	splits?: E2ESplitSeed[];
 };
@@ -69,6 +78,7 @@ export type E2EConfig = {
 declare global {
 	interface Window {
 		__PEERPOCKET_E2E__?: E2EConfig;
+		__PEERPOCKET_E2E_STORES__?: Record<string, any>;
 	}
 }
 
@@ -113,9 +123,19 @@ export async function initializeE2E() {
 		);
 
 		for (const member of groupSeed.members ?? []) {
-			groupStore.setRow('members', member.id, {
+			const memberRow: Record<string, unknown> = {
 				name: member.name,
 				joinedAt: member.joinedAt ?? joinedAt,
+			};
+			if (member.isPlaceholder) memberRow.isPlaceholder = true;
+			if (member.claimedAt) memberRow.claimedAt = member.claimedAt;
+			groupStore.setRow('members', member.id, memberRow);
+		}
+
+		for (const claim of groupSeed.claims ?? []) {
+			groupStore.setRow('claims', claim.placeholderId, {
+				hashedId: claim.hashedId,
+				claimedAt: claim.claimedAt ?? joinedAt,
 			});
 		}
 
@@ -211,6 +231,92 @@ export async function gotoSeededRoute(
 	await page.goto(path);
 }
 
+export async function disableReseed(page: Page) {
+	await page.addInitScript(() => {
+		if (window.__PEERPOCKET_E2E__?.seed) {
+			delete window.__PEERPOCKET_E2E__.seed;
+		}
+	});
+}
+
+type RawTables = Record<string, Record<string, Record<string, unknown>>>;
+
+const TOMBSTONE = '\uFFFC';
+
+function unwrapStampedTables(parsed: any): {
+	tables: RawTables;
+	valuesRoot: unknown;
+} {
+	const tablesRoot = Array.isArray(parsed?.[0]) ? parsed[0][0] : parsed[0];
+	const valuesRoot = Array.isArray(parsed?.[1]) ? parsed[1][0] : parsed[1];
+	const tables: RawTables = {};
+	for (const [tableId, table] of Object.entries(tablesRoot ?? {})) {
+		const rows = Array.isArray(table) ? table[0] : table;
+		if (!rows || typeof rows !== 'object') continue;
+		const outRows: Record<string, Record<string, unknown>> = {};
+		for (const [rowId, row] of Object.entries(
+			rows as Record<string, unknown>,
+		)) {
+			const cells = Array.isArray(row) ? row[0] : row;
+			if (!cells || typeof cells !== 'object') continue;
+			const outCells: Record<string, unknown> = {};
+			for (const [cellId, cell] of Object.entries(
+				cells as Record<string, unknown>,
+			)) {
+				const value = Array.isArray(cell) ? cell[0] : cell;
+				if (value === TOMBSTONE || value === null) continue;
+				outCells[cellId] = value;
+			}
+			if (Object.keys(outCells).length > 0) outRows[rowId] = outCells;
+		}
+		tables[tableId] = outRows;
+	}
+	return { tables, valuesRoot };
+}
+
+export async function readGroupStoreTables(
+	page: Page,
+	groupId: string,
+): Promise<RawTables> {
+	const key = `${GROUP_STORE_PREFIX}-${groupId}`;
+	const raw = await page.evaluate((k) => localStorage.getItem(k), key);
+	if (!raw) throw new Error(`No group store at ${key}`);
+	return unwrapStampedTables(JSON.parse(raw)).tables;
+}
+
+export async function injectOfflineExpense(
+	page: Page,
+	groupId: string,
+	expense: E2EExpenseSeed,
+	split: E2ESplitSeed,
+) {
+	await page.evaluate(
+		({ key, expense, split }) => {
+			const store = window.__PEERPOCKET_E2E_STORES__?.[key];
+			if (!store) throw new Error(`No E2E store at ${key}`);
+			store.setRow('expenses', expense.id, {
+				amount: expense.amount,
+				currency: expense.currency ?? '',
+				category: expense.category,
+				notes: expense.notes ?? '',
+				paidOn: expense.paidOn,
+				paidByMemberId: expense.paidByMemberId,
+				createdAt: expense.createdAt ?? expense.paidOn,
+			});
+			store.setRow('splits', split.id, {
+				expenseId: split.expenseId,
+				memberId: split.memberId,
+				amount: split.amount,
+			});
+		},
+		{
+			key: `${GROUP_STORE_PREFIX}-${groupId}`,
+			expense,
+			split,
+		},
+	);
+}
+
 export async function createUserFromLanding(page: Page, name = 'Alice') {
 	await installAppMocks(page);
 	await page.goto('/');
@@ -219,8 +325,14 @@ export async function createUserFromLanding(page: Page, name = 'Alice') {
 	await page.getByRole('button', { name: 'Skip' }).click();
 }
 
-export async function openSpeedDialAction(page: Page, name: string) {
-	await page.getByLabel('Group actions').hover();
+export async function openSpeedDialAction(
+	page: Page,
+	name: string,
+	dialLabel = 'Group actions',
+) {
+	// Hover to open the SpeedDial rather than click: a click both hovers (open)
+	// and toggles (close), which races and can leave the menu shut under load.
+	await page.getByLabel(dialLabel).hover();
 	await page.getByRole('menuitem', { name }).click();
 }
 

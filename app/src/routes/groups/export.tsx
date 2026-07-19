@@ -44,6 +44,7 @@ function RouteComponent() {
 						string,
 						{
 							members: Record<string, any>;
+							claims: Record<string, any>;
 							expenses: Record<string, any>;
 							splits: Record<string, any>;
 						}
@@ -67,6 +68,11 @@ function RouteComponent() {
 								? parsed[0][0]
 								: parsed[0];
 
+							// Deleted mergeable cells persist as the ￼ sentinel
+							// (jsonStringWithUndefined) or null (msgpack sync) — strip
+							// them or exports leak tombstoned rows and fail import.
+							const TOMBSTONE = '￼';
+
 							const unwrapCell = (cell: any) =>
 								Array.isArray(cell) ? cell[0] : cell;
 
@@ -76,21 +82,23 @@ function RouteComponent() {
 								const result: Record<string, any> = {};
 								for (const [rowId, row] of Object.entries(rows)) {
 									const cells = Array.isArray(row) ? row[0] : row;
-									if (!cells || typeof cells !== 'object') {
-										result[rowId] = cells;
-										continue;
-									}
+									if (!cells || typeof cells !== 'object') continue;
 									const unwrappedCells: Record<string, any> = {};
 									for (const [cellKey, cellValue] of Object.entries(cells)) {
-										unwrappedCells[cellKey] = unwrapCell(cellValue);
+										const value = unwrapCell(cellValue);
+										if (value === TOMBSTONE || value === null) continue;
+										unwrappedCells[cellKey] = value;
 									}
-									result[rowId] = unwrappedCells;
+									if (Object.keys(unwrappedCells).length > 0) {
+										result[rowId] = unwrappedCells;
+									}
 								}
 								return result;
 							};
 
 							groupStoresData[groupId] = {
 								members: unwrapTable(tables?.members),
+								claims: unwrapTable(tables?.claims),
 								expenses: unwrapTable(tables?.expenses),
 								splits: unwrapTable(tables?.splits),
 							};

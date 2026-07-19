@@ -2,8 +2,12 @@ import { expect, test } from '@playwright/test';
 import {
 	baseUser,
 	buildFullGroupSeed,
+	disableReseed,
 	gotoSeededRoute,
 	installAppMocks,
+	now,
+	readGroupStoreTables,
+	tripGroup,
 } from '../mocks/playwright';
 
 test('export page renders with mode selection', async ({ page }) => {
@@ -302,6 +306,175 @@ test('full round-trip: export full, then import on fresh landing', async ({
 
 	await freshPage.getByLabel('Menu').click();
 	await expect(freshPage.getByText(baseUser.name)).toBeVisible();
+
+	await freshContext.close();
+});
+
+test('import placeholder and claims ledger in consistent post-claim state', async ({
+	browser,
+}) => {
+	const importedAt = Date.now();
+	const placeholderSeed = {
+		exportedAt: new Date().toISOString(),
+		user: {
+			id: baseUser.id,
+			hashedId: baseUser.hashedId,
+			name: baseUser.name,
+		},
+		groups: {
+			[tripGroup.id]: {
+				name: tripGroup.name,
+				joinedAt: importedAt,
+			},
+		},
+		groupStores: {
+			[tripGroup.id]: {
+				members: {
+					[baseUser.hashedId]: {
+						name: baseUser.name,
+						joinedAt: importedAt,
+					},
+					'placeholder-dan': {
+						name: 'Dan',
+						joinedAt: importedAt - 1000,
+						isPlaceholder: true,
+					},
+				},
+				claims: {
+					'placeholder-erin': {
+						hashedId: 'hashed-bob',
+						claimedAt: importedAt - 500,
+					},
+				},
+				expenses: {},
+				splits: {},
+			},
+		},
+	};
+
+	const freshContext = await browser.newContext();
+	const freshPage = await freshContext.newPage();
+
+	await installAppMocks(freshPage);
+	await freshPage.goto('/');
+
+	await freshPage.setInputFiles('input[type="file"]', {
+		name: 'placeholder-import.json',
+		mimeType: 'application/json',
+		buffer: Buffer.from(JSON.stringify(placeholderSeed)),
+	});
+
+	await expect(freshPage.getByText('Import Data')).toBeVisible();
+	await freshPage.getByRole('button', { name: 'Import' }).click();
+
+	await expect(freshPage).toHaveURL(/\/?groups$/);
+
+	const tables = await readGroupStoreTables(freshPage, tripGroup.id);
+	expect(tables.members?.['placeholder-dan']?.isPlaceholder).toBe(true);
+	expect(tables.claims?.['placeholder-erin']?.hashedId).toBe('hashed-bob');
+
+	await freshPage.goto(`/groups/${tripGroup.id}?tab=members`);
+	await expect(
+		freshPage.getByRole('listitem').filter({ hasText: 'Dan' }),
+	).toBeVisible();
+	await expect(freshPage.getByText('Not joined yet')).toBeVisible();
+
+	await freshContext.close();
+});
+
+test('full round-trip: claim, export, import on fresh device keeps claims and retargeted FKs', async ({
+	browser,
+}) => {
+	const contextA = await browser.newContext();
+	const pageA = await contextA.newPage();
+
+	await gotoSeededRoute(pageA, `/groups/${tripGroup.id}?tab=members`, {
+		user: baseUser,
+		groups: [
+			{
+				...tripGroup,
+				members: [
+					{ id: baseUser.hashedId, name: baseUser.name, joinedAt: now },
+					{
+						id: 'placeholder-dan',
+						name: 'Dan',
+						joinedAt: now + 60000,
+						isPlaceholder: true,
+					},
+				],
+				expenses: [
+					{
+						id: 'exp-1',
+						amount: 60,
+						category: 'Food',
+						notes: 'Dinner',
+						paidOn: now,
+						paidByMemberId: 'placeholder-dan',
+					},
+				],
+				splits: [
+					{
+						id: 'split-1',
+						expenseId: 'exp-1',
+						memberId: 'placeholder-dan',
+						amount: 30,
+					},
+					{
+						id: 'split-2',
+						expenseId: 'exp-1',
+						memberId: baseUser.hashedId,
+						amount: 30,
+					},
+				],
+			},
+		],
+	});
+
+	await pageA
+		.getByRole('listitem')
+		.filter({ hasText: 'Dan' })
+		.getByRole('button', { name: 'Member actions' })
+		.click();
+	await pageA.getByRole('menuitem', { name: 'Claim as me' }).click();
+	await pageA.getByRole('button', { name: 'Claim' }).click();
+	await expect(
+		pageA.getByRole('listitem').filter({ hasText: 'Dan' }),
+	).toHaveCount(0);
+
+	await disableReseed(pageA);
+	await pageA.goto('/groups/export');
+	await pageA.getByText('Full Export').click();
+	const [download] = await Promise.all([
+		pageA.waitForEvent('download'),
+		pageA.getByRole('button', { name: 'Export' }).click(),
+	]);
+	const chunks = await (await download.createReadStream()).toArray();
+	const exportBuffer = Buffer.concat(chunks);
+
+	await contextA.close();
+
+	const freshContext = await browser.newContext();
+	const freshPage = await freshContext.newPage();
+
+	await installAppMocks(freshPage);
+	await freshPage.goto('/');
+	await freshPage.setInputFiles('input[type="file"]', {
+		name: 'round-trip.json',
+		mimeType: 'application/json',
+		buffer: exportBuffer,
+	});
+	await expect(freshPage.getByText('Import Data')).toBeVisible();
+	await freshPage.getByRole('button', { name: 'Import' }).click();
+	await expect(freshPage).toHaveURL(/\/?groups$/);
+
+	const tables = await readGroupStoreTables(freshPage, tripGroup.id);
+	expect(tables.claims?.['placeholder-dan']?.hashedId).toBe(baseUser.hashedId);
+	expect(tables.members?.['placeholder-dan']).toBeUndefined();
+	expect(tables.members?.[baseUser.hashedId]?.name).toBe(baseUser.name);
+	expect(tables.members?.[baseUser.hashedId]?.joinedAt).toBe(now);
+	expect(tables.expenses?.['exp-1']?.paidByMemberId).toBe(baseUser.hashedId);
+	expect(tables.splits?.['split-1']?.memberId).toBe(baseUser.hashedId);
+	expect(tables.splits?.['split-2']?.memberId).toBe(baseUser.hashedId);
 
 	await freshContext.close();
 });

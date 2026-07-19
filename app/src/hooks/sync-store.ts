@@ -17,6 +17,7 @@ import {
 	type TablesSchema,
 	type ValuesSchema,
 } from 'tinybase/with-schemas';
+import { reconcileClaims } from '../utils/placeholder';
 
 function isE2EAndRelayDisabled(): boolean {
 	try {
@@ -42,6 +43,12 @@ export async function createSyncStore<
 	// @ts-expect-error https://tinybase.org/guides/persistence/an-intro-to-persistence/
 	const persistence = createLocalPersister(store, id);
 	await persistence.startAutoPersisting();
+
+	if ((window as any).__PEERPOCKET_E2E__) {
+		const w = window as any;
+		w.__PEERPOCKET_E2E_STORES__ = w.__PEERPOCKET_E2E_STORES__ ?? {};
+		w.__PEERPOCKET_E2E_STORES__[id] = store;
+	}
 
 	const { useTable, useValues } = UiReact as UiReact.WithSchemas<
 		[typeof tablesSchema, typeof valuesSchema]
@@ -153,6 +160,9 @@ export async function createSyncStore<
 
 					synchronizer.current.addStatusListener((_synchronizer, status) => {
 						setDebouncedSyncing(status !== 0);
+						if (status === 0) {
+							reconcileClaims(store);
+						}
 					});
 
 					sendMessage(

@@ -11,7 +11,14 @@ const groupRowSchema = z.object({
 const memberRowSchema = z.object({
 	name: z.string(),
 	joinedAt: z.number(),
+	isPlaceholder: z.boolean().optional(),
+	claimedAt: z.number().optional(),
 	archivedAt: z.number().optional(),
+});
+
+const claimRowSchema = z.object({
+	hashedId: z.string(),
+	claimedAt: z.number(),
 });
 
 const expenseRowSchema = z.object({
@@ -34,6 +41,7 @@ const splitRowSchema = z.object({
 
 const groupStoreSchema = z.object({
 	members: z.record(memberRowSchema),
+	claims: z.record(claimRowSchema).optional(),
 	expenses: z.record(expenseRowSchema),
 	splits: z.record(splitRowSchema),
 });
@@ -132,6 +140,7 @@ export function performImport(data: ExportData, isFull: boolean): string {
 				groupStoreId,
 				{
 					members: groupData.members || {},
+					claims: groupData.claims || {},
 					expenses: groupData.expenses || {},
 					splits: groupData.splits || {},
 				},

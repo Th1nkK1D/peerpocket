@@ -8,6 +8,8 @@ const tablesSchema = {
 	members: {
 		name: { type: 'string', default: '' },
 		joinedAt: { type: 'number', default: 0 },
+		isPlaceholder: { type: 'boolean' },
+		claimedAt: { type: 'number' },
 	},
 	expenses: {
 		amount: { type: 'number', default: 0 },
@@ -24,6 +26,10 @@ const tablesSchema = {
 		memberId: { type: 'string', default: '' },
 		amount: { type: 'number', default: 0 },
 		settledAt: { type: 'number' },
+	},
+	claims: {
+		hashedId: { type: 'string', default: '' },
+		claimedAt: { type: 'number', default: 0 },
 	},
 } as const;
 
