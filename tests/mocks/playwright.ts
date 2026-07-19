@@ -220,7 +220,7 @@ export async function createUserFromLanding(page: Page, name = 'Alice') {
 }
 
 export async function openSpeedDialAction(page: Page, name: string) {
-	await page.getByLabel('Group actions').click();
+	await page.getByLabel('Group actions').hover();
 	await page.getByRole('menuitem', { name }).click();
 }
 

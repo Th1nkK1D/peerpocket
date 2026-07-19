@@ -15,13 +15,13 @@ export default defineConfig({
 		{
 			command: 'bun run --cwd server dev',
 			url: 'http://127.0.0.1:3000',
-			reuseExistingServer: true,
+			reuseExistingServer: !process.env.CI,
 			timeout: 30000,
 		},
 		{
 			command: 'bun run --cwd app dev',
 			url: 'http://127.0.0.1:8000',
-			reuseExistingServer: true,
+			reuseExistingServer: !process.env.CI,
 			timeout: 120000,
 		},
 	],

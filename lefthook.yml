@@ -6,7 +6,7 @@ pre-commit:
 pre-push:
   commands:
     test:
-      run: bun run test
+      run: CI=1 bun run test
 commit-msg:
   commands:
     check:
