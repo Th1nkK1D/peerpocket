@@ -41,7 +41,15 @@ serve({
 					broadcastPeerChange(peer, data.storeId);
 					return;
 				case 'SYNC':
-					peer.publish(data.storeId, rawData);
+					peer.publish(
+						data.storeId,
+						formatMessage({
+							type: 'SYNC',
+							storeId: data.storeId,
+							fromPeerId: peer.id,
+							payload: data.payload,
+						}),
+					);
 					return;
 				case 'SIGNAL':
 					for (const p of peer.peers) {

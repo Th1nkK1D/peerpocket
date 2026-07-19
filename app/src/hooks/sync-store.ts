@@ -1,6 +1,6 @@
 import { decode, encode } from '@msgpack/msgpack';
 import { formatMessage, parsedMessage } from '@peerpocket/libs/message';
-import { useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import useWebSocket from 'react-use-websocket';
 import SimplePeer from 'simple-peer';
 import { createLocalPersister } from 'tinybase/persisters/persister-browser';
@@ -93,7 +93,22 @@ export async function createSyncStore<
 		function clearAllTimeouts() {
 			for (const t of activeTimeouts.current) clearTimeout(t);
 			activeTimeouts.current.clear();
+			if (syncDebounceRef.current) clearTimeout(syncDebounceRef.current);
 		}
+
+		// Teardown on unmount — don't rely on useWebSocket's onClose firing.
+		useEffect(
+			() => () => {
+				for (const t of activeTimeouts.current) clearTimeout(t);
+				activeTimeouts.current.clear();
+				if (syncDebounceRef.current) clearTimeout(syncDebounceRef.current);
+				for (const [, conn] of peerConnections.current) {
+					conn.peer.destroy();
+				}
+				peerConnections.current.clear();
+			},
+			[],
+		);
 
 		const { sendMessage } = useWebSocket(
 			import.meta.env.PUBLIC_RELAY_URL,
@@ -192,8 +207,14 @@ export async function createSyncStore<
 								}
 							}
 							return;
-						case 'SYNC':
-							return messageReceiver.current(...data.payload);
+						case 'SYNC': {
+							// Drop the transport toClientId; use the relay-stamped sender.
+							const [, ...rest] = data.payload;
+							if (data.fromPeerId) {
+								messageReceiver.current(data.fromPeerId, ...rest);
+							}
+							return;
+						}
 						case 'PEER_CHANGE':
 							if (data.count > 1 && data.count > onlinePeerCount) {
 								await synchronizer.current?.startSync();

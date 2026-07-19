@@ -14,6 +14,7 @@ interface PeerChangeMessage {
 interface SyncMessage {
 	type: 'SYNC';
 	storeId: string;
+	fromPeerId?: string;
 	payload: [any, any, any, any];
 }
 
