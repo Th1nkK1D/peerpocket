@@ -8,7 +8,7 @@
 		"build": "bun run --filter=\"@peerpocket/*\" build",
 		"check": "bun run --filter=\"@peerpocket/*\" --elide-lines=0 check",
 		"lint": "bun run biome check --write",
-		"test": "playwright test",
+		"test": "bun scripts/free-test-ports.ts && playwright test",
 		"prepare": "lefthook install"
 	},
 	"workspaces": [
