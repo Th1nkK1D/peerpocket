@@ -4,6 +4,12 @@ import App from './app';
 import './index.css';
 import { initializeE2E } from '../../tests/mocks/playwright';
 
+// Recover when a lazy route chunk vanished after a new deployment
+window.addEventListener('vite:preloadError', (event) => {
+	event.preventDefault();
+	window.location.reload();
+});
+
 const rootEl = document.getElementById('root');
 
 async function bootstrap() {

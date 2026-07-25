@@ -26,6 +26,7 @@ export default defineConfig({
 				cleanupOutdatedCaches: true,
 			},
 			manifest: {
+				id: '/',
 				name: 'PeerPocket',
 				short_name: 'PeerPocket',
 				description: 'Peer-to-peer expense tracker',

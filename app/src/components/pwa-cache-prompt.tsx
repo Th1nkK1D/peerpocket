@@ -7,7 +7,18 @@ export default function ReloadPrompt() {
 		offlineReady: [offlineReady, setOfflineReady],
 		needRefresh: [needRefresh, setNeedRefresh],
 		updateServiceWorker,
-	} = useRegisterSW();
+	} = useRegisterSW({
+		onRegisteredSW(_swUrl, registration) {
+			if (registration) {
+				setInterval(
+					() => {
+						registration.update();
+					},
+					60 * 60 * 1000,
+				);
+			}
+		},
+	});
 
 	return (
 		<>
