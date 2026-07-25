@@ -282,8 +282,11 @@ export async function createSyncStore<
 							return;
 						case 'SYNC': {
 							// Drop the transport toClientId; use the relay-stamped sender.
-							const [, ...rest] = data.payload;
-							if (data.fromPeerId) {
+							const [toPeerId, ...rest] = data.payload;
+							if (
+								data.fromPeerId &&
+								(toPeerId === null || toPeerId === myPeerIdRef.current)
+							) {
 								messageReceiver.current(data.fromPeerId, ...rest);
 							}
 							return;

@@ -46,17 +46,28 @@ serve({
 					}
 					broadcastPeerChange(peer, data.storeId);
 					return;
-				case 'SYNC':
-					peer.publish(
-						data.storeId,
-						formatMessage({
-							type: 'SYNC',
-							storeId: data.storeId,
-							fromPeerId: peer.id,
-							payload: data.payload,
-						}),
-					);
+				case 'SYNC': {
+					const toPeerId = data.payload[0];
+					const message = formatMessage({
+						type: 'SYNC',
+						storeId: data.storeId,
+						fromPeerId: peer.id,
+						payload: data.payload,
+					});
+
+					if (toPeerId === null) {
+						peer.publish(data.storeId, message);
+						return;
+					}
+
+					for (const p of peer.peers) {
+						if (p.id === toPeerId && p.topics.has(data.storeId)) {
+							p.send(message);
+							break;
+						}
+					}
 					return;
+				}
 				case 'SIGNAL':
 					for (const p of peer.peers) {
 						if (p.id === data.toPeerId && p.topics.has(data.storeId)) {
