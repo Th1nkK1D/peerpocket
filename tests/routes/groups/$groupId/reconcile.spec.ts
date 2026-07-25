@@ -69,10 +69,10 @@ test('syncs placeholder claim from A to B via relay', async ({ browser }) => {
 
 	// Wait for both peers to be connected
 	await expect(
-		pageA.getByText(/peers available|Connected to|Only you are online/),
+		pageA.getByText(/peers available|Connected to|Syncing|Only you are online/),
 	).toBeVisible({ timeout: 15000 });
 	await expect(
-		pageB.getByText(/peers available|Connected to|Only you are online/),
+		pageB.getByText(/peers available|Connected to|Syncing|Only you are online/),
 	).toBeVisible({ timeout: 15000 });
 
 	// Verify both see the placeholder initially

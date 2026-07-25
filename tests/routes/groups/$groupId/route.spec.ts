@@ -53,6 +53,24 @@ test('redirects away when the active user is not in the group list', async ({
 	await expect(page).toHaveURL(/\/groups$/);
 });
 
+test('relay server responds to heartbeat ping with pong', async ({ page }) => {
+	await page.goto('/');
+
+	const reply = await page.evaluate(
+		() =>
+			new Promise<string>((resolve, reject) => {
+				const ws = new WebSocket('ws://127.0.0.1:3000');
+				ws.onopen = () => ws.send('ping');
+				ws.onmessage = (event) =>
+					resolve(typeof event.data === 'string' ? event.data : 'binary');
+				ws.onerror = () => reject(new Error('websocket error'));
+				setTimeout(() => reject(new Error('pong timeout')), 5000);
+			}),
+	);
+
+	expect(reply).toBe('pong');
+});
+
 test('merges expenses from two peers via sync union', async ({ browser }) => {
 	const groupSeed = {
 		...tripGroup,
@@ -96,10 +114,10 @@ test('merges expenses from two peers via sync union', async ({ browser }) => {
 
 	// Verify sync UI states - peers are online via relay
 	await expect(
-		pageA.getByText(/peers available|Connected to|Only you are online/),
+		pageA.getByText(/peers available|Connected to|Syncing|Only you are online/),
 	).toBeVisible({ timeout: 10000 });
 	await expect(
-		pageB.getByText(/peers available|Connected to|Only you are online/),
+		pageB.getByText(/peers available|Connected to|Syncing|Only you are online/),
 	).toBeVisible({ timeout: 10000 });
 
 	// Peer A creates expense
@@ -128,10 +146,10 @@ test('merges expenses from two peers via sync union', async ({ browser }) => {
 
 	// Both peers should show online state after sync
 	await expect(
-		pageA.getByText(/peers available|Connected to|Only you are online/),
+		pageA.getByText(/peers available|Connected to|Syncing|Only you are online/),
 	).toBeVisible();
 	await expect(
-		pageB.getByText(/peers available|Connected to|Only you are online/),
+		pageB.getByText(/peers available|Connected to|Syncing|Only you are online/),
 	).toBeVisible();
 
 	// Both peers should have all 3 expenses
@@ -192,10 +210,10 @@ test('merges members from two peers joining independently', async ({
 
 	// Both peers should show online state after sync
 	await expect(
-		pageA.getByText(/peers available|Connected to|Only you are online/),
+		pageA.getByText(/peers available|Connected to|Syncing|Only you are online/),
 	).toBeVisible();
 	await expect(
-		pageB.getByText(/peers available|Connected to|Only you are online/),
+		pageB.getByText(/peers available|Connected to|Syncing|Only you are online/),
 	).toBeVisible();
 
 	// Both peers should see both members

@@ -1,6 +1,6 @@
 import { decode, encode } from '@msgpack/msgpack';
 import { formatMessage, parsedMessage } from '@peerpocket/libs/message';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import useWebSocket from 'react-use-websocket';
 import SimplePeer from 'simple-peer';
 import { createLocalPersister } from 'tinybase/persisters/persister-browser';
@@ -18,6 +18,18 @@ import {
 	type ValuesSchema,
 } from 'tinybase/with-schemas';
 import { reconcileClaims } from '../utils/placeholder';
+
+// createCustomSynchronizer takes seconds; a huge value here leaves the
+// synchronizer stuck in a syncing state for hours when a peer departs
+// mid-request.
+const REQUEST_TIMEOUT_SECONDS = 10;
+const HEARTBEAT_INTERVAL_MS = 10_000;
+// Longer than Chrome's ~1-check/min background timer throttling, so an idle
+// but healthy background tab is kept alive instead of closed by mistake.
+const HEARTBEAT_TIMEOUT_MS = 70_000;
+// Hidden longer than this and the OS may have silently killed the socket
+// without a close frame; readyState can't be trusted after resume.
+const STALE_HIDDEN_MS = 30_000;
 
 function isE2EAndRelayDisabled(): boolean {
 	try {
@@ -86,6 +98,8 @@ export async function createSyncStore<
 		const [isSyncing, setIsSyncing] = useState(false);
 		const skipRelay = isE2EAndRelayDisabled();
 		const syncDebounceRef = useRef<NodeJS.Timeout>(null);
+		const [forceClosed, setForceClosed] = useState(false);
+		const hiddenAtRef = useRef<number | null>(null);
 
 		const myPeerIdRef = useRef<string | null>(null);
 		const peerConnections = useRef<
@@ -97,11 +111,51 @@ export async function createSyncStore<
 			activeTimeouts.current.add(timeout);
 		}
 
-		function clearAllTimeouts() {
+		const resetPeerState = useCallback(() => {
+			myPeerIdRef.current = null;
 			for (const t of activeTimeouts.current) clearTimeout(t);
 			activeTimeouts.current.clear();
 			if (syncDebounceRef.current) clearTimeout(syncDebounceRef.current);
-		}
+			for (const [, conn] of peerConnections.current) {
+				conn.peer.destroy();
+			}
+			peerConnections.current.clear();
+			setOnlinePeerCount(0);
+			setConnectedPeerCount(0);
+			setIsSyncing(false);
+			synchronizer.current?.stopSync();
+		}, []);
+
+		// Bounce the connect flag back so useWebSocket reopens the socket.
+		useEffect(() => {
+			if (forceClosed) setForceClosed(false);
+		}, [forceClosed]);
+
+		useEffect(() => {
+			if (skipRelay) return;
+
+			function handleVisibilityChange() {
+				if (document.visibilityState === 'hidden') {
+					hiddenAtRef.current = Date.now();
+					return;
+				}
+				if (
+					hiddenAtRef.current !== null &&
+					Date.now() - hiddenAtRef.current > STALE_HIDDEN_MS
+				) {
+					resetPeerState();
+					setForceClosed(true);
+				}
+				hiddenAtRef.current = null;
+			}
+
+			document.addEventListener('visibilitychange', handleVisibilityChange);
+			return () =>
+				document.removeEventListener(
+					'visibilitychange',
+					handleVisibilityChange,
+				);
+		}, [skipRelay, resetPeerState]);
 
 		// Teardown on unmount — don't rely on useWebSocket's onClose firing.
 		useEffect(
@@ -122,7 +176,16 @@ export async function createSyncStore<
 			{
 				retryOnError: true,
 				shouldReconnect: () => !skipRelay,
+				reconnectAttempts: Number.POSITIVE_INFINITY,
+				reconnectInterval: (attempt) => Math.min(1000 * 2 ** attempt, 10_000),
+				heartbeat: {
+					message: 'ping',
+					returnMessage: 'pong',
+					interval: HEARTBEAT_INTERVAL_MS,
+					timeout: HEARTBEAT_TIMEOUT_MS,
+				},
 				onOpen() {
+					synchronizer.current?.destroy();
 					synchronizer.current = createCustomSynchronizer(
 						store,
 						function send(
@@ -155,7 +218,7 @@ export async function createSyncStore<
 							messageReceiver.current = receive;
 						},
 						() => {},
-						10000,
+						REQUEST_TIMEOUT_SECONDS,
 					);
 
 					synchronizer.current.addStatusListener((_synchronizer, status) => {
@@ -233,19 +296,10 @@ export async function createSyncStore<
 					}
 				},
 				onClose() {
-					myPeerIdRef.current = null;
-					clearAllTimeouts();
-					for (const [, conn] of peerConnections.current) {
-						conn.peer.destroy();
-					}
-					peerConnections.current.clear();
-					setOnlinePeerCount(0);
-					setConnectedPeerCount(0);
-					setIsSyncing(false);
-					synchronizer.current?.stopSync();
+					resetPeerState();
 				},
 			},
-			!skipRelay,
+			!skipRelay && !forceClosed,
 		);
 
 		return { onlinePeerCount, connectedPeerCount, isSyncing };

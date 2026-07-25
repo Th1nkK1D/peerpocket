@@ -174,7 +174,7 @@ function RouteComponent() {
 		>
 			<Paper elevation={1} className="rounded-none">
 				<div className="flex flex-row items-center justify-center gap-2 px-3 pt-2 pb-1">
-					{isSyncing && connectedPeerCount > 0 ? (
+					{isSyncing && onlinePeerCount > 1 ? (
 						<CircularProgress size={8} className="text-success" />
 					) : (
 						<div
@@ -194,8 +194,10 @@ function RouteComponent() {
 							? 'No connection to the relay server'
 							: onlinePeerCount === 1
 								? 'Only you are online'
-								: isSyncing && connectedPeerCount > 0
-									? `Syncing with ${connectedPeerCount} of ${onlinePeerCount - 1} peers`
+								: isSyncing
+									? connectedPeerCount > 0
+										? `Syncing with ${connectedPeerCount} of ${onlinePeerCount - 1} peers`
+										: `Syncing via relay with ${onlinePeerCount - 1} peers`
 									: connectedPeerCount > 0
 										? `Connected to ${connectedPeerCount} of ${onlinePeerCount - 1} peers`
 										: `${onlinePeerCount - 1} peers available`}

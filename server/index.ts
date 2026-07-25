@@ -6,6 +6,12 @@ serve({
 	websocket: {
 		open() {},
 		async message(peer: Peer, { rawData }: Message) {
+			const raw = rawData as string | Buffer<ArrayBufferLike>;
+			if (raw.length === 4 && raw.toString() === 'ping') {
+				peer.send('pong');
+				return;
+			}
+
 			const data = await parsedMessage(rawData as Buffer<ArrayBufferLike>);
 
 			switch (data.type) {
