@@ -9,7 +9,10 @@
 		"check": "bun run --filter=\"@peerpocket/*\" --elide-lines=0 check",
 		"lint": "bun run biome check --write",
 		"test": "bun scripts/free-test-ports.ts && playwright test",
-		"prepare": "lefthook install"
+		"prepare": "husky"
+	},
+	"lint-staged": {
+		"*": "biome check --write --unsafe --no-errors-on-unmatched --files-ignore-unknown=true --colors=off"
 	},
 	"workspaces": [
 		"app",
@@ -21,6 +24,7 @@
 		"@commitlint/cli": "^19.8.1",
 		"@commitlint/config-conventional": "^19.8.1",
 		"@playwright/test": "^1.55.0",
-		"lefthook": "^1.11.13"
+		"husky": "^9.1.7",
+		"lint-staged": "^16.1.2"
 	}
 }

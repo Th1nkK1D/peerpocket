@@ -34,4 +34,4 @@ test-results
 # Finder (MacOS) folder config
 .DS_Store
 
-.husky
+.husky/_
