@@ -21,6 +21,7 @@ export default defineConfig({
 				'favicon-72x72.png',
 				'favicon-192x192.png',
 				'favicon-512x512.png',
+				'maskable-512x512.png',
 			],
 			workbox: {
 				cleanupOutdatedCaches: true,
@@ -47,7 +48,7 @@ export default defineConfig({
 						type: 'image/png',
 					},
 					{
-						src: 'favicon-512x512.png',
+						src: 'maskable-512x512.png',
 						sizes: '512x512',
 						type: 'image/png',
 						purpose: 'maskable',
