@@ -72,8 +72,12 @@ test('relay server responds to heartbeat ping with pong', async ({ page }) => {
 });
 
 test('merges expenses from two peers via sync union', async ({ browser }) => {
+	// Two-peer relay sync is slow enough to exceed the default timeout under load.
+	test.setTimeout(60000);
+	// Relay rooms are keyed by store id, so each relay test needs its own group.
+	const syncGroup = { ...tripGroup, id: 'group-sync-expenses' };
 	const groupSeed = {
-		...tripGroup,
+		...syncGroup,
 		members: [
 			{ id: baseUser.hashedId, name: baseUser.name },
 			{ id: 'hashed-bob', name: 'Bob' },
@@ -97,13 +101,13 @@ test('merges expenses from two peers via sync union', async ({ browser }) => {
 	const pageA = await contextA.newPage();
 	const pageB = await contextB.newPage();
 
-	await gotoSeededRoute(pageA, `/groups/${tripGroup.id}?tab=expenses`, {
+	await gotoSeededRoute(pageA, `/groups/${syncGroup.id}?tab=expenses`, {
 		user: baseUser,
 		groups: [groupSeed],
 		enableRelay: true,
 	});
 
-	await gotoSeededRoute(pageB, `/groups/${tripGroup.id}?tab=expenses`, {
+	await gotoSeededRoute(pageB, `/groups/${syncGroup.id}?tab=expenses`, {
 		user: { id: 'user-bob', hashedId: 'hashed-bob', name: 'Bob' },
 		groups: [groupSeed],
 		enableRelay: true,
@@ -121,23 +125,23 @@ test('merges expenses from two peers via sync union', async ({ browser }) => {
 	).toBeVisible({ timeout: 10000 });
 
 	// Peer A creates expense
-	await pageA.goto(`/groups/expense?groupId=${tripGroup.id}`);
+	await pageA.goto(`/groups/expense?groupId=${syncGroup.id}`);
 	await pageA.getByLabel('Total').fill('200');
 	await pageA.getByLabel('Notes').fill('Expense A');
 	await pageA.getByRole('button', { name: 'Next' }).click();
 	await pageA.getByRole('button', { name: 'Split selections equally' }).click();
 	await pageA.getByRole('button', { name: 'Add' }).click();
-	await expectOnExpenses(pageA, tripGroup.id);
+	await expectOnExpenses(pageA, syncGroup.id);
 	await expect(pageA.getByText('Expense A')).toBeVisible();
 
 	// Peer B creates expense
-	await pageB.goto(`/groups/expense?groupId=${tripGroup.id}`);
+	await pageB.goto(`/groups/expense?groupId=${syncGroup.id}`);
 	await pageB.getByLabel('Total').fill('300');
 	await pageB.getByLabel('Notes').fill('Expense B');
 	await pageB.getByRole('button', { name: 'Next' }).click();
 	await pageB.getByRole('button', { name: 'Split selections equally' }).click();
 	await pageB.getByRole('button', { name: 'Add' }).click();
-	await expectOnExpenses(pageB, tripGroup.id);
+	await expectOnExpenses(pageB, syncGroup.id);
 	await expect(pageB.getByText('Expense B')).toBeVisible();
 
 	// Wait for sync - expect synced data to appear
@@ -166,8 +170,10 @@ test('merges expenses from two peers via sync union', async ({ browser }) => {
 test('merges members from two peers joining independently', async ({
 	browser,
 }) => {
+	test.setTimeout(60000);
+	const memberSyncGroup = { ...tripGroup, id: 'group-sync-members' };
 	const groupSeed = {
-		...tripGroup,
+		...memberSyncGroup,
 		members: [],
 		expenses: [],
 	};
@@ -177,13 +183,13 @@ test('merges members from two peers joining independently', async ({
 	const pageA = await contextA.newPage();
 	const pageB = await contextB.newPage();
 
-	await gotoSeededRoute(pageA, `/groups/${tripGroup.id}?tab=members`, {
+	await gotoSeededRoute(pageA, `/groups/${memberSyncGroup.id}?tab=members`, {
 		user: baseUser,
 		groups: [groupSeed],
 		enableRelay: true,
 	});
 
-	await gotoSeededRoute(pageB, `/groups/${tripGroup.id}?tab=members`, {
+	await gotoSeededRoute(pageB, `/groups/${memberSyncGroup.id}?tab=members`, {
 		user: { id: 'user-bob', hashedId: 'hashed-bob', name: 'Bob' },
 		groups: [groupSeed],
 		enableRelay: true,

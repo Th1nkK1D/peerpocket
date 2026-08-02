@@ -12,12 +12,13 @@ import {
 const reconGroup = { ...tripGroup, id: 'group-reconcile' };
 
 test('syncs placeholder claim from A to B via relay', async ({ browser }) => {
+	const claimGroup = { ...reconGroup, id: 'group-reconcile-claim' };
 	const seed = {
 		enableRelay: true,
 		user: baseUser,
 		groups: [
 			{
-				...reconGroup,
+				...claimGroup,
 				members: [
 					{ id: baseUser.hashedId, name: baseUser.name, joinedAt: now },
 					{
@@ -60,9 +61,9 @@ test('syncs placeholder claim from A to B via relay', async ({ browser }) => {
 	const contextB = await browser.newContext();
 	const pageB = await contextB.newPage();
 
-	await gotoSeededRoute(pageA, `/groups/${reconGroup.id}?tab=members`, seed);
+	await gotoSeededRoute(pageA, `/groups/${claimGroup.id}?tab=members`, seed);
 
-	await gotoSeededRoute(pageB, `/groups/${reconGroup.id}?tab=members`, {
+	await gotoSeededRoute(pageB, `/groups/${claimGroup.id}?tab=members`, {
 		...seed,
 		user: { id: 'user-bob', hashedId: 'hashed-bob', name: 'Bob' },
 	});
@@ -205,6 +206,7 @@ test('offline peer sees placeholder until sync', async ({ browser }) => {
 test('heals orphan splits after offline peer reconnects', async ({
 	browser,
 }) => {
+	const healGroup = { ...reconGroup, id: 'group-reconcile-heal' };
 	test.setTimeout(90000);
 	const groupState = {
 		members: [
@@ -247,16 +249,16 @@ test('heals orphan splits after offline peer reconnects', async ({
 	const contextB = await browser.newContext();
 	const pageB = await contextB.newPage();
 
-	await gotoSeededRoute(pageA, `/groups/${reconGroup.id}?tab=members`, {
+	await gotoSeededRoute(pageA, `/groups/${healGroup.id}?tab=members`, {
 		enableRelay: true,
 		user: baseUser,
-		groups: [{ ...reconGroup, ...groupState }],
+		groups: [{ ...healGroup, ...groupState }],
 	});
 
-	await gotoSeededRoute(pageB, `/groups/${reconGroup.id}?tab=members`, {
+	await gotoSeededRoute(pageB, `/groups/${healGroup.id}?tab=members`, {
 		enableRelay: false,
 		user: { id: 'user-bob', hashedId: 'hashed-bob', name: 'Bob' },
-		groups: [{ ...reconGroup, ...groupState }],
+		groups: [{ ...healGroup, ...groupState }],
 	});
 
 	// On A: claim the placeholder while B is offline
@@ -274,7 +276,7 @@ test('heals orphan splits after offline peer reconnects', async ({
 	// On B (offline): write a new expense whose split references the claimed placeholder
 	await injectOfflineExpense(
 		pageB,
-		reconGroup.id,
+		healGroup.id,
 		{
 			id: 'expense-y',
 			amount: 20,
@@ -304,13 +306,13 @@ test('heals orphan splits after offline peer reconnects', async ({
 	await expect
 		.poll(
 			async () =>
-				(await readGroupStoreTables(pageB, reconGroup.id)).splits?.['split-y']
+				(await readGroupStoreTables(pageB, healGroup.id)).splits?.['split-y']
 					?.memberId,
 			{ timeout: 30000 },
 		)
 		.toBe(baseUser.hashedId);
 
-	const tables = await readGroupStoreTables(pageB, reconGroup.id);
+	const tables = await readGroupStoreTables(pageB, healGroup.id);
 	expect(tables.claims?.['placeholder-dan']?.hashedId).toBe(baseUser.hashedId);
 	expect(tables.splits?.['split-dan']?.memberId).toBe(baseUser.hashedId);
 	expect(tables.members?.['placeholder-dan']).toBeUndefined();
