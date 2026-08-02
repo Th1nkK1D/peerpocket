@@ -10,7 +10,11 @@ import {
 	Typography,
 } from '@mui/material';
 import type { TransitionProps } from '@mui/material/transitions';
-import type { ReactNode, PointerEvent as ReactPointerEvent } from 'react';
+import type {
+	KeyboardEvent as ReactKeyboardEvent,
+	ReactNode,
+	PointerEvent as ReactPointerEvent,
+} from 'react';
 import {
 	forwardRef,
 	useCallback,
@@ -20,6 +24,18 @@ import {
 	useRef,
 	useState,
 } from 'react';
+import {
+	buildDisplayChars,
+	type DisplayCharacter,
+	displayCharKey,
+	evaluateExpression,
+	formatExpression,
+	formatInput,
+	OPERATORS,
+	type Operator,
+	operandBounds,
+	replaceRange,
+} from '../utils/calculator';
 
 const Transition = forwardRef(function Transition(
 	props: TransitionProps & {
@@ -37,12 +53,11 @@ interface CalculatorDialogProps {
 	onClose: () => void;
 }
 
-type Operator = '+' | '-' | '×' | '÷';
-
 /** Gap kept between the caret and the edges of the scrolling display. */
 const CARET_MARGIN = 12;
 const EDGE_SCROLL_ZONE = 32;
 const EDGE_SCROLL_STEP = 16;
+const EDGE_SCROLL_INTERVAL = 60;
 
 /** Horizontal scroller without a visible scrollbar. */
 const SCROLLER_CLASS =
@@ -55,23 +70,31 @@ export function CalculatorDialog({
 	onClose,
 }: CalculatorDialogProps) {
 	const [expression, setExpression] = useState(() => formatInput(value));
-	const [cursor, setCursor] = useState(() => formatInput(value).length);
+	const [cursor, setCursor] = useState(() => expression.length);
 	const [secondaryDisplay, setSecondaryDisplay] = useState('');
 	const [isResult, setIsResult] = useState(false);
 	const [isDragging, setIsDragging] = useState(false);
 
 	const displayRef = useRef<HTMLDivElement>(null);
+	const secondaryRef = useRef<HTMLDivElement>(null);
 	const caretRef = useRef<HTMLSpanElement>(null);
+	const pointerXRef = useRef<number | null>(null);
+	const valueRef = useRef(value);
 
 	useEffect(() => {
-		if (open) {
-			const initial = formatInput(value);
-			setExpression(initial);
-			setCursor(initial.length);
-			setSecondaryDisplay('');
-			setIsResult(false);
-		}
-	}, [open, value]);
+		valueRef.current = value;
+	}, [value]);
+
+	// Only reopening seeds the expression, so a syncing value cannot wipe input.
+	useEffect(() => {
+		if (!open) return;
+
+		const initial = formatInput(valueRef.current);
+		setExpression(initial);
+		setCursor(initial.length);
+		setSecondaryDisplay('');
+		setIsResult(false);
+	}, [open]);
 
 	const displayChars = useMemo(
 		() => buildDisplayChars(expression),
@@ -104,6 +127,13 @@ export function CalculatorDialog({
 			container.scrollLeft -= overflowLeft;
 		}
 	}, [displayChars, caretIndex]);
+
+	useLayoutEffect(() => {
+		const container = secondaryRef.current;
+		if (container && secondaryDisplay) {
+			container.scrollLeft = container.scrollWidth;
+		}
+	}, [secondaryDisplay]);
 
 	const reset = useCallback(() => {
 		setExpression('0');
@@ -175,9 +205,10 @@ export function CalculatorDialog({
 				return;
 			}
 
-			if (cursor === 0) return;
+			// At the start only + and - are meaningful, as the sign of the operand.
+			if (cursor === 0 && operator !== '+' && operator !== '-') return;
 
-			if (OPERATORS.has(expression[cursor - 1])) {
+			if (cursor > 0 && OPERATORS.has(expression[cursor - 1])) {
 				setExpression(replaceRange(expression, cursor - 1, cursor, operator));
 				return;
 			}
@@ -188,8 +219,9 @@ export function CalculatorDialog({
 		[cursor, expression, isResult],
 	);
 
+	const result = useMemo(() => evaluateExpression(expression), [expression]);
+
 	const handleEquals = useCallback(() => {
-		const result = evaluateExpression(expression);
 		if (result === null) return;
 
 		const resultText = String(result);
@@ -197,24 +229,32 @@ export function CalculatorDialog({
 		setExpression(resultText);
 		setCursor(resultText.length);
 		setIsResult(true);
-	}, [expression]);
+	}, [expression, result]);
 
 	const handleConfirm = useCallback(() => {
-		const result = evaluateExpression(expression);
 		onConfirm(result ?? 0);
-	}, [expression, onConfirm]);
+	}, [onConfirm, result]);
 
-	const moveCaretToPointer = useCallback((clientX: number) => {
+	/** Reveals hidden characters when the pointer rests against either edge. */
+	const scrollTowardsEdge = useCallback((clientX: number) => {
 		const container = displayRef.current;
-		if (!container) return;
+		if (!container) return false;
 
-		// Reveal hidden characters when dragging against either edge.
 		const containerRect = container.getBoundingClientRect();
+		const before = container.scrollLeft;
+
 		if (clientX > containerRect.right - EDGE_SCROLL_ZONE) {
 			container.scrollLeft += EDGE_SCROLL_STEP;
 		} else if (clientX < containerRect.left + EDGE_SCROLL_ZONE) {
 			container.scrollLeft -= EDGE_SCROLL_STEP;
 		}
+
+		return container.scrollLeft !== before;
+	}, []);
+
+	const setCursorFromPointer = useCallback((clientX: number) => {
+		const container = displayRef.current;
+		if (!container) return;
 
 		const spans = Array.from(
 			container.querySelectorAll<HTMLElement>('[data-source]'),
@@ -242,14 +282,37 @@ export function CalculatorDialog({
 		setCursor(nearest);
 	}, []);
 
+	const moveCaretToPointer = useCallback(
+		(clientX: number) => {
+			scrollTowardsEdge(clientX);
+			setCursorFromPointer(clientX);
+		},
+		[scrollTowardsEdge, setCursorFromPointer],
+	);
+
+	// Keep scrolling while the pointer is held still against an edge.
+	useEffect(() => {
+		if (!isDragging) return;
+
+		const timer = setInterval(() => {
+			const clientX = pointerXRef.current;
+			if (clientX === null) return;
+			if (scrollTowardsEdge(clientX)) setCursorFromPointer(clientX);
+		}, EDGE_SCROLL_INTERVAL);
+
+		return () => clearInterval(timer);
+	}, [isDragging, scrollTowardsEdge, setCursorFromPointer]);
+
 	const handleCaretPointerDown = (event: ReactPointerEvent<HTMLDivElement>) => {
 		event.currentTarget.setPointerCapture(event.pointerId);
+		pointerXRef.current = event.clientX;
 		setIsDragging(true);
 		moveCaretToPointer(event.clientX);
 	};
 
 	const handleCaretPointerMove = (event: ReactPointerEvent<HTMLDivElement>) => {
 		if (!isDragging) return;
+		pointerXRef.current = event.clientX;
 		moveCaretToPointer(event.clientX);
 	};
 
@@ -257,12 +320,29 @@ export function CalculatorDialog({
 		if (event.currentTarget.hasPointerCapture(event.pointerId)) {
 			event.currentTarget.releasePointerCapture(event.pointerId);
 		}
+		pointerXRef.current = null;
 		setIsDragging(false);
 	};
 
-	const canConfirm = evaluateExpression(expression) !== null;
+	const handleCaretKeyDown = (event: ReactKeyboardEvent<HTMLDivElement>) => {
+		const moves: Record<string, number> = {
+			ArrowLeft: Math.max(0, cursor - 1),
+			ArrowRight: Math.min(expression.length, cursor + 1),
+			Home: 0,
+			End: expression.length,
+		};
+
+		const next = moves[event.key];
+		if (next === undefined) return;
+
+		event.preventDefault();
+		setCursor(next);
+	};
+
+	const canConfirm = result !== null;
 	const hasPendingCalculation =
-		!isResult && [...expression].some((char) => OPERATORS.has(char));
+		!isResult &&
+		[...expression].some((char, index) => index > 0 && OPERATORS.has(char));
 
 	return (
 		<Dialog
@@ -294,7 +374,7 @@ export function CalculatorDialog({
 
 			<Box className="flex flex-1 flex-col gap-3 p-4">
 				<div className="py-4">
-					<div className={SCROLLER_CLASS}>
+					<div ref={secondaryRef} className={SCROLLER_CLASS}>
 						<Typography
 							component="div"
 							variant="body1"
@@ -308,10 +388,20 @@ export function CalculatorDialog({
 					<div
 						ref={displayRef}
 						data-testid="calculator-display"
+						// biome-ignore lint/a11y/useSemanticElements: an input cannot render the per-character spans the caret is positioned from
+						role="textbox"
+						aria-label="Expression"
+						aria-readonly="true"
+						tabIndex={0}
 						onPointerDown={handleCaretPointerDown}
 						onPointerMove={handleCaretPointerMove}
 						onPointerUp={handleCaretPointerUp}
 						onPointerCancel={handleCaretPointerUp}
+						onLostPointerCapture={() => {
+							pointerXRef.current = null;
+							setIsDragging(false);
+						}}
+						onKeyDown={handleCaretKeyDown}
 						className={`touch-none select-none py-1 ${SCROLLER_CLASS}`}
 					>
 						<Typography
@@ -442,7 +532,7 @@ function CalButton({
 			onClick={onClick}
 			disabled={disabled}
 			aria-label={label}
-			className={`min-h-0 ${className}`}
+			className={className}
 			sx={{
 				width: '100%',
 				aspectRatio: '1',
@@ -457,155 +547,4 @@ function CalButton({
 			{children}
 		</Button>
 	);
-}
-
-const OPERATORS = new Set(['+', '-', '×', '÷']);
-
-interface DisplayCharacter {
-	char: string;
-	/** Index in the raw expression this character belongs to. */
-	source: number;
-	/** True for grouping separators, which have no raw expression counterpart. */
-	isSeparator: boolean;
-}
-
-function displayCharKey(char: DisplayCharacter): string {
-	return `${char.source}-${char.isSeparator ? 'separator' : 'char'}`;
-}
-
-function buildDisplayChars(expression: string): DisplayCharacter[] {
-	const chars: DisplayCharacter[] = [];
-	let buffer = '';
-	let bufferStart = 0;
-
-	function flushBuffer() {
-		if (!buffer) return;
-		let offset = 0;
-		for (const char of formatNumberBuffer(buffer)) {
-			const isSeparator = char !== buffer[offset];
-			chars.push({ char, source: bufferStart + offset, isSeparator });
-			if (!isSeparator) offset++;
-		}
-		buffer = '';
-	}
-
-	for (let index = 0; index < expression.length; index++) {
-		const char = expression[index];
-		if (OPERATORS.has(char)) {
-			flushBuffer();
-			chars.push({ char, source: index, isSeparator: false });
-		} else {
-			if (!buffer) bufferStart = index;
-			buffer += char;
-		}
-	}
-	flushBuffer();
-
-	return chars;
-}
-
-function operandBounds(expression: string, cursor: number): [number, number] {
-	let start = cursor;
-	while (start > 0 && !OPERATORS.has(expression[start - 1])) start--;
-
-	let end = cursor;
-	while (end < expression.length && !OPERATORS.has(expression[end])) end++;
-
-	return [start, end];
-}
-
-function replaceRange(
-	expression: string,
-	start: number,
-	end: number,
-	inserted: string,
-): string {
-	return expression.slice(0, start) + inserted + expression.slice(end);
-}
-
-function formatInput(value: number): string {
-	if (!value) return '0';
-	const str = value.toString();
-	if (str.includes('e')) return value.toFixed(2);
-	return str;
-}
-
-function formatExpression(expression: string): string {
-	return buildDisplayChars(expression)
-		.map(({ char }) => char)
-		.join('');
-}
-
-function formatNumberBuffer(buf: string): string {
-	const [intPart, decPart] = buf.split('.');
-	const groupedInt = intPart.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-	return decPart !== undefined ? `${groupedInt}.${decPart}` : groupedInt;
-}
-
-function evaluateExpression(expr: string): number | null {
-	// Tokenize: split into numbers and operators
-	const tokens: (number | Operator)[] = [];
-	let num = '';
-
-	for (const ch of expr) {
-		if (OPERATORS.has(ch)) {
-			if (num) {
-				const parsed = parseFloat(num);
-				if (!Number.isFinite(parsed)) return null;
-				tokens.push(parsed);
-				num = '';
-			}
-			tokens.push(ch as Operator);
-		} else {
-			num += ch;
-		}
-	}
-
-	if (num) {
-		const parsed = parseFloat(num);
-		if (!Number.isFinite(parsed)) return null;
-		tokens.push(parsed);
-	}
-
-	if (tokens.length === 0) return null;
-	if (tokens.length === 1) {
-		return typeof tokens[0] === 'number' ? tokens[0] : null;
-	}
-
-	// Process × and ÷ first (higher precedence)
-	const reduced: (number | '+' | '-')[] = [];
-	let i = 0;
-
-	while (i < tokens.length) {
-		const token = tokens[i];
-
-		if (typeof token === 'number') {
-			let result = token;
-			while (
-				i + 2 < tokens.length &&
-				(tokens[i + 1] === '×' || tokens[i + 1] === '÷')
-			) {
-				const op = tokens[i + 1] as Operator;
-				const right = tokens[i + 2];
-				if (typeof right !== 'number') break;
-				result = op === '×' ? result * right : right === 0 ? 0 : result / right;
-				i += 2;
-			}
-			reduced.push(result);
-		} else {
-			reduced.push(token as '+' | '-');
-		}
-		i++;
-	}
-
-	// Process + and -
-	let result = reduced[0] as number;
-	for (let j = 1; j < reduced.length; j += 2) {
-		const op = reduced[j];
-		const right = reduced[j + 1] as number;
-		result = op === '+' ? result + right : result - right;
-	}
-
-	const rounded = Math.round(result * 100) / 100;
-	return Number.isFinite(rounded) ? rounded : null;
 }
