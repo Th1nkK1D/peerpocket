@@ -12,10 +12,11 @@ import { idHelper } from '../utils/id';
 
 export const Route = createFileRoute('/')({
 	component: RouteComponent,
-	beforeLoad() {
+	beforeLoad({ search }) {
 		if (activeUserStoreId.get()) {
 			throw redirect({
-				to: '/groups',
+				to: search.path?.startsWith('/groups/') ? search.path : '/groups',
+				search: search.params,
 				replace: true,
 			});
 		}

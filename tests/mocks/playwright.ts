@@ -204,6 +204,10 @@ export async function installAppMocks(page: Page) {
 			async writeText(text: string) {
 				this.value = text;
 			}
+
+			async readText() {
+				return this.value;
+			}
 		}
 
 		Object.defineProperty(navigator, 'clipboard', {

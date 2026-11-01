@@ -55,3 +55,30 @@ test('redirects away from the landing route when there is an active user', async
 	await expect(page).toHaveURL(/\/groups$/);
 	await expect(page.getByRole('heading', { name: 'PeerPocket' })).toBeVisible();
 });
+
+test('keeps the invite when an active user opens a landing invite link', async ({
+	page,
+}) => {
+	const params = encodeURIComponent(
+		JSON.stringify({ id: 'group-party', name: 'Party' }),
+	);
+	await gotoSeededRoute(
+		page,
+		`/?path=/groups/join&params=${params}`,
+		buildFullGroupSeed(),
+	);
+
+	await expect(page).toHaveURL(/\/groups\/join\?id=group-party&name=Party$/);
+});
+
+test('ignores a landing redirect path outside the groups routes', async ({
+	page,
+}) => {
+	await gotoSeededRoute(
+		page,
+		`/?path=${encodeURIComponent('https://example.com')}`,
+		buildFullGroupSeed(),
+	);
+
+	await expect(page).toHaveURL(/\/groups$/);
+});

@@ -1,41 +1,19 @@
 import 'barcode-detector/polyfill';
-import { Alert, Snackbar } from '@mui/material';
+import { ContentPasteOutlined } from '@mui/icons-material';
+import { Alert, Fab, Snackbar } from '@mui/material';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { type IDetectedBarcode, Scanner } from '@yudiel/react-qr-scanner';
 import { useEffect, useRef, useState } from 'react';
 import { getE2EConfig } from '../../../../tests/mocks/playwright';
 import { AuthenticatedLayout } from '../../components/authenticated-layout';
-
-interface JoinSearch {
-	id: string;
-	name: string;
-}
+import { FabsContainer } from '../../components/fabs-container';
+import { InviteLinkDialog } from '../../components/invite-link-dialog';
+import { type GroupInvite, parseGroupJoinUrl } from '../../utils/group-link';
 
 export const Route = createFileRoute('/groups/scan')({
 	component: RouteComponent,
 	loader: ({ context }) => context,
 });
-
-function parseGroupJoinUrl(rawValue: string): JoinSearch | null {
-	try {
-		const url = new URL(rawValue, window.location.origin);
-
-		if (url.pathname !== '/groups/join') {
-			return null;
-		}
-
-		const id = url.searchParams.get('id')?.trim();
-		const name = url.searchParams.get('name')?.trim();
-
-		if (!id || !name) {
-			return null;
-		}
-
-		return { id, name };
-	} catch {
-		return null;
-	}
-}
 
 function RouteComponent() {
 	const { user } = Route.useLoaderData();
@@ -43,7 +21,34 @@ function RouteComponent() {
 	const hasMatchedScan = useRef(false);
 	const [cameraError, setCameraError] = useState<string | null>(null);
 	const [scanError, setScanError] = useState<string | null>(null);
+	const [inviteDialogOpen, setInviteDialogOpen] = useState(false);
 	const e2eScan = getE2EConfig()?.scan;
+
+	function joinInvite(invite: GroupInvite) {
+		hasMatchedScan.current = true;
+		setScanError(null);
+
+		navigate({
+			to: '/groups/join',
+			search: invite,
+			replace: true,
+		});
+	}
+
+	async function pasteInviteLink() {
+		try {
+			const invite = parseGroupJoinUrl(await navigator.clipboard.readText());
+
+			if (invite) {
+				joinInvite(invite);
+				return;
+			}
+		} catch {
+			// Denied or unsupported, fall through to manual entry
+		}
+
+		setInviteDialogOpen(true);
+	}
 
 	function handleScan(detectedCodes: IDetectedBarcode[]) {
 		if (hasMatchedScan.current) {
@@ -52,21 +57,14 @@ function RouteComponent() {
 
 		const match = detectedCodes
 			.map(({ rawValue }) => parseGroupJoinUrl(rawValue))
-			.find((value): value is JoinSearch => value !== null);
+			.find((value): value is GroupInvite => value !== null);
 
 		if (!match) {
 			setScanError('Could not read a valid group link from that QR code.');
 			return;
 		}
 
-		hasMatchedScan.current = true;
-		setScanError(null);
-
-		navigate({
-			to: '/groups/join',
-			search: match,
-			replace: true,
-		});
+		joinInvite(match);
 	}
 
 	function handleError(error: unknown) {
@@ -125,6 +123,22 @@ function RouteComponent() {
 				/>
 			)}
 			{cameraError ? <Alert severity="error">{cameraError}</Alert> : null}
+			<FabsContainer position="fixed" className="left-6 justify-center">
+				<Fab
+					variant="extended"
+					color="secondary"
+					className="gap-2 opacity-80"
+					onClick={pasteInviteLink}
+				>
+					<ContentPasteOutlined />
+					Paste invite link
+				</Fab>
+			</FabsContainer>
+			<InviteLinkDialog
+				open={inviteDialogOpen}
+				onClose={() => setInviteDialogOpen(false)}
+				onJoin={joinInvite}
+			/>
 			<Snackbar
 				open={Boolean(scanError)}
 				autoHideDuration={4000}
