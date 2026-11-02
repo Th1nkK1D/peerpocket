@@ -5,7 +5,7 @@ import { AuthenticatedLayout } from '../../components/authenticated-layout';
 import { GroupSharing } from '../../components/group-sharing';
 import { LinkButton } from '../../components/links';
 import { useMuiForm } from '../../hooks/form';
-import { useStepper } from '../../hooks/stepper';
+import { StepNavigations, StepperView, useStepper } from '../../hooks/stepper';
 import { GROUP_STORE_PREFIX, setupGroupStore } from '../../stores/group';
 import { idHelper } from '../../utils/id';
 
@@ -17,8 +17,10 @@ export const Route = createFileRoute('/groups/create')({
 function RouteComponent() {
 	const { user } = Route.useLoaderData();
 
-	const { activeStep, setActiveStep, StepperView, StepNavigations } =
-		useStepper(['Create', 'Share']);
+	const { activeStep, setActiveStep, stepperProps } = useStepper([
+		'Create',
+		'Share',
+	]);
 
 	const id = useMemo(idHelper.generate, []);
 
@@ -57,7 +59,7 @@ function RouteComponent() {
 
 	return (
 		<AuthenticatedLayout title="New Group" userStore={user}>
-			<StepperView className="p-3">
+			<StepperView {...stepperProps} className="p-3">
 				{activeStep === 0 ? (
 					<form
 						className="flex flex-col gap-4"

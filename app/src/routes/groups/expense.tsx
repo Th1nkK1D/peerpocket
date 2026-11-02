@@ -12,7 +12,7 @@ import {
 	roundToTwoDecimal,
 	useMuiForm,
 } from '../../hooks/form';
-import { useStepper } from '../../hooks/stepper';
+import { StepNavigations, StepperView, useStepper } from '../../hooks/stepper';
 import { GROUP_STORE_PREFIX, setupGroupStore } from '../../stores/group';
 import { idHelper } from '../../utils/id';
 
@@ -75,8 +75,10 @@ function RouteComponent() {
 
 	const navigate = useNavigate();
 
-	const { activeStep, setActiveStep, StepperView, StepNavigations } =
-		useStepper(['Expense details', 'Splits']);
+	const { activeStep, setActiveStep, stepperProps } = useStepper([
+		'Expense details',
+		'Splits',
+	]);
 
 	const detailsForm = useMuiForm({
 		validators: {
@@ -215,7 +217,7 @@ function RouteComponent() {
 
 	return (
 		<AuthenticatedLayout title={groupName} userStore={user}>
-			<StepperView className="p-3">
+			<StepperView {...stepperProps} className="p-3">
 				{activeStep === 0 ? (
 					<form
 						className="flex flex-1 flex-col gap-4"
