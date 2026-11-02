@@ -1,9 +1,8 @@
 import { HandshakeOutlined } from '@mui/icons-material';
 import { Avatar, Button, Typography } from '@mui/material';
 import { createFileRoute } from '@tanstack/react-router';
-import { zodValidator } from '@tanstack/zod-adapter';
 import { useState } from 'react';
-import { z } from 'zod/v4';
+import * as z from 'zod';
 import { AuthenticatedLayout } from '../../components/authenticated-layout';
 import { LinkButton } from '../../components/links';
 import { GROUP_STORE_PREFIX, setupGroupStore } from '../../stores/group';
@@ -11,12 +10,10 @@ import { idHelper } from '../../utils/id';
 
 export const Route = createFileRoute('/groups/join')({
 	component: RouteComponent,
-	validateSearch: zodValidator(
-		z.object({
-			id: z.string().nonempty(),
-			name: z.string().nonempty(),
-		}),
-	),
+	validateSearch: z.object({
+		id: z.string().nonempty(),
+		name: z.string().nonempty(),
+	}),
 	loaderDeps: ({ search: { id, name } }) => ({ id, name }),
 	loader: async ({ deps, context }) => ({
 		...deps,

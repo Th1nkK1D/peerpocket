@@ -40,10 +40,10 @@ const splitRowSchema = z.object({
 });
 
 const groupStoreSchema = z.object({
-	members: z.record(memberRowSchema),
-	claims: z.record(claimRowSchema).optional(),
-	expenses: z.record(expenseRowSchema),
-	splits: z.record(splitRowSchema),
+	members: z.record(z.string(), memberRowSchema),
+	claims: z.record(z.string(), claimRowSchema).optional(),
+	expenses: z.record(z.string(), expenseRowSchema),
+	splits: z.record(z.string(), splitRowSchema),
 });
 
 export const exportDataSchema = z.object({
@@ -53,8 +53,8 @@ export const exportDataSchema = z.object({
 		hashedId: z.string(),
 		name: z.string(),
 	}),
-	groups: z.record(groupRowSchema).optional(),
-	groupStores: z.record(groupStoreSchema).optional(),
+	groups: z.record(z.string(), groupRowSchema).optional(),
+	groupStores: z.record(z.string(), groupStoreSchema).optional(),
 });
 
 export type ExportData = z.infer<typeof exportDataSchema>;

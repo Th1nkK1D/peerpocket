@@ -182,15 +182,23 @@
 
 	/* Switch */
 	--color-Switch-default: var(--mui-palette-Switch-defaultColor);
-	--color-Switch-defaultDisabled: var(--mui-palette-Switch-defaultDisabledColor);
-	--color-Switch-primaryDisabled: var(--mui-palette-Switch-primaryDisabledColor);
+	--color-Switch-defaultDisabled: var(
+		--mui-palette-Switch-defaultDisabledColor
+	);
+	--color-Switch-primaryDisabled: var(
+		--mui-palette-Switch-primaryDisabledColor
+	);
 	--color-Switch-secondaryDisabled: var(
 		--mui-palette-Switch-secondaryDisabledColor
 	);
 	--color-Switch-errorDisabled: var(--mui-palette-Switch-errorDisabledColor);
 	--color-Switch-infoDisabled: var(--mui-palette-Switch-infoDisabledColor);
-	--color-Switch-successDisabled: var(--mui-palette-Switch-successDisabledColor);
-	--color-Switch-warningDisabled: var(--mui-palette-Switch-warningDisabledColor);
+	--color-Switch-successDisabled: var(
+		--mui-palette-Switch-successDisabledColor
+	);
+	--color-Switch-warningDisabled: var(
+		--mui-palette-Switch-warningDisabledColor
+	);
 
 	/* TableCell */
 	--color-TableCell-border: var(--mui-palette-TableCell-border);

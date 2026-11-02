@@ -73,6 +73,7 @@ export async function createSyncStore<
 		name: N,
 		method: (rows: withRowId<RowValue<N>>[]) => T,
 	): T;
+	// biome-ignore lint/correctness/noComponentHookFactories: bound to this store, created once per store
 	function useTableRows<N extends TableName>(
 		name: N,
 		method: (rows: withRowId<RowValue<N>>[]) => unknown = (rows) => rows,
@@ -90,6 +91,7 @@ export async function createSyncStore<
 		);
 	}
 
+	// biome-ignore lint/correctness/noComponentHookFactories: bound to this store, created once per store
 	function usePeerSync() {
 		const synchronizer = useRef<Synchronizer<any>>(null);
 		const messageReceiver = useRef<Receive>(() => {});

@@ -385,10 +385,10 @@ export function CalculatorDialog({
 						</Typography>
 					</div>
 
+					{/* biome-ignore lint/a11y/useSemanticElements: an input cannot render the per-character spans the caret is positioned from */}
 					<div
 						ref={displayRef}
 						data-testid="calculator-display"
-						// biome-ignore lint/a11y/useSemanticElements: an input cannot render the per-character spans the caret is positioned from
 						role="textbox"
 						aria-label="Expression"
 						aria-readonly="true"
@@ -402,7 +402,7 @@ export function CalculatorDialog({
 							setIsDragging(false);
 						}}
 						onKeyDown={handleCaretKeyDown}
-						className={`touch-none select-none py-1 ${SCROLLER_CLASS}`}
+						className={`touch-none py-1 select-none ${SCROLLER_CLASS}`}
 					>
 						<Typography
 							component="div"
@@ -500,7 +500,7 @@ function DisplayChar({ char }: { char: DisplayCharacter }) {
 	return (
 		// The global `span` base style would otherwise drop the display typography.
 		<span
-			className="[font:inherit] [letter-spacing:inherit]"
+			className="[letter-spacing:inherit] [font:inherit]"
 			data-source={char.isSeparator ? undefined : char.source}
 		>
 			{char.char}

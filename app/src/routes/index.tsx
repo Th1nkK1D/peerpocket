@@ -1,6 +1,5 @@
 import { Divider } from '@mui/material';
 import { createFileRoute, redirect, useNavigate } from '@tanstack/react-router';
-import { zodValidator } from '@tanstack/zod-adapter';
 import { useState } from 'react';
 import * as z from 'zod';
 import { ImportFlow } from '../components/import-flow';
@@ -22,12 +21,10 @@ export const Route = createFileRoute('/')({
 			});
 		}
 	},
-	validateSearch: zodValidator(
-		z.object({
-			path: z.string().optional(),
-			params: z.record(z.any()).optional(),
-		}),
-	),
+	validateSearch: z.object({
+		path: z.string().optional(),
+		params: z.record(z.string(), z.any()).optional(),
+	}),
 });
 
 function RouteComponent() {

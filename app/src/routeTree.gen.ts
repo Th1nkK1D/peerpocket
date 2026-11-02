@@ -9,24 +9,24 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as GroupsRouteRouteImport } from './routes/groups/route'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as GroupsRouteRouteImport } from './routes/groups/route'
 import { Route as GroupsIndexRouteImport } from './routes/groups/index'
-import { Route as GroupsScanRouteImport } from './routes/groups/scan'
-import { Route as GroupsJoinRouteImport } from './routes/groups/join'
-import { Route as GroupsExportRouteImport } from './routes/groups/export'
-import { Route as GroupsExpenseRouteImport } from './routes/groups/expense'
-import { Route as GroupsCreateRouteImport } from './routes/groups/create'
 import { Route as GroupsGroupIdRouteImport } from './routes/groups/$groupId'
+import { Route as GroupsCreateRouteImport } from './routes/groups/create'
+import { Route as GroupsExpenseRouteImport } from './routes/groups/expense'
+import { Route as GroupsExportRouteImport } from './routes/groups/export'
+import { Route as GroupsJoinRouteImport } from './routes/groups/join'
+import { Route as GroupsScanRouteImport } from './routes/groups/scan'
 
-const GroupsRouteRoute = GroupsRouteRouteImport.update({
-  id: '/groups',
-  path: '/groups',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GroupsRouteRoute = GroupsRouteRouteImport.update({
+  id: '/groups',
+  path: '/groups',
   getParentRoute: () => rootRouteImport,
 } as any)
 const GroupsIndexRoute = GroupsIndexRouteImport.update({
@@ -34,24 +34,9 @@ const GroupsIndexRoute = GroupsIndexRouteImport.update({
   path: '/',
   getParentRoute: () => GroupsRouteRoute,
 } as any)
-const GroupsScanRoute = GroupsScanRouteImport.update({
-  id: '/scan',
-  path: '/scan',
-  getParentRoute: () => GroupsRouteRoute,
-} as any)
-const GroupsJoinRoute = GroupsJoinRouteImport.update({
-  id: '/join',
-  path: '/join',
-  getParentRoute: () => GroupsRouteRoute,
-} as any)
-const GroupsExportRoute = GroupsExportRouteImport.update({
-  id: '/export',
-  path: '/export',
-  getParentRoute: () => GroupsRouteRoute,
-} as any)
-const GroupsExpenseRoute = GroupsExpenseRouteImport.update({
-  id: '/expense',
-  path: '/expense',
+const GroupsGroupIdRoute = GroupsGroupIdRouteImport.update({
+  id: '/$groupId',
+  path: '/$groupId',
   getParentRoute: () => GroupsRouteRoute,
 } as any)
 const GroupsCreateRoute = GroupsCreateRouteImport.update({
@@ -59,9 +44,24 @@ const GroupsCreateRoute = GroupsCreateRouteImport.update({
   path: '/create',
   getParentRoute: () => GroupsRouteRoute,
 } as any)
-const GroupsGroupIdRoute = GroupsGroupIdRouteImport.update({
-  id: '/$groupId',
-  path: '/$groupId',
+const GroupsExpenseRoute = GroupsExpenseRouteImport.update({
+  id: '/expense',
+  path: '/expense',
+  getParentRoute: () => GroupsRouteRoute,
+} as any)
+const GroupsExportRoute = GroupsExportRouteImport.update({
+  id: '/export',
+  path: '/export',
+  getParentRoute: () => GroupsRouteRoute,
+} as any)
+const GroupsJoinRoute = GroupsJoinRouteImport.update({
+  id: '/join',
+  path: '/join',
+  getParentRoute: () => GroupsRouteRoute,
+} as any)
+const GroupsScanRoute = GroupsScanRouteImport.update({
+  id: '/scan',
+  path: '/scan',
   getParentRoute: () => GroupsRouteRoute,
 } as any)
 
@@ -140,18 +140,18 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/groups': {
-      id: '/groups'
-      path: '/groups'
-      fullPath: '/groups'
-      preLoaderRoute: typeof GroupsRouteRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/': {
       id: '/'
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/groups': {
+      id: '/groups'
+      path: '/groups'
+      fullPath: '/groups'
+      preLoaderRoute: typeof GroupsRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/groups/': {
@@ -161,32 +161,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof GroupsIndexRouteImport
       parentRoute: typeof GroupsRouteRoute
     }
-    '/groups/scan': {
-      id: '/groups/scan'
-      path: '/scan'
-      fullPath: '/groups/scan'
-      preLoaderRoute: typeof GroupsScanRouteImport
-      parentRoute: typeof GroupsRouteRoute
-    }
-    '/groups/join': {
-      id: '/groups/join'
-      path: '/join'
-      fullPath: '/groups/join'
-      preLoaderRoute: typeof GroupsJoinRouteImport
-      parentRoute: typeof GroupsRouteRoute
-    }
-    '/groups/export': {
-      id: '/groups/export'
-      path: '/export'
-      fullPath: '/groups/export'
-      preLoaderRoute: typeof GroupsExportRouteImport
-      parentRoute: typeof GroupsRouteRoute
-    }
-    '/groups/expense': {
-      id: '/groups/expense'
-      path: '/expense'
-      fullPath: '/groups/expense'
-      preLoaderRoute: typeof GroupsExpenseRouteImport
+    '/groups/$groupId': {
+      id: '/groups/$groupId'
+      path: '/$groupId'
+      fullPath: '/groups/$groupId'
+      preLoaderRoute: typeof GroupsGroupIdRouteImport
       parentRoute: typeof GroupsRouteRoute
     }
     '/groups/create': {
@@ -196,11 +175,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof GroupsCreateRouteImport
       parentRoute: typeof GroupsRouteRoute
     }
-    '/groups/$groupId': {
-      id: '/groups/$groupId'
-      path: '/$groupId'
-      fullPath: '/groups/$groupId'
-      preLoaderRoute: typeof GroupsGroupIdRouteImport
+    '/groups/expense': {
+      id: '/groups/expense'
+      path: '/expense'
+      fullPath: '/groups/expense'
+      preLoaderRoute: typeof GroupsExpenseRouteImport
+      parentRoute: typeof GroupsRouteRoute
+    }
+    '/groups/export': {
+      id: '/groups/export'
+      path: '/export'
+      fullPath: '/groups/export'
+      preLoaderRoute: typeof GroupsExportRouteImport
+      parentRoute: typeof GroupsRouteRoute
+    }
+    '/groups/join': {
+      id: '/groups/join'
+      path: '/join'
+      fullPath: '/groups/join'
+      preLoaderRoute: typeof GroupsJoinRouteImport
+      parentRoute: typeof GroupsRouteRoute
+    }
+    '/groups/scan': {
+      id: '/groups/scan'
+      path: '/scan'
+      fullPath: '/groups/scan'
+      preLoaderRoute: typeof GroupsScanRouteImport
       parentRoute: typeof GroupsRouteRoute
     }
   }

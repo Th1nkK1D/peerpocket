@@ -9,9 +9,8 @@ import {
 	Typography,
 } from '@mui/material';
 import { createFileRoute, redirect } from '@tanstack/react-router';
-import { zodValidator } from '@tanstack/zod-adapter';
 import { useCallback, useEffect, useRef } from 'react';
-import { z } from 'zod/v4';
+import * as z from 'zod';
 import { AuthenticatedLayout } from '../../components/authenticated-layout';
 import { ExpensesPanel } from '../../components/group-tab/expenses-panel';
 import { MembersPanel } from '../../components/group-tab/members-panel';
@@ -46,7 +45,7 @@ const searchSchema = z.object({
 
 export const Route = createFileRoute('/groups/$groupId')({
 	component: RouteComponent,
-	validateSearch: zodValidator(searchSchema),
+	validateSearch: searchSchema,
 	async beforeLoad({ params, context }) {
 		const { user } = context;
 
@@ -131,6 +130,7 @@ function RouteComponent() {
 							navigate({
 								search: { tab: tabs[index].key },
 								replace: true,
+								resetScroll: false,
 							});
 						}
 					}
@@ -151,9 +151,11 @@ function RouteComponent() {
 
 	const handleTabChange = useCallback(
 		(_: React.SyntheticEvent, newValue: number) => {
+			// The router's default scroll reset would cancel the smooth panel scroll
 			navigate({
 				search: { tab: tabs[newValue].key },
 				replace: true,
+				resetScroll: false,
 			});
 		},
 		[navigate],

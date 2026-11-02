@@ -84,7 +84,7 @@ export function AuthenticatedLayout({
 						</IconButton>
 					)}
 
-					<h1 className="font-bold text-xl">{title}</h1>
+					<h1 className="text-xl font-bold">{title}</h1>
 
 					<IconButton
 						size="large"

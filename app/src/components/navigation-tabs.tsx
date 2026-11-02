@@ -21,12 +21,7 @@ export function NavigationTabs({ tabs, ...rest }: Props) {
 	}
 
 	return (
-		<MuiTabs
-			// biome-ignore lint/a11y/useSemanticElements: use MUI tab
-			role="navigation"
-			value={activeTab}
-			{...rest}
-		>
+		<MuiTabs role="navigation" value={activeTab} {...rest}>
 			{tabs.map((tabProps) => (
 				<LinkTab key={tabProps.to} {...tabProps} />
 			))}

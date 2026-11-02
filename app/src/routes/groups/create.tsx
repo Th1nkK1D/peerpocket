@@ -1,6 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router';
 import { useMemo } from 'react';
-import { z } from 'zod/v4';
+import * as z from 'zod';
 import { AuthenticatedLayout } from '../../components/authenticated-layout';
 import { GroupSharing } from '../../components/group-sharing';
 import { LinkButton } from '../../components/links';

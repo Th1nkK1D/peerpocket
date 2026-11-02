@@ -34,7 +34,7 @@ export function StackHorizontalBarChart({
 						style={{ width: `${(groupTotal * 100) / max}%` }}
 					>
 						<div
-							className="rounded-r-sm bg-secondary"
+							className="bg-secondary rounded-r-sm"
 							style={{ width: `${(myTotal * 100) / groupTotal}%` }}
 						></div>
 					</div>

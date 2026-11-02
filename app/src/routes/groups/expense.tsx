@@ -1,8 +1,7 @@
 import { Button } from '@mui/material';
 import { createFileRoute, redirect, useNavigate } from '@tanstack/react-router';
-import { zodValidator } from '@tanstack/zod-adapter';
 import dayjs, { type Dayjs } from 'dayjs';
-import { z } from 'zod/v4';
+import * as z from 'zod';
 import { AuthenticatedLayout } from '../../components/authenticated-layout';
 import { LinkButton } from '../../components/links';
 import { categories } from '../../constants/expense';
@@ -20,12 +19,10 @@ const SMALLEST_FRACTION = 0.01;
 
 export const Route = createFileRoute('/groups/expense')({
 	component: RouteComponent,
-	validateSearch: zodValidator(
-		z.object({
-			groupId: z.string().nonempty(),
-			expenseId: z.string().nonempty().optional(),
-		}),
-	),
+	validateSearch: z.object({
+		groupId: z.string().nonempty(),
+		expenseId: z.string().nonempty().optional(),
+	}),
 	loaderDeps: ({ search: { groupId, expenseId } }) => ({ groupId, expenseId }),
 	async loader({ deps, context }) {
 		const { groupId, expenseId } = deps;
