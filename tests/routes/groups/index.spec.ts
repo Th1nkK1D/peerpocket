@@ -3,6 +3,7 @@ import {
 	buildFullGroupSeed,
 	createUserFromLanding,
 	gotoSeededRoute,
+	offerInstallPrompt,
 	openSpeedDialAction,
 	tripGroup,
 } from '../../mocks/playwright';
@@ -18,6 +19,24 @@ test('shows the empty state and speed dial actions', async ({ page }) => {
 	await page.goto('/groups');
 	await openSpeedDialAction(page, 'Join');
 	await expect(page).toHaveURL(/\/groups\/scan$/);
+});
+
+test('offers to install from the menu after the landing nudge is gone', async ({
+	page,
+}) => {
+	await gotoSeededRoute(page, '/groups', buildFullGroupSeed());
+	const isPrevented = await offerInstallPrompt(page);
+	expect(isPrevented).toBe(true);
+
+	await page.getByRole('button', { name: 'Menu' }).click();
+	await page.getByRole('menuitem', { name: 'Install app' }).click();
+
+	await expect
+		.poll(() => page.evaluate(() => window.__INSTALL_PROMPTS__))
+		.toBe(1);
+	await expect(
+		page.getByRole('menuitem', { name: 'Install app', includeHidden: true }),
+	).toHaveCount(0);
 });
 
 test('opens groups from the list', async ({ page }) => {

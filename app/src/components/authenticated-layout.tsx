@@ -3,6 +3,7 @@ import {
 	ChevronLeft,
 	DarkMode,
 	Download,
+	InstallMobileOutlined,
 	LightMode,
 	Logout,
 	ManageAccounts,
@@ -26,6 +27,7 @@ import {
 import { useColorScheme } from '@mui/material/styles';
 import { useNavigate } from '@tanstack/react-router';
 import { type PropsWithChildren, useId, useState } from 'react';
+import { useInstallPrompt } from '../hooks/install-prompt';
 import type { UserStore } from '../stores/user';
 
 interface Props {
@@ -45,6 +47,7 @@ export function AuthenticatedLayout({
 	const user = userStore.useValues();
 	const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 	const { mode, setMode } = useColorScheme();
+	const { canPrompt, install } = useInstallPrompt();
 
 	const navigate = useNavigate();
 	const dialogTitleId = useId();
@@ -143,6 +146,19 @@ export function AuthenticatedLayout({
 							</ListItemIcon>
 							<ListItemText>Export data</ListItemText>
 						</MenuItem>
+						{canPrompt && (
+							<MenuItem
+								onClick={() => {
+									closeMenu();
+									install();
+								}}
+							>
+								<ListItemIcon>
+									<InstallMobileOutlined fontSize="small" />
+								</ListItemIcon>
+								<ListItemText>Install app</ListItemText>
+							</MenuItem>
+						)}
 						<MenuItem onClick={openLogoutDialog}>
 							<ListItemIcon>
 								<Logout fontSize="small" />

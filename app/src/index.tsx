@@ -2,7 +2,12 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './app';
 import './index.css';
+import './hooks/install-prompt';
 import { initializeE2E } from '../../tests/mocks/playwright';
+import {
+	activeUserStoreId,
+	requestPersistentStorage,
+} from './utils/active-user';
 
 // Recover when a lazy route chunk vanished after a new deployment
 window.addEventListener('vite:preloadError', (event) => {
@@ -15,6 +20,10 @@ const rootEl = document.getElementById('root');
 async function bootstrap() {
 	if ('__PEERPOCKET_E2E__' in window) {
 		await initializeE2E();
+	}
+
+	if (activeUserStoreId.get()) {
+		requestPersistentStorage();
 	}
 
 	if (rootEl) {

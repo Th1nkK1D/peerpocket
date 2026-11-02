@@ -4,6 +4,7 @@ import { zodValidator } from '@tanstack/zod-adapter';
 import { useState } from 'react';
 import * as z from 'zod';
 import { ImportFlow } from '../components/import-flow';
+import { InstallNudge } from '../components/install-nudge';
 import { SaveIdentityDialog } from '../components/save-identity-dialog';
 import { useMuiForm } from '../hooks/form';
 import { setupUserStore, USER_STORE_PREFIX } from '../stores/user';
@@ -80,6 +81,7 @@ function RouteComponent() {
 				<h3>PeerPocket</h3>
 				<p>Your Peer-to-peer expense tracker</p>
 			</div>
+			<InstallNudge hasInvite={path === '/groups/join'} />
 			<form
 				className="flex flex-col gap-2"
 				onSubmit={(e) => {

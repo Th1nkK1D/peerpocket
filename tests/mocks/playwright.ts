@@ -79,6 +79,7 @@ declare global {
 	interface Window {
 		__PEERPOCKET_E2E__?: E2EConfig;
 		__PEERPOCKET_E2E_STORES__?: Record<string, any>;
+		__INSTALL_PROMPTS__?: number;
 	}
 }
 
@@ -214,6 +215,23 @@ export async function installAppMocks(page: Page) {
 			value: new ClipboardMock(),
 			configurable: true,
 		});
+	});
+}
+
+export function offerInstallPrompt(page: Page) {
+	return page.evaluate(() => {
+		window.__INSTALL_PROMPTS__ = 0;
+		const event = Object.assign(
+			new Event('beforeinstallprompt', { cancelable: true }),
+			{
+				prompt: async () => {
+					window.__INSTALL_PROMPTS__ = (window.__INSTALL_PROMPTS__ ?? 0) + 1;
+				},
+				userChoice: Promise.resolve({ outcome: 'accepted' }),
+			},
+		);
+		window.dispatchEvent(event);
+		return event.defaultPrevented;
 	});
 }
 
