@@ -1,1 +1,1 @@
-CI=1 bun run test
+bun run check && CI=1 bun run test
