@@ -3,6 +3,7 @@
 ## Structure
 
 The project is monorepo managed by bun
+
 - /app is main frontend app using react, Tanstack Router, Tanstack Form, MUI, Tailwind, and Tinybase
 - /server is the backend based on bun
 - /libs is a shared functions

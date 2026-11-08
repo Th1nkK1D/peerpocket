@@ -11,7 +11,7 @@
 	"dependencies": {
 		"@peerpocket/libs": "workspace:*",
 		"crossws": "^0.4.17",
-		"srvx": "^0.8.16"
+		"srvx": "^1.0.8"
 	},
 	"devDependencies": {
 		"@types/bun": "latest"
