@@ -101,6 +101,15 @@ test('merges expenses from two peers via sync union', async ({ browser }) => {
 	const pageA = await contextA.newPage();
 	const pageB = await contextB.newPage();
 
+	const relayFrames: string[] = [];
+	for (const page of [pageA, pageB]) {
+		page.on('websocket', (ws) => {
+			ws.on('framesent', ({ payload }) =>
+				relayFrames.push(Buffer.from(payload).toString('latin1')),
+			);
+		});
+	}
+
 	await gotoSeededRoute(pageA, `/groups/${syncGroup.id}?tab=expenses`, {
 		user: baseUser,
 		groups: [groupSeed],
@@ -162,6 +171,23 @@ test('merges expenses from two peers via sync union', async ({ browser }) => {
 
 	await expect(pageB.getByText('Initial expense')).toBeVisible();
 	await expect(pageB.getByText('Expense B')).toBeVisible();
+
+	// The relay must only see an opaque topic and ciphertext
+	expect(relayFrames.some((frame) => frame.includes('SYNC'))).toBe(true);
+	// WebRTC offers go through the relay too, so their fingerprint must be sealed
+	for (const secret of [
+		syncGroup.id,
+		'a=fingerprint',
+		'Initial expense',
+		'Expense A',
+	]) {
+		expect
+			.soft(
+				relayFrames.some((frame) => frame.includes(secret)),
+				secret,
+			)
+			.toBe(false);
+	}
 
 	await contextA.close();
 	await contextB.close();

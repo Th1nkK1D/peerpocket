@@ -6,7 +6,7 @@ Your (PWA) Peer-to-peer expense tracker
 
 ## How does it work?
 
-PeerPocket never store your data outside your devices, instead **the same expense group data on all online devices will be synced** via our tiny WebSocket relay server. Technically, subscribing to the same WebSocket topic which is a random generated group ID.
+PeerPocket never store your data outside your devices, instead **the same expense group data on all online devices will be synced** via our tiny WebSocket relay server. Technically, subscribing to the same WebSocket topic derived from a random generated group ID. Everything passing through the relay is end-to-end encrypted with a key derived from the same ID, which never leaves your devices, so the relay can't read or tamper with your data. It still sees who is online, message sizes and timing, and IP addresses.
 
 ## Tech Stack
 

@@ -17,6 +17,7 @@ import {
 	type TablesSchema,
 	type ValuesSchema,
 } from 'tinybase/with-schemas';
+import { createGroupChannel } from '../utils/group-channel';
 import { reconcileClaims } from '../utils/placeholder';
 
 // createCustomSynchronizer takes seconds; a huge value here leaves the
@@ -55,6 +56,8 @@ export async function createSyncStore<
 	// @ts-expect-error https://tinybase.org/guides/persistence/an-intro-to-persistence/
 	const persistence = createLocalPersister(store, id);
 	await persistence.startAutoPersisting();
+
+	const channel = await createGroupChannel(id);
 
 	if ((window as any).__PEERPOCKET_E2E__) {
 		const w = window as any;
@@ -208,13 +211,20 @@ export async function createSyncStore<
 								}
 							}
 
-							sendMessage(
-								formatMessage({
-									type: 'SYNC',
-									storeId: id,
-									payload,
-								}),
-							);
+							channel
+								.seal(args)
+								.then((sealed) =>
+									sendMessage(
+										formatMessage({
+											type: 'SYNC',
+											storeId: channel.topic,
+											payload: [toClientId, sealed],
+										}),
+										// Don't queue for the next socket, where our peer id is stale
+										false,
+									),
+								)
+								.catch((err) => console.warn('[PeerSync] seal failed:', err));
 						},
 						function registerReceive(receive: Receive) {
 							messageReceiver.current = receive;
@@ -233,7 +243,7 @@ export async function createSyncStore<
 					sendMessage(
 						formatMessage({
 							type: 'SUBSCRIBE',
-							storeId: id,
+							storeId: channel.topic,
 						}),
 					);
 
@@ -242,7 +252,7 @@ export async function createSyncStore<
 				async onMessage(event: MessageEvent) {
 					const data = await parsedMessage(event.data);
 
-					if (data.storeId !== id) return;
+					if (data.storeId !== channel.topic) return;
 
 					switch (data.type) {
 						case 'PEER_JOIN':
@@ -267,29 +277,40 @@ export async function createSyncStore<
 								}
 							}
 							return;
-						case 'SIGNAL':
+						// Decrypt before the routing checks, so a reset during the await can't slip through
+						case 'SIGNAL': {
+							const signal = (await openSealed(
+								data.signal,
+							)) as SimplePeer.SignalData | null;
 							if (
+								signal &&
 								data.toPeerId === myPeerIdRef.current &&
 								data.fromPeerId !== myPeerIdRef.current
 							) {
 								const conn = peerConnections.current.get(data.fromPeerId);
 								if (conn) {
-									conn.peer.signal(data.signal);
+									conn.peer.signal(signal);
 								} else {
 									// Peer not ready yet — connect and retry until ready
 									connectToPeer(data.fromPeerId);
-									waitForSignal(data.fromPeerId, data.signal);
+									waitForSignal(data.fromPeerId, signal);
 								}
 							}
 							return;
+						}
 						case 'SYNC': {
 							// Drop the transport toClientId; use the relay-stamped sender.
-							const [toPeerId, ...rest] = data.payload;
+							const [toPeerId, sealed] = data.payload;
+							const args = await openSealed(sealed);
 							if (
+								args &&
 								data.fromPeerId &&
 								(toPeerId === null || toPeerId === myPeerIdRef.current)
 							) {
-								messageReceiver.current(data.fromPeerId, ...rest);
+								messageReceiver.current(
+									data.fromPeerId,
+									...(args as [string, Message, any]),
+								);
 							}
 							return;
 						}
@@ -315,6 +336,15 @@ export async function createSyncStore<
 				setIsSyncing(true);
 			} else {
 				syncDebounceRef.current = setTimeout(() => setIsSyncing(false), 500);
+			}
+		}
+
+		async function openSealed(sealed: Uint8Array) {
+			try {
+				return await channel.open(sealed);
+			} catch (err) {
+				console.warn('[PeerSync] open failed:', err);
+				return null;
 			}
 		}
 
@@ -350,17 +380,24 @@ export async function createSyncStore<
 			});
 
 			peer.on('signal', (signal) => {
-				if (myPeerIdRef.current) {
-					sendMessage(
-						formatMessage({
-							type: 'SIGNAL',
-							storeId: id,
-							toPeerId: remotePeerId,
-							fromPeerId: myPeerIdRef.current,
-							signal,
-						}),
-					);
-				}
+				const fromPeerId = myPeerIdRef.current;
+				if (!fromPeerId) return;
+				// Sealed so the relay can't swap the DTLS fingerprint and sit in the middle
+				channel
+					.seal(signal)
+					.then((sealed) =>
+						sendMessage(
+							formatMessage({
+								type: 'SIGNAL',
+								storeId: channel.topic,
+								toPeerId: remotePeerId,
+								fromPeerId,
+								signal: sealed,
+							}),
+							false,
+						),
+					)
+					.catch((err) => console.warn('[PeerSync] seal failed:', err));
 			});
 
 			peer.on('data', (data: Uint8Array) => {

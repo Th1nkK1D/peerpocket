@@ -15,7 +15,7 @@ interface SyncMessage {
 	type: 'SYNC';
 	storeId: string;
 	fromPeerId?: string;
-	payload: [any, any, any, any];
+	payload: [toPeerId: string | null, sealed: Uint8Array];
 }
 
 interface SignalMessage {
@@ -23,7 +23,7 @@ interface SignalMessage {
 	storeId: string;
 	toPeerId: string;
 	fromPeerId: string;
-	signal: any;
+	signal: Uint8Array;
 }
 
 interface PeerJoinMessage {
