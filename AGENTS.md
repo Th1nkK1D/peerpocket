@@ -21,3 +21,4 @@ The project is monorepo managed by bun
   - Any changes to the user-side functionality should add/update corresponded e2e tests in /tests
   - Always run all e2e test with `bun run test`, all tests must be passed
 - Human will get in the loop and edit some file along the way. If you spot it, please respect those changes
+- Write commit messages as a single concise conventional commit subject line, without a body
