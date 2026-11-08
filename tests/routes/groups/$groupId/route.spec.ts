@@ -132,6 +132,10 @@ test('merges expenses from two peers via sync union', async ({ browser }) => {
 	await expect(
 		pageB.getByText(/peers available|Connected to|Syncing|Only you are online/),
 	).toBeVisible({ timeout: 10000 });
+	// The local Chromium gathers no ICE candidates, so we can't wait for a connection, only the WebRTC handshake
+	await expect
+		.poll(() => relayFrames.some((frame) => frame.includes('SIGNAL')))
+		.toBe(true);
 
 	// Peer A creates expense
 	await pageA.goto(`/groups/expense?groupId=${syncGroup.id}`);

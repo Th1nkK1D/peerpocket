@@ -8,6 +8,12 @@ export default defineConfig({
 		global: 'globalThis',
 	},
 	envPrefix: 'PUBLIC_',
+	resolve: {
+		// simple-peer's source needs Node's `events`, which Vite stubs out in the browser; its bundled build doesn't
+		alias: [
+			{ find: /^simple-peer$/, replacement: 'simple-peer/simplepeer.min.js' },
+		],
+	},
 	plugins: [
 		tanstackRouter({
 			target: 'react',
