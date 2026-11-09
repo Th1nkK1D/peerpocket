@@ -1,5 +1,12 @@
 import { CssBaseline } from '@mui/material';
-import { amber, deepPurple, grey, orange } from '@mui/material/colors';
+import {
+	blueGrey,
+	deepOrange,
+	deepPurple,
+	grey,
+	indigo,
+	orange,
+} from '@mui/material/colors';
 import GlobalStyles from '@mui/material/GlobalStyles';
 import {
 	createTheme,
@@ -11,25 +18,31 @@ import { createRootRoute, Outlet } from '@tanstack/react-router';
 import { useEffect } from 'react';
 import PwaCachePrompt from '../components/pwa-cache-prompt';
 
+const primaryColor = { light: indigo[300], dark: deepPurple[200] };
+
 const theme = createTheme({
 	colorSchemes: {
 		light: {
 			palette: {
 				primary: {
-					main: deepPurple[500],
+					main: primaryColor.light,
 				},
 				secondary: {
-					main: amber[800],
+					main: deepOrange[400],
+				},
+				background: {
+					default: blueGrey[50],
+					paper: grey[50],
 				},
 			},
 		},
 		dark: {
 			palette: {
 				primary: {
-					main: deepPurple[300],
+					main: primaryColor.dark,
 				},
 				secondary: {
-					main: orange[600],
+					main: orange[300],
 				},
 			},
 		},
@@ -42,6 +55,17 @@ const theme = createTheme({
 		borderRadius: 12,
 	},
 	components: {
+		MuiAppBar: {
+			defaultProps: {
+				enableColorOnDark: true,
+			},
+			styleOverrides: {
+				root: ({ theme }) =>
+					theme.applyStyles('dark', {
+						boxShadow: '0 4px 12px rgba(0, 0, 0, 0.7)',
+					}),
+			},
+		},
 		MuiButton: {
 			styleOverrides: {
 				root: {
@@ -73,13 +97,15 @@ function RootComponent() {
 }
 
 function MetaThemeColor() {
-	const { mode } = useColorScheme();
+	const { colorScheme } = useColorScheme();
 
 	useEffect(() => {
-		document
-			.querySelector('meta[name="theme-color"]')
-			?.setAttribute('content', mode === 'dark' ? grey[900] : deepPurple[500]);
-	}, [mode]);
+		if (colorScheme) {
+			document
+				.querySelector('meta[name="theme-color"]')
+				?.setAttribute('content', primaryColor[colorScheme]);
+		}
+	}, [colorScheme]);
 
 	return null;
 }

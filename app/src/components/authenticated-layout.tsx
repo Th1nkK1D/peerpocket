@@ -73,11 +73,10 @@ export function AuthenticatedLayout({
 		<div className="flex h-dvh flex-col">
 			<AppBar position="static" className="z-20">
 				<Toolbar className="flex items-center justify-between">
-					{hideBackButton ? (
-						<img src="/favicon-72x72.png" alt="" className="size-6 rounded" />
-					) : (
+					{!hideBackButton && (
 						<IconButton
-							className="-ml-3 text-white"
+							color="inherit"
+							className="-ml-3"
 							onClick={() => navigate({ to: '..' })}
 						>
 							<ChevronLeft />

@@ -24,10 +24,11 @@ export default defineConfig({
 		VitePWA({
 			registerType: 'prompt',
 			includeAssets: [
-				'favicon-72x72.png',
-				'favicon-192x192.png',
-				'favicon-512x512.png',
-				'maskable-512x512.png',
+				'favicon.svg',
+				'apple-touch-icon.png',
+				'favicon-192x192-20261109.png',
+				'favicon-512x512-20261109.png',
+				'maskable-512x512-20261109.png',
 			],
 			workbox: {
 				cleanupOutdatedCaches: true,
@@ -37,24 +38,24 @@ export default defineConfig({
 				name: 'PeerPocket',
 				short_name: 'PeerPocket',
 				description: 'Peer-to-peer expense tracker',
-				theme_color: '#673ab7',
-				background_color: '#ffffff',
+				theme_color: '#7986cb',
+				background_color: '#9fa8da',
 				display: 'standalone',
 				scope: '/',
 				start_url: '/',
 				icons: [
 					{
-						src: 'favicon-192x192.png',
+						src: 'favicon-192x192-20261109.png',
 						sizes: '192x192',
 						type: 'image/png',
 					},
 					{
-						src: 'favicon-512x512.png',
+						src: 'favicon-512x512-20261109.png',
 						sizes: '512x512',
 						type: 'image/png',
 					},
 					{
-						src: 'maskable-512x512.png',
+						src: 'maskable-512x512-20261109.png',
 						sizes: '512x512',
 						type: 'image/png',
 						purpose: 'maskable',
