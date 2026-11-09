@@ -250,6 +250,8 @@ export async function createSyncStore<
 					synchronizer.current.startSync();
 				},
 				async onMessage(event: MessageEvent) {
+					if (typeof event.data === 'string') return; // heartbeat pong
+
 					const data = await parsedMessage(event.data);
 
 					if (data.storeId !== channel.topic) return;
