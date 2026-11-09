@@ -83,7 +83,11 @@ export function AuthenticatedLayout({
 						</IconButton>
 					)}
 
-					<h1 className="text-xl font-bold">{title}</h1>
+					<h1
+						className={`font-grandstander font-medium ${hideBackButton ? 'text-2xl' : 'text-xl'}`}
+					>
+						{title}
+					</h1>
 
 					<IconButton
 						size="large"

@@ -71,10 +71,10 @@ function RouteComponent() {
 	}
 
 	return (
-		<AuthenticatedLayout title="PeerPockets" userStore={user} hideBackButton>
+		<AuthenticatedLayout title="PeerPocket" userStore={user} hideBackButton>
 			<div className="m-3 mb-24 flex flex-1 flex-col gap-3">
 				<div className="flex justify-between">
-					<Typography variant="h5">Groups</Typography>
+					<Typography variant="h6">Groups</Typography>
 					<ActionMenu
 						ariaLabel="Filter groups"
 						triggerIcon={<FilterList fontSize="small" />}
@@ -110,7 +110,11 @@ function RouteComponent() {
 										className="flex flex-1 flex-col"
 									>
 										<Typography variant="h6">{name}</Typography>
-										<Typography variant="body2" color="textSecondary">
+										<Typography
+											variant="body2"
+											color="textSecondary"
+											className="font-grandstander font-light"
+										>
 											Joined {dayjs(joinedAt).format('DD MMM YY')}
 										</Typography>
 									</Link>

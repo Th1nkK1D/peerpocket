@@ -131,9 +131,11 @@ export function MembersPanel({ user, userGroupInfo, group }: PanelProps) {
 							<ListItemText
 								primary={member.name}
 								secondary={
-									isPlaceholder
-										? 'Not joined yet'
-										: `Joined on ${dayjs(member.joinedAt).format('DD MMMM YYYY')}`
+									<span className="font-grandstander font-light">
+										{isPlaceholder
+											? 'Not joined yet'
+											: `Joined on ${dayjs(member.joinedAt).format('DD MMMM YYYY')}`}
+									</span>
 								}
 							/>
 						</ListItem>

@@ -18,6 +18,8 @@
 	--font-caption: var(--mui-font-caption);
 	--font-overline: var(--mui-font-overline);
 
+	--font-grandstander: "Grandstander Variable", sans-serif;
+
 	--letter-spacing-h1: -0.01562em;
 	--letter-spacing-h2: -0.00833em;
 	--letter-spacing-h4: 0.00735em;

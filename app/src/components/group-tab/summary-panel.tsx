@@ -191,15 +191,13 @@ export function SummaryPanel({ user, group }: PanelProps) {
 				</div>
 			</div>
 
-			<Divider>
-				<Chip
-					label={
-						selectedMemberId === currentUser.hashedId
-							? 'Who I need to pay to'
-							: `Who ${selectedMemberName} needs to pay to`
-					}
-				></Chip>
-			</Divider>
+			<SectionDivider
+				label={
+					selectedMemberId === currentUser.hashedId
+						? 'Who I need to pay to'
+						: `Who ${selectedMemberName} needs to pay to`
+				}
+			/>
 
 			{outstandingBalanceWithOtherMembers.toPayThem.length ? (
 				<MemberAmountTable
@@ -216,15 +214,13 @@ export function SummaryPanel({ user, group }: PanelProps) {
 				</Typography>
 			)}
 
-			<Divider>
-				<Chip
-					label={
-						selectedMemberId === currentUser.hashedId
-							? 'Who needs to pay me'
-							: `Who needs to pay ${selectedMemberName}`
-					}
-				></Chip>
-			</Divider>
+			<SectionDivider
+				label={
+					selectedMemberId === currentUser.hashedId
+						? 'Who needs to pay me'
+						: `Who needs to pay ${selectedMemberName}`
+				}
+			/>
 
 			{outstandingBalanceWithOtherMembers.toPayMe.length ? (
 				<MemberAmountTable
@@ -244,6 +240,16 @@ export function SummaryPanel({ user, group }: PanelProps) {
 	);
 }
 
+function SectionDivider({ label }: { label: string }) {
+	return (
+		<Divider>
+			<Chip
+				label={<span className="font-grandstander font-light">{label}</span>}
+			/>
+		</Divider>
+	);
+}
+
 function TotalExpenseCard({
 	label,
 	value,
@@ -255,7 +261,7 @@ function TotalExpenseCard({
 }) {
 	return (
 		<Card className="p-2" variant="outlined">
-			<Typography variant="body2" className={className}>
+			<Typography variant="body2" className={`font-grandstander ${className}`}>
 				{label}
 			</Typography>
 			<Typography className={`text-2xl ${className}`}>

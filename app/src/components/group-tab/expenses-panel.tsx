@@ -145,7 +145,7 @@ export function ExpensesPanel({ user, group, groupId }: PanelProps) {
 														<Typography
 															variant="body2"
 															color="textSecondary"
-															className="flex-1"
+															className="font-grandstander flex-1 font-light"
 														>
 															{expense.paidByMemberId === currentUser.hashedId
 																? `${otherSplits.length} people owe you`
