@@ -4,6 +4,7 @@ import { Alert, Fab, Snackbar } from '@mui/material';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { type IDetectedBarcode, Scanner } from '@yudiel/react-qr-scanner';
 import { useEffect, useRef, useState } from 'react';
+
 import { getE2EConfig } from '../../../../tests/mocks/playwright';
 import { AuthenticatedLayout } from '../../components/authenticated-layout';
 import { FabsContainer } from '../../components/fabs-container';
@@ -79,7 +80,6 @@ function RouteComponent() {
 		);
 	}
 
-	// biome-ignore lint: just for e2e test
 	useEffect(() => {
 		if (!e2eScan) {
 			return;
@@ -97,6 +97,7 @@ function RouteComponent() {
 				),
 			);
 		}
+		// oxlint-disable-next-line react-hooks/exhaustive-deps -- just for e2e test
 	}, [e2eScan]);
 
 	return (

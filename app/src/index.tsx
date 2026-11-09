@@ -1,14 +1,16 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import App from './app';
+
+import { initializeE2E } from '../../tests/mocks/playwright';
 import '@fontsource-variable/grandstander';
+
 import '@fontsource/roboto/latin-300.css';
 import '@fontsource/roboto/latin-400.css';
 import '@fontsource/roboto/latin-500.css';
 import '@fontsource/roboto/latin-700.css';
 import './index.css';
 import './hooks/install-prompt';
-import { initializeE2E } from '../../tests/mocks/playwright';
+import App from './app';
 import {
 	activeUserStoreId,
 	requestPersistentStorage,

@@ -18,6 +18,7 @@ import {
 import { groups } from 'd3-array';
 import dayjs from 'dayjs';
 import { useState } from 'react';
+
 import { categories, categoryNameEmojiMap } from '../../constants/expense';
 import { formatDecimal } from '../../hooks/form';
 import { EmptyState } from '../empty-state';
@@ -145,7 +146,7 @@ export function ExpensesPanel({ user, group, groupId }: PanelProps) {
 														<Typography
 															variant="body2"
 															color="textSecondary"
-															className="font-grandstander flex-1 font-light"
+															className="flex-1 font-grandstander font-light"
 														>
 															{expense.paidByMemberId === currentUser.hashedId
 																? `${otherSplits.length} people owe you`

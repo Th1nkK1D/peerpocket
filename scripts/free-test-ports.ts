@@ -19,7 +19,7 @@ for (const line of output.split('\n')) {
 			process.kill(id, 'SIGTERM');
 			killed.add(id);
 			console.log(`Killed stale process ${id} on port ${port[1]}`);
-		} catch (_) {}
+		} catch {}
 	}
 }
 

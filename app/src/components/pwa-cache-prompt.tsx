@@ -1,6 +1,6 @@
-import { useRegisterSW } from 'virtual:pwa-register/react';
 import { Close } from '@mui/icons-material';
 import { Button, IconButton, Snackbar } from '@mui/material';
+import { useRegisterSW } from 'virtual:pwa-register/react';
 
 export default function ReloadPrompt() {
 	const {

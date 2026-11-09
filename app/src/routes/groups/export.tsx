@@ -11,6 +11,7 @@ import {
 } from '@mui/material';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import React from 'react';
+
 import { AuthenticatedLayout } from '../../components/authenticated-layout';
 import { GROUP_STORE_PREFIX } from '../../stores/group';
 import {

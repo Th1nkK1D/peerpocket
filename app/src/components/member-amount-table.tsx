@@ -6,6 +6,7 @@ import {
 	TableRow,
 } from '@mui/material';
 import type { ComponentProps } from 'react';
+
 import { formatDecimal } from '../hooks/form';
 
 interface MemberAmountTableProps {

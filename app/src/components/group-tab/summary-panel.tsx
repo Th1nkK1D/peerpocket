@@ -9,6 +9,7 @@ import {
 import { groups } from 'd3-array';
 import dayjs from 'dayjs';
 import { type ComponentProps, useEffect, useMemo, useState } from 'react';
+
 import { categoryNameEmojiMap } from '../../constants/expense';
 import { formatDecimal } from '../../hooks/form';
 import { ExpenseGroupByBar } from '../expense-groupby-bar';

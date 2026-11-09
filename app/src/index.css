@@ -1,4 +1,4 @@
-@import "tailwindcss";
+@import 'tailwindcss';
 
 @custom-variant dark (&:is(.dark *));
 
@@ -18,7 +18,7 @@
 	--font-caption: var(--mui-font-caption);
 	--font-overline: var(--mui-font-overline);
 
-	--font-grandstander: "Grandstander Variable", sans-serif;
+	--font-grandstander: 'Grandstander Variable', sans-serif;
 
 	--letter-spacing-h1: -0.01562em;
 	--letter-spacing-h2: -0.00833em;
@@ -303,7 +303,7 @@
 
 	/* ReactPullToRefresh content */
 	.refresh-view {
-		@apply flex-1 flex flex-col;
+		@apply flex flex-1 flex-col;
 	}
 }
 

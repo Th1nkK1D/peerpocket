@@ -1,4 +1,5 @@
 import { expect, test } from '@playwright/test';
+
 import { createUserFromLanding } from '../../mocks/playwright';
 
 test('creates a group, shows share controls, and navigates from the share step', async ({

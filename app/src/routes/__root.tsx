@@ -16,6 +16,7 @@ import {
 } from '@mui/material/styles';
 import { createRootRoute, Outlet } from '@tanstack/react-router';
 import { useEffect } from 'react';
+
 import PwaCachePrompt from '../components/pwa-cache-prompt';
 
 const primaryColor = { light: indigo[300], dark: deepPurple[200] };

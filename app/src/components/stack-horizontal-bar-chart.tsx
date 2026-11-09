@@ -1,4 +1,5 @@
 import Typography from '@mui/material/Typography';
+
 import { formatDecimal } from '../hooks/form';
 
 interface StackHorizontalBarChartProps {
@@ -34,7 +35,7 @@ export function StackHorizontalBarChart({
 						style={{ width: `${(groupTotal * 100) / max}%` }}
 					>
 						<div
-							className="bg-secondary rounded-r-sm"
+							className="rounded-r-sm bg-secondary"
 							style={{ width: `${(myTotal * 100) / groupTotal}%` }}
 						></div>
 					</div>

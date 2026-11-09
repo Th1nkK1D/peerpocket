@@ -1,4 +1,5 @@
 import { expect, type Page, test } from '@playwright/test';
+
 import { baseUser, gotoSeededRoute, tripGroup } from '../../mocks/playwright';
 
 async function openCalculator(page: Page) {

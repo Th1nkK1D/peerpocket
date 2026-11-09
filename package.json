@@ -1,33 +1,38 @@
 {
 	"name": "peerpocket",
-	"module": "index.ts",
-	"type": "module",
 	"private": true,
-	"scripts": {
-		"dev": "bun run --filter=\"@peerpocket/*\" dev",
-		"build": "bun run --filter=\"@peerpocket/*\" build",
-		"check": "bun run --filter=\"@peerpocket/*\" --elide-lines=0 check",
-		"lint": "bun run biome check --write",
-		"test": "bun scripts/free-test-ports.ts && playwright test",
-		"prepare": "husky"
-	},
-	"lint-staged": {
-		"*": "biome check --write --unsafe --no-errors-on-unmatched --files-ignore-unknown=true --colors=off"
-	},
 	"workspaces": [
 		"app",
 		"server",
 		"libs"
 	],
+	"type": "module",
+	"module": "index.ts",
+	"scripts": {
+		"dev": "bun run --filter=\"@peerpocket/*\" dev",
+		"build": "bun run --filter=\"@peerpocket/*\" build",
+		"check": "bun run --filter=\"@peerpocket/*\" --elide-lines=0 check",
+		"lint": "oxlint --fix && oxfmt",
+		"test": "bun scripts/free-test-ports.ts && playwright test",
+		"prepare": "husky"
+	},
 	"devDependencies": {
-		"@biomejs/biome": "2.6.6",
 		"@commitlint/cli": "^19.8.1",
 		"@commitlint/config-conventional": "^19.8.1",
 		"@playwright/test": "^1.65.0",
 		"husky": "^9.1.7",
-		"lint-staged": "^16.4.0"
+		"lint-staged": "^16.4.0",
+		"oxfmt": "^0.78.0",
+		"oxlint": "^1.93.0"
 	},
 	"overrides": {
 		"glob": "^14.0.4"
+	},
+	"lint-staged": {
+		"*.{js,jsx,ts,tsx,mjs,cjs}": [
+			"oxlint --fix",
+			"oxfmt --no-error-on-unmatched-pattern"
+		],
+		"*.{json,jsonc,css,html,md,yml,yaml}": "oxfmt --no-error-on-unmatched-pattern"
 	}
 }

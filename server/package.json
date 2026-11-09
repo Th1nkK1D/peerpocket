@@ -1,8 +1,8 @@
 {
 	"name": "@peerpocket/server",
-	"module": "index.ts",
-	"type": "module",
 	"private": true,
+	"type": "module",
+	"module": "index.ts",
 	"scripts": {
 		"dev": "bun run --hot index.ts",
 		"build": "bun build --minify ./index.ts --outfile dist/server.js --target node",

@@ -23,6 +23,7 @@ import {
 } from '@mui/material';
 import dayjs from 'dayjs';
 import { useState } from 'react';
+
 import { claimPlaceholder, createPlaceholder } from '../../utils/placeholder';
 import { ActionMenu } from '../action-menu';
 import { FabsContainer } from '../fabs-container';
@@ -75,7 +76,7 @@ export function MembersPanel({ user, userGroupInfo, group }: PanelProps) {
 			? 'You cannot remove yourself from the group.'
 			: expenses.some(
 						(expense) => expense.paidByMemberId === selectedMember.id,
-					) || splits.some((split) => split.memberId === selectedMember.id)
+				  ) || splits.some((split) => split.memberId === selectedMember.id)
 				? 'This member cannot be removed because they are related to an expense or split.'
 				: null
 		: null;

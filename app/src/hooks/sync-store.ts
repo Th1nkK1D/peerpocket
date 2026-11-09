@@ -17,6 +17,7 @@ import {
 	type TablesSchema,
 	type ValuesSchema,
 } from 'tinybase/with-schemas';
+
 import { createGroupChannel } from '../utils/group-channel';
 import { reconcileClaims } from '../utils/placeholder';
 
@@ -38,7 +39,7 @@ function isE2EAndRelayDisabled(): boolean {
 		if (config?.seed && config.seed.enableRelay !== true) {
 			return true;
 		}
-	} catch (_) {}
+	} catch {}
 	return false;
 }
 
@@ -76,7 +77,6 @@ export async function createSyncStore<
 		name: N,
 		method: (rows: withRowId<RowValue<N>>[]) => T,
 	): T;
-	// biome-ignore lint/correctness/noComponentHookFactories: bound to this store, created once per store
 	function useTableRows<N extends TableName>(
 		name: N,
 		method: (rows: withRowId<RowValue<N>>[]) => unknown = (rows) => rows,
@@ -94,7 +94,6 @@ export async function createSyncStore<
 		);
 	}
 
-	// biome-ignore lint/correctness/noComponentHookFactories: bound to this store, created once per store
 	function usePeerSync() {
 		const synchronizer = useRef<Synchronizer<any>>(null);
 		const messageReceiver = useRef<Receive>(() => {});

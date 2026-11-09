@@ -1,4 +1,5 @@
 import type { Page } from '@playwright/test';
+
 import {
 	GROUP_STORE_PREFIX,
 	setupGroupStore,

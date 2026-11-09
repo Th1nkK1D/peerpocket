@@ -6,6 +6,7 @@ import {
 } from '@mui/icons-material';
 import { Alert, AlertTitle, Button, Snackbar, TextField } from '@mui/material';
 import { useState } from 'react';
+
 import {
 	isInAppBrowser,
 	isIos,
@@ -28,7 +29,7 @@ export function InstallNudge({ hasInvite }: InstallNudgeProps) {
 		<Alert
 			data-testid="install-nudge"
 			severity={isInstalled ? 'success' : 'warning'}
-			className="[&_p]:typography-body2 w-full max-w-sm"
+			className="w-full max-w-sm [&_p]:typography-body2"
 		>
 			{isInstalled ? (
 				<>

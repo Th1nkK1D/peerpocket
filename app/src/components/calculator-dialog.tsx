@@ -24,6 +24,7 @@ import {
 	useRef,
 	useState,
 } from 'react';
+
 import {
 	buildDisplayChars,
 	type DisplayCharacter,
@@ -385,7 +386,7 @@ export function CalculatorDialog({
 						</Typography>
 					</div>
 
-					{/* biome-ignore lint/a11y/useSemanticElements: an input cannot render the per-character spans the caret is positioned from */}
+					{/* oxlint-disable-next-line jsx-a11y/prefer-tag-over-role -- an input cannot render the per-character spans the caret is positioned from */}
 					<div
 						ref={displayRef}
 						data-testid="calculator-display"

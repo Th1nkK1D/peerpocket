@@ -1,6 +1,7 @@
 import { createFileRoute } from '@tanstack/react-router';
 import { useMemo } from 'react';
 import * as z from 'zod';
+
 import { AuthenticatedLayout } from '../../components/authenticated-layout';
 import { GroupSharing } from '../../components/group-sharing';
 import { LinkButton } from '../../components/links';
@@ -22,7 +23,7 @@ function RouteComponent() {
 		'Share',
 	]);
 
-	const id = useMemo(idHelper.generate, []);
+	const id = useMemo(() => idHelper.generate(), []);
 
 	const form = useMuiForm({
 		defaultValues: {
