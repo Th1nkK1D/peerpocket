@@ -39,7 +39,7 @@ export default defineConfig({
 				name: 'PeerPocket',
 				short_name: 'PeerPocket',
 				description: 'Peer-to-peer expense tracker',
-				theme_color: '#7986cb',
+				theme_color: '#000000',
 				background_color: '#9fa8da',
 				display: 'standalone',
 				scope: '/',
