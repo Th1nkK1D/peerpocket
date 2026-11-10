@@ -1,6 +1,12 @@
+<div align="center">
+
+<img src="app/public/favicon-512x512-20261110.png" alt="PeerPocket icon" width="256" />
+
 # PeerPocket
 
 Your (PWA) Peer-to-peer expense tracker
+
+</div>
 
 > **PeerPocket are under an early development**, we might ship a new version which is not compatible with your existing data. Please understand that you might lose your data anytime.
 
