@@ -26,9 +26,9 @@ export default defineConfig({
 			includeAssets: [
 				'favicon.svg',
 				'apple-touch-icon.png',
-				'favicon-192x192-20261109.png',
-				'favicon-512x512-20261109.png',
-				'maskable-512x512-20261109.png',
+				'favicon-192x192-20261110.png',
+				'favicon-512x512-20261110.png',
+				'maskable-512x512-20261110.png',
 			],
 			workbox: {
 				cleanupOutdatedCaches: true,
@@ -40,23 +40,23 @@ export default defineConfig({
 				short_name: 'PeerPocket',
 				description: 'Peer-to-peer expense tracker',
 				theme_color: '#000000',
-				background_color: '#9fa8da',
+				background_color: '#5c6bc0',
 				display: 'standalone',
 				scope: '/',
 				start_url: '/',
 				icons: [
 					{
-						src: 'favicon-192x192-20261109.png',
+						src: 'favicon-192x192-20261110.png',
 						sizes: '192x192',
 						type: 'image/png',
 					},
 					{
-						src: 'favicon-512x512-20261109.png',
+						src: 'favicon-512x512-20261110.png',
 						sizes: '512x512',
 						type: 'image/png',
 					},
 					{
-						src: 'maskable-512x512-20261109.png',
+						src: 'maskable-512x512-20261110.png',
 						sizes: '512x512',
 						type: 'image/png',
 						purpose: 'maskable',

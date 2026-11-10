@@ -74,7 +74,7 @@ function RouteComponent() {
 
 	return (
 		<div className="flex h-full min-h-dvh flex-col items-center justify-center gap-6 p-2">
-			<img src="/favicon-192x192-20261109.png" alt="" className="rounded-xl" />
+			<img src="/favicon-192x192-20261110.png" alt="" className="rounded-xl" />
 			<div>
 				<h3>PeerPocket</h3>
 				<p>Your Peer-to-peer expense tracker</p>

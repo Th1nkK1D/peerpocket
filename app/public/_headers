@@ -1,13 +1,13 @@
 /assets/*
   Cache-Control: public, max-age=31536000, immutable
 
-/favicon-192x192-20261109.png
+/favicon-192x192-20261110.png
   Cache-Control: public, max-age=31536000, immutable
 
-/favicon-512x512-20261109.png
+/favicon-512x512-20261110.png
   Cache-Control: public, max-age=31536000, immutable
 
-/maskable-512x512-20261109.png
+/maskable-512x512-20261110.png
   Cache-Control: public, max-age=31536000, immutable
 
 /sw.js
