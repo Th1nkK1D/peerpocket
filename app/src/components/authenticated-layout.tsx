@@ -84,11 +84,16 @@ export function AuthenticatedLayout({
 						</IconButton>
 					)}
 
-					<h1
-						className={`font-grandstander font-medium ${hideBackButton ? 'text-2xl' : 'text-xl'}`}
-					>
-						{title}
-					</h1>
+					<div className="flex items-center gap-2">
+						{hideBackButton && (
+							<img src="/favicon.svg" alt="" className="size-8" />
+						)}
+						<h1
+							className={`-mb-1 font-grandstander font-medium ${hideBackButton ? 'text-2xl' : 'text-xl'}`}
+						>
+							{title}
+						</h1>
+					</div>
 
 					<IconButton
 						size="large"

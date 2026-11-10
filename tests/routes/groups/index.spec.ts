@@ -12,6 +12,7 @@ import {
 test('shows the empty state and speed dial actions', async ({ page }) => {
 	await createUserFromLanding(page);
 
+	await expect(page.locator('header img[src="/favicon.svg"]')).toBeVisible();
 	await expect(page.getByText('No active group yet')).toBeVisible();
 
 	await openSpeedDialAction(page, 'Create');

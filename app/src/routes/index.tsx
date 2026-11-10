@@ -73,11 +73,15 @@ function RouteComponent() {
 	}
 
 	return (
-		<div className="flex h-full min-h-dvh flex-col items-center justify-center gap-6 p-2">
-			<img src="/favicon-192x192-20261110.png" alt="" className="rounded-xl" />
+		<div className="flex h-full min-h-dvh flex-col items-center justify-center gap-6 px-3 py-8">
+			<img
+				src="/favicon-192x192-20261110.png"
+				alt=""
+				className="size-40 rounded-xl"
+			/>
 			<div>
-				<h3>PeerPocket</h3>
-				<p>Your Peer-to-peer expense tracker</p>
+				<h3 className="font-grandstander font-medium">PeerPocket</h3>
+				<p>Your peer-to-peer expense tracker</p>
 			</div>
 			<InstallNudge hasInvite={path === '/groups/join'} />
 			<form
