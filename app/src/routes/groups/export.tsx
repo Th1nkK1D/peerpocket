@@ -12,7 +12,7 @@ import {
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import React from 'react';
 
-import { AuthenticatedLayout } from '../../components/authenticated-layout';
+import { AuthenticatedLayout } from '../../components/layout/authenticated-layout';
 import { GROUP_STORE_PREFIX } from '../../stores/group';
 import {
 	downloadJson,

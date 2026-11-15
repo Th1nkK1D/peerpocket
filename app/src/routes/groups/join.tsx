@@ -4,8 +4,8 @@ import { createFileRoute } from '@tanstack/react-router';
 import { useState } from 'react';
 import * as z from 'zod';
 
-import { AuthenticatedLayout } from '../../components/authenticated-layout';
-import { LinkButton } from '../../components/links';
+import { AuthenticatedLayout } from '../../components/layout/authenticated-layout';
+import { LinkButton } from '../../components/ui/links';
 import { GROUP_STORE_PREFIX, setupGroupStore } from '../../stores/group';
 import { idHelper } from '../../utils/id';
 

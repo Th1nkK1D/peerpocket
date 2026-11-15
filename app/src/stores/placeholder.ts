@@ -1,4 +1,4 @@
-import { idHelper } from './id';
+import { idHelper } from '../utils/id';
 
 interface MinimalStore {
 	hasRow(table: string, rowId: string): boolean;

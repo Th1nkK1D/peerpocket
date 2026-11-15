@@ -3,10 +3,10 @@ import { createFileRoute, redirect, useNavigate } from '@tanstack/react-router';
 import { useState } from 'react';
 import * as z from 'zod';
 
-import { ImportFlow } from '../components/import-flow';
-import { InstallNudge } from '../components/install-nudge';
-import { SaveIdentityDialog } from '../components/save-identity-dialog';
-import { useMuiForm } from '../hooks/form';
+import { ImportFlow } from '../components/landing/import-flow';
+import { InstallNudge } from '../components/landing/install-nudge';
+import { SaveIdentityDialog } from '../components/landing/save-identity-dialog';
+import { useMuiForm } from '../form/fields';
 import { setupUserStore, USER_STORE_PREFIX } from '../stores/user';
 import { activeUserStoreId } from '../utils/active-user';
 import { idHelper } from '../utils/id';

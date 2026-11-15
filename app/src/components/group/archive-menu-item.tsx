@@ -1,7 +1,7 @@
 import { ArchiveOutlined, UnarchiveOutlined } from '@mui/icons-material';
 
-import type { UserStore } from '../stores/user';
-import type { ActionMenuItem } from './action-menu';
+import type { UserStore } from '../../stores/user';
+import type { ActionMenuItem } from '../ui/action-menu';
 
 export function archiveMenuItem(
 	user: UserStore,

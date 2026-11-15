@@ -36,7 +36,7 @@ import {
 	type Operator,
 	operandBounds,
 	replaceRange,
-} from '../utils/calculator';
+} from './calculator';
 
 const Transition = forwardRef(function Transition(
 	props: TransitionProps & {

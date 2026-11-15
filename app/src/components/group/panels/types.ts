@@ -1,5 +1,5 @@
-import type { setupGroupStore } from '../../stores/group';
-import type { UserStore } from '../../stores/user';
+import type { setupGroupStore } from '../../../stores/group';
+import type { UserStore } from '../../../stores/user';
 
 export type GroupStore = Awaited<ReturnType<typeof setupGroupStore>>;
 

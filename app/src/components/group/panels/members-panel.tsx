@@ -24,9 +24,12 @@ import {
 import dayjs from 'dayjs';
 import { useState } from 'react';
 
-import { claimPlaceholder, createPlaceholder } from '../../utils/placeholder';
-import { ActionMenu } from '../action-menu';
-import { FabsContainer } from '../fabs-container';
+import {
+	claimPlaceholder,
+	createPlaceholder,
+} from '../../../stores/placeholder';
+import { ActionMenu } from '../../ui/action-menu';
+import { FabsContainer } from '../../ui/fabs-container';
 import { GroupSharing } from '../group-sharing';
 import type { PanelProps } from './types';
 

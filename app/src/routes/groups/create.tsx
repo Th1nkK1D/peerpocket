@@ -2,11 +2,11 @@ import { createFileRoute } from '@tanstack/react-router';
 import { useMemo } from 'react';
 import * as z from 'zod';
 
-import { AuthenticatedLayout } from '../../components/authenticated-layout';
-import { GroupSharing } from '../../components/group-sharing';
-import { LinkButton } from '../../components/links';
-import { useMuiForm } from '../../hooks/form';
-import { StepNavigations, StepperView, useStepper } from '../../hooks/stepper';
+import { GroupSharing } from '../../components/group/group-sharing';
+import { AuthenticatedLayout } from '../../components/layout/authenticated-layout';
+import { LinkButton } from '../../components/ui/links';
+import { useMuiForm } from '../../form/fields';
+import { StepNavigations, StepperView, useStepper } from '../../form/stepper';
 import { GROUP_STORE_PREFIX, setupGroupStore } from '../../stores/group';
 import { idHelper } from '../../utils/id';
 

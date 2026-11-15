@@ -13,7 +13,7 @@ import {
 	downloadJson,
 	type ExportData,
 	generateFilename,
-} from '../utils/export';
+} from '../../utils/export';
 
 interface SaveIdentityDialogProps {
 	open: boolean;

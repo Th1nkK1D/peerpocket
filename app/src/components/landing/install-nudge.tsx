@@ -12,7 +12,7 @@ import {
 	isIos,
 	isStandalone,
 	useInstallPrompt,
-} from '../hooks/install-prompt';
+} from '../../hooks/install-prompt';
 
 interface InstallNudgeProps {
 	hasInvite: boolean;

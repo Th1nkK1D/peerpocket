@@ -18,8 +18,8 @@ import {
 	type ValuesSchema,
 } from 'tinybase/with-schemas';
 
-import { createGroupChannel } from '../utils/group-channel';
-import { reconcileClaims } from '../utils/placeholder';
+import { createGroupChannel } from './group-channel';
+import { reconcileClaims } from './placeholder';
 
 // createCustomSynchronizer takes seconds; a huge value here leaves the
 // synchronizer stuck in a syncing state for hours when a peer departs

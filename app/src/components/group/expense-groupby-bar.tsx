@@ -1,7 +1,7 @@
 import { Category, DateRange, Sort } from '@mui/icons-material';
 import { Typography } from '@mui/material';
 
-import { ActionMenu } from './action-menu';
+import { ActionMenu } from '../ui/action-menu';
 
 interface ExpenseGroupByBarProps {
 	count: number;

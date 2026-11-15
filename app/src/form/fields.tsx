@@ -19,7 +19,8 @@ import {
 import type { Dayjs } from 'dayjs';
 import { type ComponentProps, useEffect, useState } from 'react';
 
-import { CalculatorDialog } from '../components/calculator-dialog';
+import { formatDecimal, roundToTwoDecimal } from '../utils/format';
+import { CalculatorDialog } from './calculator-dialog';
 
 const { fieldContext, formContext, useFieldContext, useFormContext } =
 	createFormHookContexts();
@@ -216,14 +217,3 @@ export const useMuiForm = createFormHook({
 		SubmitButton,
 	},
 }).useAppForm;
-
-export function formatDecimal(value: number, minimumFractionDigits = 2) {
-	return value.toLocaleString('th-TH', {
-		minimumFractionDigits,
-		maximumFractionDigits: 2,
-	});
-}
-
-export function roundToTwoDecimal(value: number): number {
-	return Math.round(value * 100) / 100;
-}

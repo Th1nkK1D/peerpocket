@@ -8,8 +8,8 @@ import {
 } from '@mui/material';
 import * as z from 'zod';
 
-import { useMuiForm } from '../hooks/form';
-import { type GroupInvite, parseGroupJoinUrl } from '../utils/group-link';
+import { useMuiForm } from '../../form/fields';
+import { type GroupInvite, parseGroupJoinUrl } from '../../utils/group-link';
 
 interface Props {
 	open: boolean;

@@ -7,7 +7,7 @@ import {
 } from '@mui/material';
 import type { ComponentProps } from 'react';
 
-import { formatDecimal } from '../hooks/form';
+import { formatDecimal } from '../../utils/format';
 
 interface MemberAmountTableProps {
 	currency: string;

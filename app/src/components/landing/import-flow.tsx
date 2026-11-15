@@ -17,7 +17,7 @@ import {
 	exportDataSchema,
 	isFullExport,
 	performImport,
-} from '../utils/export';
+} from '../../utils/export';
 
 interface ImportFlowProps {
 	onImportSuccess: (userStoreId: string) => void;

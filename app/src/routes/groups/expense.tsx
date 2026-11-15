@@ -3,17 +3,13 @@ import { createFileRoute, redirect, useNavigate } from '@tanstack/react-router';
 import dayjs, { type Dayjs } from 'dayjs';
 import * as z from 'zod';
 
-import { AuthenticatedLayout } from '../../components/authenticated-layout';
-import { LinkButton } from '../../components/links';
+import { AuthenticatedLayout } from '../../components/layout/authenticated-layout';
+import { LinkButton } from '../../components/ui/links';
 import { categories } from '../../constants/expense';
-import {
-	BaseCurrencyField,
-	formatDecimal,
-	roundToTwoDecimal,
-	useMuiForm,
-} from '../../hooks/form';
-import { StepNavigations, StepperView, useStepper } from '../../hooks/stepper';
+import { BaseCurrencyField, useMuiForm } from '../../form/fields';
+import { StepNavigations, StepperView, useStepper } from '../../form/stepper';
 import { GROUP_STORE_PREFIX, setupGroupStore } from '../../stores/group';
+import { formatDecimal, roundToTwoDecimal } from '../../utils/format';
 import { idHelper } from '../../utils/id';
 
 const SMALLEST_FRACTION = 0.01;

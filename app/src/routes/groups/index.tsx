@@ -24,12 +24,12 @@ import { createFileRoute, Link, useNavigate } from '@tanstack/react-router';
 import dayjs from 'dayjs';
 import { useState } from 'react';
 
-import { AccountMenu } from '../../components/account-menu';
-import { ActionMenu } from '../../components/action-menu';
-import { archiveMenuItem } from '../../components/archive-menu-item';
-import { AuthenticatedLayout } from '../../components/authenticated-layout';
-import { EmptyState } from '../../components/empty-state';
-import { FabsContainer } from '../../components/fabs-container';
+import { archiveMenuItem } from '../../components/group/archive-menu-item';
+import { AccountMenu } from '../../components/layout/account-menu';
+import { AuthenticatedLayout } from '../../components/layout/authenticated-layout';
+import { ActionMenu } from '../../components/ui/action-menu';
+import { EmptyState } from '../../components/ui/empty-state';
+import { FabsContainer } from '../../components/ui/fabs-container';
 import { GROUP_STORE_PREFIX } from '../../stores/group';
 import { idHelper } from '../../utils/id';
 

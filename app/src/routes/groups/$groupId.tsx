@@ -15,12 +15,12 @@ import dayjs from 'dayjs';
 import { useCallback, useEffect, useRef } from 'react';
 import * as z from 'zod';
 
-import { ActionMenu } from '../../components/action-menu';
-import { archiveMenuItem } from '../../components/archive-menu-item';
-import { AuthenticatedLayout } from '../../components/authenticated-layout';
-import { ExpensesPanel } from '../../components/group-tab/expenses-panel';
-import { MembersPanel } from '../../components/group-tab/members-panel';
-import { SummaryPanel } from '../../components/group-tab/summary-panel';
+import { archiveMenuItem } from '../../components/group/archive-menu-item';
+import { ExpensesPanel } from '../../components/group/panels/expenses-panel';
+import { MembersPanel } from '../../components/group/panels/members-panel';
+import { SummaryPanel } from '../../components/group/panels/summary-panel';
+import { AuthenticatedLayout } from '../../components/layout/authenticated-layout';
+import { ActionMenu } from '../../components/ui/action-menu';
 import { GROUP_STORE_PREFIX, setupGroupStore } from '../../stores/group';
 import { buildTransactionsCsv, downloadCsv } from '../../utils/group-csv';
 import { idHelper } from '../../utils/id';

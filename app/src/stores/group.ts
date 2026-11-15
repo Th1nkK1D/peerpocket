@@ -1,4 +1,4 @@
-import { createSyncStore } from '../hooks/sync-store';
+import { createSyncStore } from './sync-store';
 
 export const GROUP_STORE_PREFIX = 'group';
 

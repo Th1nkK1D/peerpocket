@@ -6,9 +6,9 @@ import { type IDetectedBarcode, Scanner } from '@yudiel/react-qr-scanner';
 import { useEffect, useRef, useState } from 'react';
 
 import { getE2EConfig } from '../../../../tests/mocks/playwright';
-import { AuthenticatedLayout } from '../../components/authenticated-layout';
-import { FabsContainer } from '../../components/fabs-container';
-import { InviteLinkDialog } from '../../components/invite-link-dialog';
+import { InviteLinkDialog } from '../../components/group/invite-link-dialog';
+import { AuthenticatedLayout } from '../../components/layout/authenticated-layout';
+import { FabsContainer } from '../../components/ui/fabs-container';
 import { type GroupInvite, parseGroupJoinUrl } from '../../utils/group-link';
 
 export const Route = createFileRoute('/groups/scan')({

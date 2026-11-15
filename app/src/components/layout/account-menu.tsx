@@ -25,8 +25,8 @@ import { useColorScheme } from '@mui/material/styles';
 import { useNavigate } from '@tanstack/react-router';
 import { useId, useState } from 'react';
 
-import { useInstallPrompt } from '../hooks/install-prompt';
-import type { UserStore } from '../stores/user';
+import { useInstallPrompt } from '../../hooks/install-prompt';
+import type { UserStore } from '../../stores/user';
 
 interface Props {
 	userStore: UserStore;

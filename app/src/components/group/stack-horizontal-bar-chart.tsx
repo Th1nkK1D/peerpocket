@@ -1,6 +1,6 @@
 import Typography from '@mui/material/Typography';
 
-import { formatDecimal } from '../hooks/form';
+import { formatDecimal } from '../../utils/format';
 
 interface StackHorizontalBarChartProps {
 	data: {
