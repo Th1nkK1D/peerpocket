@@ -219,7 +219,8 @@ export async function installAppMocks(page: Page) {
 	});
 }
 
-export function offerInstallPrompt(page: Page) {
+export async function offerInstallPrompt(page: Page) {
+	await page.waitForFunction(() => '__TSR_ROUTER__' in window);
 	return page.evaluate(() => {
 		window.__INSTALL_PROMPTS__ = 0;
 		const event = Object.assign(

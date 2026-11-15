@@ -1,7 +1,7 @@
 import { decode, encode } from '@msgpack/msgpack';
 import { formatMessage, parsedMessage } from '@peerpocket/libs/message';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import useWebSocket from 'react-use-websocket';
+import { useWebSocket } from 'react-use-websocket/dist/lib/use-websocket.js';
 import SimplePeer from 'simple-peer';
 import { createLocalPersister } from 'tinybase/persisters/persister-browser';
 import {

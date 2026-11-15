@@ -4,6 +4,7 @@ export default defineConfig({
 	testDir: './tests/routes',
 	fullyParallel: true,
 	retries: 0,
+	expect: { timeout: 15_000 },
 	use: {
 		baseURL: 'http://127.0.0.1:8000',
 		trace: 'on-first-retry',

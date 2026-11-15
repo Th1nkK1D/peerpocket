@@ -1,4 +1,6 @@
-@import 'tailwindcss';
+/* Declared before Tailwind's own order so MUI stays under the utilities, whichever stylesheet loads first */
+@layer theme, base, mui, components, utilities;
+@import 'tailwindcss/index.css';
 
 @custom-variant dark (&:is(.dark *));
 

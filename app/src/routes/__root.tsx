@@ -14,9 +14,21 @@ import {
 	ThemeProvider,
 	useColorScheme,
 } from '@mui/material/styles';
-import { createRootRoute, Outlet } from '@tanstack/react-router';
-import { useEffect } from 'react';
+import {
+	ClientOnly,
+	createRootRoute,
+	HeadContent,
+	Outlet,
+	Scripts,
+} from '@tanstack/react-router';
+import { type ReactNode, useEffect } from 'react';
+import '@fontsource-variable/grandstander';
 
+import '@fontsource/roboto/latin-300.css';
+import '@fontsource/roboto/latin-400.css';
+import '@fontsource/roboto/latin-500.css';
+import '@fontsource/roboto/latin-700.css';
+import '../index.css';
 import PwaCachePrompt from '../components/pwa-cache-prompt';
 
 const primaryColor = { light: indigo[300], dark: deepPurple[200] };
@@ -79,21 +91,55 @@ const theme = createTheme({
 });
 
 export const Route = createRootRoute({
+	head: () => ({
+		meta: [
+			{ charSet: 'UTF-8' },
+			{ name: 'viewport', content: 'initial-scale=1, width=device-width' },
+			{ title: 'PeerPocket - Your Peer-to-peer expense tracker' },
+			{ name: 'description', content: 'Peer-to-peer expense tracker' },
+			{ name: 'theme-color', content: '#000000' },
+		],
+		links: [
+			{ rel: 'icon', href: '/favicon.svg', type: 'image/svg+xml' },
+			{ rel: 'apple-touch-icon', href: '/apple-touch-icon.png' },
+			...(import.meta.env.PROD
+				? [{ rel: 'manifest', href: '/manifest.webmanifest' }]
+				: []),
+		],
+	}),
+	shellComponent: RootDocument,
 	component: RootComponent,
 });
 
-function RootComponent() {
+function RootDocument({ children }: { children: ReactNode }) {
 	return (
-		<StyledEngineProvider enableCssLayer>
-			<GlobalStyles styles="@layer theme, base, mui, components, utilities;" />
+		<html lang="en">
+			<head>
+				<HeadContent />
+			</head>
+			<body>
+				{children}
+				<Scripts />
+			</body>
+		</html>
+	);
+}
 
-			<ThemeProvider theme={theme}>
-				<CssBaseline />
-				<MetaThemeColor />
-				<PwaCachePrompt />
-				<Outlet />
-			</ThemeProvider>
-		</StyledEngineProvider>
+function RootComponent() {
+	// Server-rendered emotion styles get reordered on hydration, which breaks the CSS layer order
+	return (
+		<ClientOnly>
+			<StyledEngineProvider enableCssLayer>
+				<GlobalStyles styles="@layer theme, base, mui, components, utilities;" />
+
+				<ThemeProvider theme={theme}>
+					<CssBaseline />
+					<MetaThemeColor />
+					<PwaCachePrompt />
+					<Outlet />
+				</ThemeProvider>
+			</StyledEngineProvider>
+		</ClientOnly>
 	);
 }
 
