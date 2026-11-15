@@ -85,16 +85,26 @@ test('deletes an expense', async ({ page }) => {
 	await expect(page.getByText('Dinner')).toHaveCount(0);
 });
 
-test('group expenses by date (default)', async ({ page }) => {
-	await gotoSeededRoute(
-		page,
-		`/groups/${tripGroup.id}?tab=expenses`,
-		buildFullGroupSeed(),
-	);
+test('group expenses by date (default) with friendly day names', async ({
+	page,
+}) => {
+	const seed = buildFullGroupSeed();
+	const [dinner, cab] = seed.groups![0]!.expenses!;
+	dinner!.paidOn = Date.now();
+	cab!.paidOn = Date.now() - 86400000;
+	seed.groups![0]!.expenses!.push({
+		...cab!,
+		id: 'expense-old',
+		notes: 'Old taxi',
+		paidOn: new Date('2024-03-21T12:00:00').getTime(),
+	});
+	await gotoSeededRoute(page, `/groups/${tripGroup.id}?tab=expenses`, seed);
 
-	await expect(
-		page.getByRole('button', { name: 'Group expenses by' }).first(),
-	).toBeVisible();
+	await expect(page.locator('.MuiListSubheader-root')).toHaveText([
+		'today',
+		'yesterday',
+		'Thu, 21 Mar 2024',
+	]);
 });
 
 test('group expenses by category', async ({ page }) => {

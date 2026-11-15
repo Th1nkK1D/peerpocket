@@ -21,6 +21,7 @@ import { useState } from 'react';
 
 import { categories, categoryNameEmojiMap } from '../../../constants/expense';
 import { currencyName, formatAmount } from '../../../utils/currency';
+import { formatRelativeDay } from '../../../utils/format';
 import { EmptyState } from '../../ui/empty-state';
 import { FabsContainer } from '../../ui/fabs-container';
 import { LinkButton, LinkFab } from '../../ui/links';
@@ -41,7 +42,7 @@ export function ExpensesPanel({ user, group, groupId }: PanelProps) {
 		groupBy === 'date'
 			? groups(
 					[...expenses].sort((a, z) => z.paidOn - a.paidOn),
-					(expense) => dayjs(expense.paidOn).format('ddd, D MMM YY'),
+					(expense) => formatRelativeDay(expense.paidOn, { weekday: true }),
 				)
 			: groups(
 					[...expenses].sort((a, z) => a.category.localeCompare(z.category)),
@@ -102,7 +103,7 @@ export function ExpensesPanel({ user, group, groupId }: PanelProps) {
 							<List
 								key={groupKey}
 								subheader={
-									<ListSubheader>
+									<ListSubheader className="first-letter:uppercase">
 										{groupBy === 'category'
 											? (categoryEmojiNameMap.get(groupKey) ?? groupKey)
 											: groupKey}

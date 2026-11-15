@@ -14,10 +14,14 @@ export function roundToTwoDecimal(value: number): number {
 	return Math.round(value * 100) / 100;
 }
 
-export function formatRelativeDay(date?: string | number) {
+export function formatRelativeDay(
+	date?: string | number,
+	{ weekday = false } = {},
+) {
 	const day = dayjs(date);
 	const daysAgo = dayjs().startOf('day').diff(day.startOf('day'), 'day');
 	if (daysAgo === 0) return 'today';
 	if (daysAgo === 1) return 'yesterday';
-	return day.format(day.year() === dayjs().year() ? 'D MMM' : 'D MMM YYYY');
+	const year = day.year() === dayjs().year() ? '' : ' YYYY';
+	return day.format(`${weekday ? 'ddd, ' : ''}D MMM${year}`);
 }

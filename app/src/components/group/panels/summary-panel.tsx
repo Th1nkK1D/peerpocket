@@ -1,5 +1,4 @@
 import { Chip, Divider, MenuItem, TextField, Typography } from '@mui/material';
-import dayjs from 'dayjs';
 import { useEffect, useMemo, useState } from 'react';
 
 import { categoryNameEmojiMap } from '../../../constants/expense';
@@ -9,6 +8,7 @@ import {
 	currencySymbol,
 	formatAmount,
 } from '../../../utils/currency';
+import { formatRelativeDay } from '../../../utils/format';
 import {
 	type CurrencySummary,
 	type GroupBy,
@@ -203,7 +203,7 @@ function CurrencyChart({
 				formatValue={(value) => formatAmount(value, summary.currency)}
 				formatLabel={
 					groupBy === 'date'
-						? (date) => dayjs(date).format('ddd, D MMM YY')
+						? (date) => formatRelativeDay(date, { weekday: true })
 						: (category) => `${categoryNameEmojiMap.get(category)} ${category}`
 				}
 			/>

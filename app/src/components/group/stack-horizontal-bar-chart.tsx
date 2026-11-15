@@ -22,7 +22,9 @@ export function StackHorizontalBarChart({
 			{data.map(({ category, myTotal, groupTotal }) => (
 				<div className="flex flex-col gap-1" key={category}>
 					<div className="flex flex-row">
-						<Typography className="flex-1">{formatLabel(category)}</Typography>
+						<Typography className="flex-1 first-letter:uppercase">
+							{formatLabel(category)}
+						</Typography>
 						<Typography>
 							<span className="text-secondary">{formatValue(myTotal)}</span>{' '}
 							<Typography component="span" color="textSecondary">

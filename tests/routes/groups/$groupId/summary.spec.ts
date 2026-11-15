@@ -39,13 +39,16 @@ test('groups summary by date', async ({ page }) => {
 		buildFullGroupSeed(),
 	);
 
-	await page.getByRole('button', { name: 'Group expenses by' }).last().click();
+	const summaryGroupBy = page
+		.getByRole('button', { name: 'Group expenses by' })
+		.first();
+	await summaryGroupBy.click();
 	await page.getByRole('menuitem', { name: 'By date' }).click();
 
-	await expect(page.getByText('Thu, 21 Mar 24')).toBeVisible();
-	await expect(page.getByText('Wed, 20 Mar 24')).toBeVisible();
+	await expect(page.getByText('Thu, 21 Mar 2024').first()).toBeVisible();
+	await expect(page.getByText('Wed, 20 Mar 2024').first()).toBeVisible();
 
-	await page.getByRole('button', { name: 'Group expenses by' }).last().click();
+	await summaryGroupBy.click();
 	await expect(page.getByRole('menuitem', { name: 'By date' })).toHaveClass(
 		/Mui-selected/,
 	);
