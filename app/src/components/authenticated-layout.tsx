@@ -1,215 +1,60 @@
-import {
-	AccountBoxOutlined,
-	ChevronLeft,
-	DarkMode,
-	Download,
-	InstallMobileOutlined,
-	LightMode,
-	Logout,
-	ManageAccounts,
-} from '@mui/icons-material';
-import {
-	AppBar,
-	Button,
-	Dialog,
-	DialogActions,
-	DialogContent,
-	DialogContentText,
-	DialogTitle,
-	IconButton,
-	Link,
-	ListItemIcon,
-	ListItemText,
-	Menu,
-	MenuItem,
-	Toolbar,
-} from '@mui/material';
-import { useColorScheme } from '@mui/material/styles';
+import { ChevronLeft } from '@mui/icons-material';
+import { AppBar, IconButton, Toolbar } from '@mui/material';
 import { useNavigate } from '@tanstack/react-router';
-import { type PropsWithChildren, useId, useState } from 'react';
-
-import { useInstallPrompt } from '../hooks/install-prompt';
-import type { UserStore } from '../stores/user';
+import type { PropsWithChildren, ReactNode } from 'react';
 
 interface Props {
-	userStore: UserStore;
 	title: string;
 	hideBackButton?: boolean;
+	actions?: ReactNode;
 	className?: string;
 }
 
 export function AuthenticatedLayout({
 	title,
-	userStore,
 	children,
 	hideBackButton = false,
+	actions,
 	className = '',
 }: PropsWithChildren<Props>) {
-	const user = userStore.useValues();
-	const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-	const { mode, setMode } = useColorScheme();
-	const { canPrompt, install } = useInstallPrompt();
-
 	const navigate = useNavigate();
-	const dialogTitleId = useId();
-
-	function closeMenu() {
-		setAnchorEl(null);
-	}
-
-	const [logoutDialogOpen, setLogoutDialogOpen] = useState(false);
-
-	function openLogoutDialog() {
-		closeMenu();
-		setLogoutDialogOpen(true);
-	}
-
-	function confirmLogout() {
-		setLogoutDialogOpen(false);
-		localStorage.clear();
-		navigate({ to: '/', replace: true });
-	}
 
 	return (
 		<div className="flex h-dvh flex-col">
 			<AppBar position="static" className="z-20">
-				<Toolbar className="flex items-center justify-between">
-					{!hideBackButton && (
-						<IconButton
-							color="inherit"
-							className="-ml-3"
-							onClick={() => navigate({ to: '..' })}
-						>
-							<ChevronLeft />
-						</IconButton>
-					)}
+				<Toolbar
+					disableGutters
+					className="grid grid-cols-[1fr_auto_1fr] items-center px-1"
+				>
+					<div className="flex justify-start">
+						{!hideBackButton && (
+							<IconButton
+								color="inherit"
+								onClick={() => navigate({ to: '..' })}
+							>
+								<ChevronLeft />
+							</IconButton>
+						)}
+					</div>
 
-					<div className="flex items-center gap-2">
+					<div className="flex min-w-0 items-center gap-2">
 						{hideBackButton && (
 							<img src="/favicon.svg" alt="" className="size-8" />
 						)}
 						<h1
-							className={`-mb-1 font-grandstander font-medium ${hideBackButton ? 'text-2xl' : 'text-xl'}`}
+							className={`-mb-1 truncate font-grandstander font-medium ${hideBackButton ? 'text-2xl' : 'text-xl'}`}
 						>
 							{title}
 						</h1>
 					</div>
 
-					<IconButton
-						size="large"
-						aria-label="Menu"
-						aria-controls="menu-appbar"
-						aria-haspopup="true"
-						onClick={(e) => setAnchorEl(e.currentTarget)}
-						color="inherit"
-						className="-mx-3"
-					>
-						<ManageAccounts />
-					</IconButton>
-
-					<Menu
-						anchorEl={anchorEl}
-						anchorOrigin={{
-							vertical: 'bottom',
-							horizontal: 'right',
-						}}
-						keepMounted
-						transformOrigin={{
-							vertical: 'top',
-							horizontal: 'right',
-						}}
-						open={!!anchorEl}
-						onClose={closeMenu}
-					>
-						<MenuItem disabled>
-							<ListItemIcon>
-								<AccountBoxOutlined fontSize="small" />
-							</ListItemIcon>
-							<ListItemText>{user.name}</ListItemText>
-						</MenuItem>
-						<MenuItem
-							onClick={() => {
-								setMode(mode === 'light' ? 'dark' : 'light');
-								closeMenu();
-							}}
-						>
-							<ListItemIcon>
-								{mode === 'light' ? (
-									<DarkMode fontSize="small" />
-								) : (
-									<LightMode fontSize="small" />
-								)}
-							</ListItemIcon>
-							<ListItemText>
-								{mode === 'light' ? 'Dark mode' : 'Light mode'}
-							</ListItemText>
-						</MenuItem>
-						<MenuItem
-							onClick={() => {
-								closeMenu();
-								navigate({ to: '/groups/export' });
-							}}
-						>
-							<ListItemIcon>
-								<Download fontSize="small" />
-							</ListItemIcon>
-							<ListItemText>Export data</ListItemText>
-						</MenuItem>
-						{canPrompt && (
-							<MenuItem
-								onClick={() => {
-									closeMenu();
-									install();
-								}}
-							>
-								<ListItemIcon>
-									<InstallMobileOutlined fontSize="small" />
-								</ListItemIcon>
-								<ListItemText>Install app</ListItemText>
-							</MenuItem>
-						)}
-						<MenuItem onClick={openLogoutDialog}>
-							<ListItemIcon>
-								<Logout fontSize="small" />
-							</ListItemIcon>
-							<ListItemText>Log out</ListItemText>
-						</MenuItem>
-					</Menu>
+					<div className="flex justify-end">{actions}</div>
 				</Toolbar>
 			</AppBar>
 
 			<div className={`flex flex-1 flex-col overflow-y-scroll ${className}`}>
 				{children}
 			</div>
-
-			<Dialog
-				open={logoutDialogOpen}
-				onClose={() => setLogoutDialogOpen(false)}
-				aria-labelledby={dialogTitleId}
-			>
-				<DialogTitle id={dialogTitleId}>Log out?</DialogTitle>
-				<DialogContent>
-					<DialogContentText>
-						Logging out will destroy all data stored in this device. If you will
-						recover your data later, consider{' '}
-						<Link
-							href="/groups/export"
-							onClick={() => setLogoutDialogOpen(false)}
-						>
-							exporting your data
-						</Link>{' '}
-						first.
-					</DialogContentText>
-				</DialogContent>
-				<DialogActions>
-					<Button onClick={() => setLogoutDialogOpen(false)} color="inherit">
-						Cancel
-					</Button>
-					<Button onClick={confirmLogout} color="error">
-						Log out
-					</Button>
-				</DialogActions>
-			</Dialog>
 		</div>
 	);
 }

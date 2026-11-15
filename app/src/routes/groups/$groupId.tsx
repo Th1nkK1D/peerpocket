@@ -1,3 +1,4 @@
+import MoreVert from '@mui/icons-material/MoreVert';
 import PeopleIcon from '@mui/icons-material/People';
 import ReceiptLongIcon from '@mui/icons-material/ReceiptLong';
 import StackedBarChartOutlined from '@mui/icons-material/StackedBarChartOutlined';
@@ -12,6 +13,8 @@ import { createFileRoute, redirect } from '@tanstack/react-router';
 import { useCallback, useEffect, useRef } from 'react';
 import * as z from 'zod';
 
+import { ActionMenu } from '../../components/action-menu';
+import { archiveMenuItem } from '../../components/archive-menu-item';
 import { AuthenticatedLayout } from '../../components/authenticated-layout';
 import { ExpensesPanel } from '../../components/group-tab/expenses-panel';
 import { MembersPanel } from '../../components/group-tab/members-panel';
@@ -91,6 +94,10 @@ function RouteComponent() {
 	const { groupId } = Route.useParams();
 	const { tab } = Route.useSearch();
 	const navigate = Route.useNavigate();
+
+	const [{ archivedAt } = {}] = user.useTableRows('groups', (groups) =>
+		groups.filter((g) => g.id === groupId),
+	);
 
 	const activeTab = tabs.findIndex((t) => t.key === tab);
 	const scrollContainerRef = useRef<HTMLDivElement>(null);
@@ -172,8 +179,15 @@ function RouteComponent() {
 	return (
 		<AuthenticatedLayout
 			title={userGroupInfo.name}
-			userStore={user}
 			className="!p-0"
+			actions={
+				<ActionMenu
+					ariaLabel="Group settings"
+					buttonProps={{ color: 'inherit', size: 'medium' }}
+					triggerIcon={<MoreVert />}
+					items={[archiveMenuItem(user, groupId, archivedAt)]}
+				/>
+			}
 		>
 			<Paper elevation={1} className="rounded-none">
 				<div className="flex flex-row items-center justify-center gap-2 px-3 pt-2 pb-1">

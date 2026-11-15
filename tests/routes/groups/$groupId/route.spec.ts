@@ -265,3 +265,21 @@ test('merges members from two peers joining independently', async ({
 	await contextA.close();
 	await contextB.close();
 });
+
+test('archives and unarchives the group from the group settings menu', async ({
+	page,
+}) => {
+	await gotoSeededRoute(page, `/groups/${tripGroup.id}`, buildFullGroupSeed());
+
+	await expect(page.getByLabel('Menu')).toHaveCount(0);
+
+	await page.getByRole('button', { name: 'Group settings' }).click();
+	await page.getByRole('menuitem', { name: 'Archive' }).click();
+
+	await page.getByRole('button', { name: 'Group settings' }).click();
+	await expect(page.getByRole('menuitem', { name: 'Unarchive' })).toBeVisible();
+	await page.getByRole('menuitem', { name: 'Unarchive' }).click();
+
+	await page.getByRole('button', { name: 'Group settings' }).click();
+	await expect(page.getByRole('menuitem', { name: 'Archive' })).toBeVisible();
+});

@@ -1,5 +1,5 @@
 import { MoreVert } from '@mui/icons-material';
-import IconButton from '@mui/material/IconButton';
+import IconButton, { type IconButtonProps } from '@mui/material/IconButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
@@ -17,12 +17,14 @@ interface ActionMenuProps {
 	items: ActionMenuItem[];
 	ariaLabel?: string;
 	triggerIcon?: ReactNode;
+	buttonProps?: IconButtonProps;
 }
 
 export function ActionMenu({
 	items,
 	ariaLabel = 'Actions',
 	triggerIcon,
+	buttonProps,
 }: ActionMenuProps) {
 	const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 	const open = Boolean(anchorEl);
@@ -37,7 +39,12 @@ export function ActionMenu({
 
 	return (
 		<>
-			<IconButton aria-label={ariaLabel} size="small" onClick={handleOpen}>
+			<IconButton
+				aria-label={ariaLabel}
+				size="small"
+				onClick={handleOpen}
+				{...buttonProps}
+			>
 				{triggerIcon ?? <MoreVert fontSize="small" />}
 			</IconButton>
 			<Menu anchorEl={anchorEl} open={open} onClose={handleClose}>

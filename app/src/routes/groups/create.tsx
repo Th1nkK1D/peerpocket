@@ -59,7 +59,7 @@ function RouteComponent() {
 	});
 
 	return (
-		<AuthenticatedLayout title="New Group" userStore={user}>
+		<AuthenticatedLayout title="New Group">
 			<StepperView {...stepperProps} className="p-3">
 				{activeStep === 0 ? (
 					<form

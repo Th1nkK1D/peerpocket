@@ -144,7 +144,7 @@ function RouteComponent() {
 	}
 
 	return (
-		<AuthenticatedLayout userStore={user} title="Export Data">
+		<AuthenticatedLayout title="Export Data">
 			<div className="flex flex-1 flex-col gap-4 p-4">
 				<Typography variant="body1" color="textSecondary">
 					Export data for account recovery, changing device, or to log-in from

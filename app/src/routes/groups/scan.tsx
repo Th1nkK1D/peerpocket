@@ -17,7 +17,6 @@ export const Route = createFileRoute('/groups/scan')({
 });
 
 function RouteComponent() {
-	const { user } = Route.useLoaderData();
 	const navigate = useNavigate();
 	const hasMatchedScan = useRef(false);
 	const [cameraError, setCameraError] = useState<string | null>(null);
@@ -101,7 +100,7 @@ function RouteComponent() {
 	}, [e2eScan]);
 
 	return (
-		<AuthenticatedLayout title="Scan Group QR" userStore={user} className="p-3">
+		<AuthenticatedLayout title="Scan Group QR" className="p-3">
 			{e2eScan ? (
 				<div data-testid="scanner-mock">Scanner mocked for e2e</div>
 			) : (

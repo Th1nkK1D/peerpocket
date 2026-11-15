@@ -1,5 +1,4 @@
 import {
-	ArchiveOutlined,
 	DeleteOutlined,
 	FilterList,
 	GroupAdd,
@@ -8,7 +7,6 @@ import {
 	MarkChatUnreadOutlined,
 	QrCodeScannerOutlined,
 	TourTwoTone,
-	UnarchiveOutlined,
 } from '@mui/icons-material';
 import Button from '@mui/material/Button';
 import Card from '@mui/material/Card';
@@ -26,7 +24,9 @@ import { createFileRoute, Link, useNavigate } from '@tanstack/react-router';
 import dayjs from 'dayjs';
 import { useState } from 'react';
 
+import { AccountMenu } from '../../components/account-menu';
 import { ActionMenu } from '../../components/action-menu';
+import { archiveMenuItem } from '../../components/archive-menu-item';
 import { AuthenticatedLayout } from '../../components/authenticated-layout';
 import { EmptyState } from '../../components/empty-state';
 import { FabsContainer } from '../../components/fabs-container';
@@ -53,14 +53,6 @@ function RouteComponent() {
 			.sort((a, z) => z.joinedAt - a.joinedAt),
 	);
 
-	function archiveGroup(id: string) {
-		user.setCell('groups', id, 'archivedAt', Date.now());
-	}
-
-	function unarchiveGroup(id: string) {
-		user.delCell('groups', id, 'archivedAt');
-	}
-
 	function removeGroup() {
 		if (!selectedGroup) return;
 
@@ -72,7 +64,11 @@ function RouteComponent() {
 	}
 
 	return (
-		<AuthenticatedLayout title="PeerPocket" userStore={user} hideBackButton>
+		<AuthenticatedLayout
+			title="PeerPocket"
+			hideBackButton
+			actions={<AccountMenu userStore={user} />}
+		>
 			<div className="m-3 mb-24 flex flex-1 flex-col gap-3">
 				<div className="flex justify-between">
 					<Typography variant="h6">Groups</Typography>
@@ -122,27 +118,7 @@ function RouteComponent() {
 									<ActionMenu
 										ariaLabel="Group options"
 										items={[
-											archivedAt
-												? {
-														label: 'Unarchive',
-														icon: (
-															<UnarchiveOutlined
-																fontSize="small"
-																className="text-warning"
-															/>
-														),
-														onClick: () => unarchiveGroup(id),
-													}
-												: {
-														label: 'Archive',
-														icon: (
-															<ArchiveOutlined
-																fontSize="small"
-																className="text-warning"
-															/>
-														),
-														onClick: () => archiveGroup(id),
-													},
+											archiveMenuItem(user, id, archivedAt),
 											{
 												label: 'Remove',
 												icon: (
