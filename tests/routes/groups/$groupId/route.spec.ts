@@ -283,3 +283,31 @@ test('archives and unarchives the group from the group settings menu', async ({
 	await page.getByRole('button', { name: 'Group settings' }).click();
 	await expect(page.getByRole('menuitem', { name: 'Archive' })).toBeVisible();
 });
+
+test('exports group transactions with per-member splits as CSV', async ({
+	page,
+}) => {
+	await gotoSeededRoute(page, `/groups/${tripGroup.id}`, buildFullGroupSeed());
+
+	await page.getByRole('button', { name: 'Group settings' }).click();
+	const [download] = await Promise.all([
+		page.waitForEvent('download'),
+		page.getByRole('menuitem', { name: 'Export expenses' }).click(),
+	]);
+
+	expect(download.suggestedFilename()).toMatch(
+		/^Trip-transactions-\d{8}\.csv$/,
+	);
+	const csv = Buffer.concat(await (await download.createReadStream()).toArray())
+		.toString('utf-8')
+		.replace(/^﻿/, '');
+	const date = String.raw`\d{4}-\d{2}-\d{2}`;
+	const lines = csv.split('\r\n');
+
+	expect(lines[0]).toBe('Date,Category,Notes,Amount,Paid by,Chloe,Bob,Alice');
+	expect(lines[1]).toMatch(new RegExp(`^${date},Transport,Cab,30,Bob,,15,15$`));
+	expect(lines[2]).toMatch(
+		new RegExp(`^${date},Food,Dinner,90,Alice,30,30,30$`),
+	);
+	expect(lines).toHaveLength(3);
+});

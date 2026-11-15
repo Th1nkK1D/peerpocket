@@ -1,3 +1,4 @@
+import FileDownloadOutlined from '@mui/icons-material/FileDownloadOutlined';
 import MoreVert from '@mui/icons-material/MoreVert';
 import PeopleIcon from '@mui/icons-material/People';
 import ReceiptLongIcon from '@mui/icons-material/ReceiptLong';
@@ -10,6 +11,7 @@ import {
 	Typography,
 } from '@mui/material';
 import { createFileRoute, redirect } from '@tanstack/react-router';
+import dayjs from 'dayjs';
 import { useCallback, useEffect, useRef } from 'react';
 import * as z from 'zod';
 
@@ -20,6 +22,7 @@ import { ExpensesPanel } from '../../components/group-tab/expenses-panel';
 import { MembersPanel } from '../../components/group-tab/members-panel';
 import { SummaryPanel } from '../../components/group-tab/summary-panel';
 import { GROUP_STORE_PREFIX, setupGroupStore } from '../../stores/group';
+import { buildTransactionsCsv, downloadCsv } from '../../utils/group-csv';
 import { idHelper } from '../../utils/id';
 
 const tabs = [
@@ -98,6 +101,19 @@ function RouteComponent() {
 	const [{ archivedAt } = {}] = user.useTableRows('groups', (groups) =>
 		groups.filter((g) => g.id === groupId),
 	);
+
+	function exportCsv() {
+		const csv = buildTransactionsCsv({
+			members: group.getTable('members'),
+			expenses: group.getTable('expenses'),
+			splits: group.getTable('splits'),
+		});
+		const safeName = userGroupInfo.name.replace(/[\\/:*?"<>|]/g, '-');
+		downloadCsv(
+			csv,
+			`${safeName}-transactions-${dayjs().format('YYYYMMDD')}.csv`,
+		);
+	}
 
 	const activeTab = tabs.findIndex((t) => t.key === tab);
 	const scrollContainerRef = useRef<HTMLDivElement>(null);
@@ -185,7 +201,14 @@ function RouteComponent() {
 					ariaLabel="Group settings"
 					buttonProps={{ color: 'inherit', size: 'medium' }}
 					triggerIcon={<MoreVert />}
-					items={[archiveMenuItem(user, groupId, archivedAt)]}
+					items={[
+						{
+							label: 'Export expenses',
+							icon: <FileDownloadOutlined fontSize="small" />,
+							onClick: exportCsv,
+						},
+						archiveMenuItem(user, groupId, archivedAt),
+					]}
 				/>
 			}
 		>
