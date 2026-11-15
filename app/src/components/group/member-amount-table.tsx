@@ -7,56 +7,65 @@ import {
 } from '@mui/material';
 import type { ComponentProps } from 'react';
 
-import { formatDecimal } from '../../utils/format';
+import { formatAmount } from '../../utils/currency';
+
+type Amount = { currency: string; amount: number };
 
 interface MemberAmountTableProps {
-	currency: string;
 	currentUserKey?: string;
 	items: {
 		key: string;
 		name?: string;
-		amount: number;
+		amounts: Amount[];
 	}[];
 }
 
 export function MemberAmountTable({
-	currency,
 	currentUserKey,
 	items,
 }: MemberAmountTableProps) {
+	const sortedItems = [...items].sort(
+		(a, z) => (z.amounts[0]?.amount ?? 0) - (a.amounts[0]?.amount ?? 0),
+	);
+	const totals = new Map<string, number>();
+	for (const { amounts } of sortedItems) {
+		for (const { currency, amount } of amounts) {
+			totals.set(currency, (totals.get(currency) ?? 0) + amount);
+		}
+	}
+
 	return (
 		<Table>
 			<TableHead>
 				<TableRow>
 					<TableCellDensed>Member</TableCellDensed>
-					<TableCellDensed align="right">{currency}</TableCellDensed>
+					<TableCellDensed align="right">Amount</TableCellDensed>
 				</TableRow>
 			</TableHead>
 			<TableBody>
-				{[...items]
-					.sort((a, z) => z.amount - a.amount)
-					.map((item) => {
-						const isCurrentUser = currentUserKey === item.key;
-						return (
-							<TableRow key={item.key}>
-								<TableCellDensed
-									className={isCurrentUser ? 'text-secondary' : undefined}
-								>
-									{item.name}
-								</TableCellDensed>
-								<TableCellDensed
-									align="right"
-									className={isCurrentUser ? 'text-secondary' : undefined}
-								>
-									{formatDecimal(item.amount)}
-								</TableCellDensed>
-							</TableRow>
-						);
-					})}
+				{sortedItems.map((item) => {
+					const className =
+						currentUserKey === item.key ? 'text-secondary' : undefined;
+					return (
+						<TableRow key={item.key}>
+							<TableCellDensed className={className}>
+								{item.name}
+							</TableCellDensed>
+							<TableCellDensed align="right" className={className}>
+								<AmountLines amounts={item.amounts} />
+							</TableCellDensed>
+						</TableRow>
+					);
+				})}
 				<TableRow className="italic [&>td]:border-0">
-					<TableCellDensed>Total</TableCellDensed>
-					<TableCellDensed align="right">
-						{formatDecimal(items.reduce((acc, row) => acc + row.amount, 0))}
+					<TableCellDensed className="text-secondary">Total</TableCellDensed>
+					<TableCellDensed align="right" className="text-secondary">
+						<AmountLines
+							amounts={[...totals].map(([currency, amount]) => ({
+								currency,
+								amount,
+							}))}
+						/>
 					</TableCellDensed>
 				</TableRow>
 			</TableBody>
@@ -64,11 +73,20 @@ export function MemberAmountTable({
 	);
 }
 
+function AmountLines({ amounts }: { amounts: Amount[] }) {
+	return amounts.map(({ currency, amount }) => (
+		<div key={currency}>{formatAmount(amount, currency)}</div>
+	));
+}
+
 function TableCellDensed({
 	className = '',
 	...props
 }: ComponentProps<typeof TableCell>) {
 	return (
-		<TableCell className={`px-0 py-3 text-[1rem] ${className}`} {...props} />
+		<TableCell
+			className={`px-0 py-3 align-top text-[1rem] ${className}`}
+			{...props}
+		/>
 	);
 }

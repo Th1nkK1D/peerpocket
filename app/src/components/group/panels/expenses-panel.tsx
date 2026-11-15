@@ -20,7 +20,7 @@ import dayjs from 'dayjs';
 import { useState } from 'react';
 
 import { categories, categoryNameEmojiMap } from '../../../constants/expense';
-import { formatDecimal } from '../../../utils/format';
+import { currencyName, formatAmount } from '../../../utils/currency';
 import { EmptyState } from '../../ui/empty-state';
 import { FabsContainer } from '../../ui/fabs-container';
 import { LinkButton, LinkFab } from '../../ui/links';
@@ -138,8 +138,10 @@ export function ExpensesPanel({ user, group, groupId }: PanelProps) {
 															{expense.notes || expense.category}
 														</Typography>
 														<Typography className="text-secondary">
-															{expense.currency}{' '}
-															{formatDecimal(yourSplit?.amount ?? 0)}
+															{formatAmount(
+																yourSplit?.amount ?? 0,
+																expense.currency,
+															)}
 														</Typography>
 													</div>
 													<div className="flex flex-row">
@@ -155,7 +157,8 @@ export function ExpensesPanel({ user, group, groupId }: PanelProps) {
 																	: ''}
 														</Typography>
 														<Typography variant="body2" color="textSecondary">
-															Total {formatDecimal(expense.amount)}
+															Total{' '}
+															{formatAmount(expense.amount, expense.currency)}
 														</Typography>
 													</div>
 												</div>
@@ -193,14 +196,21 @@ export function ExpensesPanel({ user, group, groupId }: PanelProps) {
 								Paid by{' '}
 								{memberIdNameMap.get(openedExpense.expense.paidByMemberId)} on{' '}
 								{dayjs(openedExpense.expense.paidOn).format('ddd, D MMM YY')}
+								{openedExpense.expense.currency
+									? ` in ${currencyName(openedExpense.expense.currency)}`
+									: ''}
 							</DialogContentText>
 							<MemberAmountTable
-								currency={openedExpense.expense.currency}
 								currentUserKey={currentUser.hashedId}
-								items={openedExpense.relatedSplits.map((exp) => ({
-									key: exp.memberId,
-									name: memberIdNameMap.get(exp.memberId),
-									amount: exp.amount,
+								items={openedExpense.relatedSplits.map((split) => ({
+									key: split.memberId,
+									name: memberIdNameMap.get(split.memberId),
+									amounts: [
+										{
+											currency: openedExpense.expense.currency,
+											amount: split.amount,
+										},
+									],
 								}))}
 							/>
 						</DialogContent>
@@ -242,7 +252,10 @@ export function ExpensesPanel({ user, group, groupId }: PanelProps) {
 								</strong>{' '}
 								for{' '}
 								<strong>
-									{formatDecimal(expensePendingDelete.expense.amount)}
+									{formatAmount(
+										expensePendingDelete.expense.amount,
+										expensePendingDelete.expense.currency,
+									)}
 								</strong>
 								. This expense will be deleted for everyone in the group. Are
 								you sure?

@@ -35,6 +35,21 @@ test('opens expense details', async ({ page }) => {
 	await expect(page.getByRole('button', { name: 'Delete' })).toBeVisible();
 });
 
+test('shows amounts with the expense currency symbol', async ({ page }) => {
+	const seed = buildFullGroupSeed();
+	seed.groups![0]!.expenses![0]!.currency = 'JPY';
+	seed.groups![0]!.expenses![1]!.currency = 'MYR';
+	await gotoSeededRoute(page, `/groups/${tripGroup.id}?tab=expenses`, seed);
+
+	await expect(page.getByText('Total ¥90.00')).toBeVisible();
+	await expect(page.getByText(/Total MYR\s30\.00/)).toBeVisible();
+
+	await page.getByText('Dinner').click();
+	const dialog = page.getByRole('dialog');
+	await expect(dialog).toContainText('in Japanese Yen');
+	await expect(dialog.getByRole('cell', { name: '¥90.00' })).toBeVisible();
+});
+
 test('navigates to edit expense', async ({ page }) => {
 	await gotoSeededRoute(
 		page,

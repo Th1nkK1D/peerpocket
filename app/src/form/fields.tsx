@@ -1,5 +1,6 @@
 import { CalculateOutlined } from '@mui/icons-material';
 import {
+	Autocomplete,
 	Button,
 	FormControlLabel,
 	IconButton,
@@ -19,6 +20,7 @@ import {
 import type { Dayjs } from 'dayjs';
 import { type ComponentProps, useEffect, useState } from 'react';
 
+import { currencyCodes, currencyName, currencySymbol } from '../utils/currency';
 import { formatDecimal, roundToTwoDecimal } from '../utils/format';
 import { CalculatorDialog } from './calculator-dialog';
 
@@ -46,7 +48,7 @@ function TextField(props: ComponentProps<typeof MuiTextField>) {
 	);
 }
 
-function CurrencyField(props: ComponentProps<typeof BaseCurrencyField>) {
+function CurrencyField(props: ComponentProps<typeof MuiTextField>) {
 	const field = useFieldContext<number>();
 	const [temporaryValue, setTemporaryValue] = useState<string | null>(null);
 	const [calculatorOpen, setCalculatorOpen] = useState(false);
@@ -64,7 +66,7 @@ function CurrencyField(props: ComponentProps<typeof BaseCurrencyField>) {
 
 	return (
 		<>
-			<BaseCurrencyField
+			<MuiTextField
 				name={field.name}
 				value={temporaryValue ?? formatDecimal(field.state.value)}
 				error={!field.state.meta.isValid}
@@ -105,7 +107,7 @@ function CurrencyField(props: ComponentProps<typeof BaseCurrencyField>) {
 						),
 					},
 				}}
-			></BaseCurrencyField>
+			></MuiTextField>
 			<CalculatorDialog
 				open={calculatorOpen}
 				value={field.state.value}
@@ -116,16 +118,30 @@ function CurrencyField(props: ComponentProps<typeof BaseCurrencyField>) {
 	);
 }
 
-export function BaseCurrencyField(props: ComponentProps<typeof MuiTextField>) {
+function CurrencyPickerField({ label }: { label: string }) {
+	const field = useFieldContext<string>();
+
 	return (
-		<MuiTextField
-			slotProps={{
-				htmlInput: {
-					className: 'text-right',
-				},
+		<Autocomplete
+			autoHighlight
+			options={currencyCodes}
+			value={field.state.value || null}
+			onChange={(_, value) => field.handleChange(value ?? '')}
+			onBlur={field.handleBlur}
+			getOptionLabel={(code) => {
+				const symbol = currencySymbol(code);
+				return `${symbol === code ? '' : `${symbol} `}${code} · ${currencyName(code)}`;
 			}}
-			{...props}
-		></MuiTextField>
+			renderInput={(params) => (
+				<MuiTextField
+					{...params}
+					name={field.name}
+					label={label}
+					error={!field.state.meta.isValid}
+					helperText={field.state.meta.errors.map((e) => e.message).at(0)}
+				/>
+			)}
+		/>
 	);
 }
 
@@ -209,6 +225,7 @@ export const useMuiForm = createFormHook({
 	fieldComponents: {
 		TextField,
 		CurrencyField,
+		CurrencyPickerField,
 		SelectField,
 		DateField,
 		Checkbox,

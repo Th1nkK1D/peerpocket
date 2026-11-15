@@ -17,6 +17,18 @@ const pwa = VitePWA({
 	workbox: {
 		cleanupOutdatedCaches: true,
 		globPatterns: ['**/*.{js,css,html,woff2}'],
+		runtimeCaching: [
+			{
+				urlPattern:
+					/^https:\/\/cdn\.jsdelivr\.net\/npm\/@fawazahmed0\/currency-api@/,
+				handler: 'NetworkFirst',
+				options: {
+					cacheName: 'currency-rates',
+					networkTimeoutSeconds: 5,
+					expiration: { maxEntries: 20 },
+				},
+			},
+		],
 	},
 	manifest: {
 		id: '/',

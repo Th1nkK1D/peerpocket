@@ -1,7 +1,5 @@
 import Typography from '@mui/material/Typography';
 
-import { formatDecimal } from '../../utils/format';
-
 interface StackHorizontalBarChartProps {
 	data: {
 		category: string;
@@ -9,11 +7,13 @@ interface StackHorizontalBarChartProps {
 		groupTotal: number;
 	}[];
 	formatLabel: (category: string) => React.ReactNode;
+	formatValue: (value: number) => string;
 }
 
 export function StackHorizontalBarChart({
 	data,
 	formatLabel,
+	formatValue,
 }: StackHorizontalBarChartProps) {
 	const max = Math.max(...data.map((item) => item.groupTotal));
 
@@ -24,9 +24,9 @@ export function StackHorizontalBarChart({
 					<div className="flex flex-row">
 						<Typography className="flex-1">{formatLabel(category)}</Typography>
 						<Typography>
-							<span className="text-secondary">{formatDecimal(myTotal)}</span>{' '}
+							<span className="text-secondary">{formatValue(myTotal)}</span>{' '}
 							<Typography component="span" color="textSecondary">
-								/ {formatDecimal(groupTotal)}
+								/ {formatValue(groupTotal)}
 							</Typography>
 						</Typography>
 					</div>

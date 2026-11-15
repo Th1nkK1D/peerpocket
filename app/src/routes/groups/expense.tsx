@@ -1,4 +1,5 @@
-import { Button } from '@mui/material';
+import { Button, InputAdornment, TextField } from '@mui/material';
+import { useStore } from '@tanstack/react-form';
 import { createFileRoute, redirect, useNavigate } from '@tanstack/react-router';
 import dayjs, { type Dayjs } from 'dayjs';
 import * as z from 'zod';
@@ -6,9 +7,10 @@ import * as z from 'zod';
 import { AuthenticatedLayout } from '../../components/layout/authenticated-layout';
 import { LinkButton } from '../../components/ui/links';
 import { categories } from '../../constants/expense';
-import { BaseCurrencyField, useMuiForm } from '../../form/fields';
+import { useMuiForm } from '../../form/fields';
 import { StepNavigations, StepperView, useStepper } from '../../form/stepper';
 import { GROUP_STORE_PREFIX, setupGroupStore } from '../../stores/group';
+import { currencySymbol, lastCurrency } from '../../utils/currency';
 import { formatDecimal, roundToTwoDecimal } from '../../utils/format';
 import { idHelper } from '../../utils/id';
 
@@ -78,6 +80,10 @@ function RouteComponent() {
 		validators: {
 			onSubmit: z.object({
 				amount: z.number(),
+				currency:
+					expense && !expense.currency
+						? z.string()
+						: z.string().nonempty('Select a currency'),
 				category: z.string().nonempty(),
 				notes: z.string(),
 				paidByMemberId: z.string(),
@@ -89,6 +95,7 @@ function RouteComponent() {
 		defaultValues: {
 			notes: expense?.notes ?? '',
 			amount: expense?.amount ?? 0,
+			currency: expense?.currency ?? lastCurrency.get(),
 			category: expense?.category ?? 'Other',
 			paidByMemberId: expense?.paidByMemberId ?? currentUser.hashedId,
 			paidOn: expense ? dayjs(expense.paidOn) : dayjs(),
@@ -97,6 +104,17 @@ function RouteComponent() {
 			setActiveStep(activeStep + 1);
 		},
 	});
+
+	const symbol = currencySymbol(
+		useStore(detailsForm.store, (state) => state.values.currency),
+	);
+	const symbolAdornment = symbol
+		? {
+				startAdornment: (
+					<InputAdornment position="start">{symbol}</InputAdornment>
+				),
+			}
+		: {};
 
 	const splitsForm = useMuiForm({
 		validators: {
@@ -131,6 +149,11 @@ function RouteComponent() {
 				createdAt: expense?.createdAt ?? Date.now(),
 				updatedAt: expenseId ? Date.now() : undefined,
 			});
+
+			const { currency } = detailsForm.state.values;
+			if (currency && currency !== expense?.currency) {
+				lastCurrency.set(currency);
+			}
 
 			if (expenseId) {
 				existingSplits.forEach((split) => {
@@ -221,7 +244,15 @@ function RouteComponent() {
 						}}
 					>
 						<detailsForm.AppField name="amount">
-							{(field) => <field.CurrencyField label="Total" />}
+							{(field) => (
+								<field.CurrencyField
+									label="Total"
+									slotProps={{ input: symbolAdornment }}
+								/>
+							)}
+						</detailsForm.AppField>
+						<detailsForm.AppField name="currency">
+							{(field) => <field.CurrencyPickerField label="Currency" />}
 						</detailsForm.AppField>
 						<detailsForm.AppField name="category">
 							{(field) => (
@@ -294,10 +325,11 @@ function RouteComponent() {
 											<tr className="opacity-60">
 												<td>Total</td>
 												<td className="pl-4">
-													<BaseCurrencyField
+													<TextField
 														fullWidth
 														disabled
 														variant="standard"
+														slotProps={{ input: symbolAdornment }}
 														value={formatDecimal(
 															detailsForm.store.state.values.amount,
 														)}
@@ -323,6 +355,7 @@ function RouteComponent() {
 																		fullWidth
 																		variant="standard"
 																		margin="dense"
+																		slotProps={{ input: symbolAdornment }}
 																	/>
 																)}
 															</splitsForm.AppField>
@@ -348,11 +381,12 @@ function RouteComponent() {
 																Leftover
 															</td>
 															<td className="pl-4">
-																<BaseCurrencyField
+																<TextField
 																	fullWidth
 																	disabled
 																	variant="standard"
 																	margin="dense"
+																	slotProps={{ input: symbolAdornment }}
 																	value={formatDecimal(
 																		detailsForm.store.state.values.amount -
 																			splitSum,

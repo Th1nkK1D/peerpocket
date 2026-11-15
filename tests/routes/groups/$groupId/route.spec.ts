@@ -287,7 +287,9 @@ test('archives and unarchives the group from the group settings menu', async ({
 test('exports group transactions with per-member splits as CSV', async ({
 	page,
 }) => {
-	await gotoSeededRoute(page, `/groups/${tripGroup.id}`, buildFullGroupSeed());
+	const seed = buildFullGroupSeed();
+	seed.groups![0]!.expenses![0]!.currency = 'THB';
+	await gotoSeededRoute(page, `/groups/${tripGroup.id}`, seed);
 
 	await page.getByRole('button', { name: 'Group settings' }).click();
 	const [download] = await Promise.all([
@@ -304,10 +306,14 @@ test('exports group transactions with per-member splits as CSV', async ({
 	const date = String.raw`\d{4}-\d{2}-\d{2}`;
 	const lines = csv.split('\r\n');
 
-	expect(lines[0]).toBe('Date,Category,Notes,Amount,Paid by,Chloe,Bob,Alice');
-	expect(lines[1]).toMatch(new RegExp(`^${date},Transport,Cab,30,Bob,,15,15$`));
+	expect(lines[0]).toBe(
+		'Date,Category,Notes,Amount,Currency,Paid by,Chloe,Bob,Alice',
+	);
+	expect(lines[1]).toMatch(
+		new RegExp(`^${date},Transport,Cab,30,,Bob,,15,15$`),
+	);
 	expect(lines[2]).toMatch(
-		new RegExp(`^${date},Food,Dinner,90,Alice,30,30,30$`),
+		new RegExp(`^${date},Food,Dinner,90,THB,Alice,30,30,30$`),
 	);
 	expect(lines).toHaveLength(3);
 });

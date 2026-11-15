@@ -407,6 +407,7 @@ test('full round-trip: claim, export, import on fresh device keeps claims and re
 					{
 						id: 'exp-1',
 						amount: 60,
+						currency: 'JPY',
 						category: 'Food',
 						notes: 'Dinner',
 						paidOn: now,
@@ -474,6 +475,7 @@ test('full round-trip: claim, export, import on fresh device keeps claims and re
 	expect(tables.members?.[baseUser.hashedId]?.name).toBe(baseUser.name);
 	expect(tables.members?.[baseUser.hashedId]?.joinedAt).toBe(now);
 	expect(tables.expenses?.['exp-1']?.paidByMemberId).toBe(baseUser.hashedId);
+	expect(tables.expenses?.['exp-1']?.currency).toBe('JPY');
 	expect(tables.splits?.['split-1']?.memberId).toBe(baseUser.hashedId);
 	expect(tables.splits?.['split-2']?.memberId).toBe(baseUser.hashedId);
 

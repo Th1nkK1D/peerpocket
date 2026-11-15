@@ -1,20 +1,27 @@
-import {
-	Card,
-	Chip,
-	Divider,
-	MenuItem,
-	TextField,
-	Typography,
-} from '@mui/material';
-import { groups } from 'd3-array';
+import { Chip, Divider, MenuItem, TextField, Typography } from '@mui/material';
 import dayjs from 'dayjs';
-import { type ComponentProps, useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 import { categoryNameEmojiMap } from '../../../constants/expense';
-import { formatDecimal } from '../../../utils/format';
+import { useCurrencyConversion } from '../../../hooks/currency-conversion';
+import {
+	currencyName,
+	currencySymbol,
+	formatAmount,
+} from '../../../utils/currency';
+import {
+	type CurrencySummary,
+	type GroupBy,
+	groupKeys,
+	mergeMemberBalances,
+	summarizeByCurrency,
+	type Transaction,
+} from '../../../utils/summary';
+import { CurrencySelect } from '../currency-select';
 import { ExpenseGroupByBar } from '../expense-groupby-bar';
 import { MemberAmountTable } from '../member-amount-table';
 import { StackHorizontalBarChart } from '../stack-horizontal-bar-chart';
+import { TotalExpenseCard } from '../total-expense-card';
 import type { PanelProps } from './types';
 
 export function SummaryPanel({ user, group }: PanelProps) {
@@ -40,98 +47,48 @@ export function SummaryPanel({ user, group }: PanelProps) {
 	const selectedMember = members.find(
 		(member) => member.id === selectedMemberId,
 	);
-	const selectedMemberName =
-		selectedMemberId === currentUser.hashedId
-			? 'you'
-			: (selectedMember?.name ?? 'selected member');
+	const isCurrentUser = selectedMemberId === currentUser.hashedId;
+	const selectedMemberName = isCurrentUser
+		? 'you'
+		: (selectedMember?.name ?? 'selected member');
 
-	const [groupBy, setGroupBy] = useState<'category' | 'date'>('category');
+	const [groupBy, setGroupBy] = useState<GroupBy>('category');
+	const conversion = useCurrencyConversion(expenses);
+	const { convert, target } = conversion;
 
-	const splitsWithExpenseInfo = useMemo(
+	const transactions = useMemo<Transaction[]>(
 		() =>
-			expenses.flatMap((exp) =>
+			expenses.flatMap((expense) =>
 				splits
-					.filter((split) => split.expenseId === exp.id)
+					.filter((split) => split.expenseId === expense.id)
 					.map((split) => ({
-						category: exp.category,
-						paidOn: exp.paidOn,
-						paidByMemberId: exp.paidByMemberId,
+						...convert(expense.currency, split.amount),
+						category: expense.category,
+						paidOn: expense.paidOn,
+						paidByMemberId: expense.paidByMemberId,
 						memberId: split.memberId,
-						amount: split.amount,
 					})),
 			),
-		[expenses, splits],
+		[expenses, splits, convert],
 	);
 
-	const chartData = useMemo<
-		ComponentProps<typeof StackHorizontalBarChart>['data']
-	>(
+	const summaries = useMemo(
 		() =>
-			groups(
-				splitsWithExpenseInfo,
-				groupBy === 'category'
-					? (tx) => tx.category
-					: (tx) => dayjs(tx.paidOn).format('YYYY-MM-DD'),
-			)
-				.map(([key, txs]) => ({
-					category: key,
-					myTotal: txs
-						.filter((tx) => tx.memberId === selectedMemberId)
-						.reduce((acc, tx) => acc + tx.amount, 0),
-					groupTotal: txs.reduce((acc, tx) => acc + tx.amount, 0),
-				}))
-				.sort((a, z) =>
-					groupBy === 'category'
-						? z.myTotal - a.myTotal
-						: z.category.localeCompare(a.category),
-				),
-		[splitsWithExpenseInfo, selectedMemberId, groupBy],
+			summarizeByCurrency(transactions, {
+				firstCurrency: target,
+				groupBy,
+				memberId: selectedMemberId,
+				members,
+			}),
+		[transactions, target, groupBy, selectedMemberId, members],
 	);
 
-	type OutstandBalance = ComponentProps<typeof MemberAmountTable>['items'];
-
-	const outstandingBalanceWithOtherMembers = useMemo(
-		() =>
-			members
-				.filter((member) => member.id !== selectedMemberId)
-				.reduce(
-					(group, { id, name }) => {
-						const iPaidThem = splitsWithExpenseInfo
-							.filter(
-								(exp) =>
-									exp.paidByMemberId === selectedMemberId &&
-									exp.memberId === id,
-							)
-							.reduce((sum, { amount }) => sum + amount, 0);
-
-						const theyPaidMe = splitsWithExpenseInfo
-							.filter(
-								(exp) =>
-									exp.paidByMemberId === id &&
-									exp.memberId === selectedMemberId,
-							)
-							.reduce((sum, { amount }) => sum + amount, 0);
-
-						if (iPaidThem > theyPaidMe) {
-							group.toPayMe.push({
-								key: id,
-								name,
-								amount: iPaidThem - theyPaidMe,
-							});
-						} else if (iPaidThem < theyPaidMe) {
-							group.toPayThem.push({
-								key: id,
-								name,
-								amount: theyPaidMe - iPaidThem,
-							});
-						}
-
-						return group;
-					},
-					{ toPayThem: [] as OutstandBalance, toPayMe: [] as OutstandBalance },
-				),
-		[splitsWithExpenseInfo, members, selectedMemberId],
-	);
+	function totals(field: 'myTotal' | 'groupTotal') {
+		return summaries.map(({ currency, chartData }) => ({
+			currency,
+			amount: chartData.reduce((sum, row) => sum + row[field], 0),
+		}));
+	}
 
 	return (
 		<div className="flex flex-col gap-3 p-3">
@@ -156,89 +113,122 @@ export function SummaryPanel({ user, group }: PanelProps) {
 					))}
 			</TextField>
 
+			<CurrencySelect conversion={conversion} />
+
 			<div className="flex flex-col gap-3">
 				<div className="grid grid-cols-2 gap-2">
 					<TotalExpenseCard
 						className="text-secondary"
 						label={
-							selectedMemberId === currentUser.hashedId
-								? 'My expense'
-								: `${selectedMemberName}'s expense`
+							isCurrentUser ? 'My expense' : `${selectedMemberName}'s expense`
 						}
-						value={chartData.reduce((acc, tx) => acc + tx.myTotal, 0)}
+						totals={totals('myTotal')}
 					/>
 					<TotalExpenseCard
 						className="opacity-70"
 						label="Group expense"
-						value={chartData.reduce((acc, tx) => acc + tx.groupTotal, 0)}
+						totals={totals('groupTotal')}
 					/>
 				</div>
 				<div className="flex flex-col">
 					<ExpenseGroupByBar
-						count={chartData.length}
+						count={new Set(transactions.map(groupKeys[groupBy])).size}
 						label={groupBy === 'category' ? 'categories' : 'dates'}
 						groupBy={groupBy}
 						onGroupByChange={setGroupBy}
 					/>
-					<StackHorizontalBarChart
-						data={chartData}
-						formatLabel={
-							groupBy === 'date'
-								? (date) => dayjs(date).format('ddd, D MMM YY')
-								: (category) =>
-										`${categoryNameEmojiMap.get(category)} ${category}`
-						}
-					/>
+					<div className="flex flex-col gap-3">
+						{summaries.map((summary) => (
+							<CurrencyChart
+								key={summary.currency}
+								summary={summary}
+								groupBy={groupBy}
+								label={
+									summaries.length > 1
+										? currencyLabel(summary.currency, target)
+										: null
+								}
+							/>
+						))}
+					</div>
 				</div>
 			</div>
 
 			<SectionDivider
 				label={
-					selectedMemberId === currentUser.hashedId
+					isCurrentUser
 						? 'Who I need to pay to'
 						: `Who ${selectedMemberName} needs to pay to`
 				}
 			/>
-
-			{outstandingBalanceWithOtherMembers.toPayThem.length ? (
-				<MemberAmountTable
-					currency="Amount"
-					items={outstandingBalanceWithOtherMembers.toPayThem}
-				/>
-			) : (
-				<Typography
-					variant="body2"
-					color="textSecondary"
-					className="text-center italic"
-				>
-					No one
-				</Typography>
-			)}
+			<BalanceTable items={mergeMemberBalances(summaries, 'toPayThem')} />
 
 			<SectionDivider
 				label={
-					selectedMemberId === currentUser.hashedId
+					isCurrentUser
 						? 'Who needs to pay me'
 						: `Who needs to pay ${selectedMemberName}`
 				}
 			/>
-
-			{outstandingBalanceWithOtherMembers.toPayMe.length ? (
-				<MemberAmountTable
-					currency="Amount"
-					items={outstandingBalanceWithOtherMembers.toPayMe}
-				/>
-			) : (
-				<Typography
-					variant="body2"
-					color="textSecondary"
-					className="text-center italic"
-				>
-					No one
-				</Typography>
-			)}
+			<BalanceTable items={mergeMemberBalances(summaries, 'toPayMe')} />
 		</div>
 	);
+}
+
+function currencyLabel(currency: string, target: string | null) {
+	const symbol = currencySymbol(currency);
+	return `${symbol && symbol !== currency ? `${symbol} ` : ''}${currencyName(currency)}${
+		target && currency !== target ? ' · not converted' : ''
+	}`;
+}
+
+function CurrencyChart({
+	summary,
+	groupBy,
+	label,
+}: {
+	summary: CurrencySummary;
+	groupBy: GroupBy;
+	label: string | null;
+}) {
+	return (
+		<div className="flex flex-col">
+			{label ? (
+				<Typography variant="overline" color="textSecondary">
+					{label}
+				</Typography>
+			) : null}
+			<StackHorizontalBarChart
+				data={summary.chartData}
+				formatValue={(value) => formatAmount(value, summary.currency)}
+				formatLabel={
+					groupBy === 'date'
+						? (date) => dayjs(date).format('ddd, D MMM YY')
+						: (category) => `${categoryNameEmojiMap.get(category)} ${category}`
+				}
+			/>
+		</div>
+	);
+}
+
+function BalanceTable({
+	items,
+}: {
+	items: ReturnType<typeof mergeMemberBalances>;
+}) {
+	if (!items.length) {
+		return (
+			<Typography
+				variant="body2"
+				color="textSecondary"
+				className="text-center italic"
+			>
+				No one
+			</Typography>
+		);
+	}
+
+	return <MemberAmountTable items={items} />;
 }
 
 function SectionDivider({ label }: { label: string }) {
@@ -248,26 +238,5 @@ function SectionDivider({ label }: { label: string }) {
 				label={<span className="font-grandstander font-light">{label}</span>}
 			/>
 		</Divider>
-	);
-}
-
-function TotalExpenseCard({
-	label,
-	value,
-	className = '',
-}: {
-	label: string;
-	value: number;
-	className?: string;
-}) {
-	return (
-		<Card className="p-2" variant="outlined">
-			<Typography variant="body2" className={`font-grandstander ${className}`}>
-				{label}
-			</Typography>
-			<Typography className={`text-2xl ${className}`}>
-				{formatDecimal(value)}
-			</Typography>
-		</Card>
 	);
 }

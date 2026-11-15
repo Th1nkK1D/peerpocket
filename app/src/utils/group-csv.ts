@@ -6,6 +6,7 @@ interface GroupTables {
 	members: Rows<{ name: string; joinedAt: number }>;
 	expenses: Rows<{
 		amount: number;
+		currency: string;
 		category: string;
 		notes: string;
 		paidOn: number;
@@ -44,6 +45,7 @@ export function buildTransactionsCsv({
 			expense.category,
 			expense.notes,
 			expense.amount,
+			expense.currency,
 			members[expense.paidByMemberId]?.name ?? '',
 			...orderedMembers.map(
 				([memberId]) => splitAmounts.get(`${id}:${memberId}`) ?? '',
@@ -55,6 +57,7 @@ export function buildTransactionsCsv({
 		'Category',
 		'Notes',
 		'Amount',
+		'Currency',
 		'Paid by',
 		...orderedMembers.map(([, member]) => member.name),
 	];
