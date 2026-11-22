@@ -24,18 +24,17 @@ export function AuthenticatedLayout({
 			<AppBar position="static" className="z-20">
 				<Toolbar
 					disableGutters
-					className="grid grid-cols-[1fr_auto_1fr] items-center px-1"
+					className={`grid items-center ${hideBackButton ? 'grid-cols-[1fr_auto] pr-1 pl-4' : 'grid-cols-[1fr_auto_1fr] px-1'}`}
 				>
-					<div className="flex justify-start">
-						{!hideBackButton && (
-							<IconButton
-								color="inherit"
-								onClick={() => navigate({ to: '..' })}
-							>
-								<ChevronLeft />
-							</IconButton>
-						)}
-					</div>
+					{!hideBackButton && (
+						<IconButton
+							color="inherit"
+							className="justify-self-start"
+							onClick={() => navigate({ to: '..' })}
+						>
+							<ChevronLeft />
+						</IconButton>
+					)}
 
 					<div className="flex min-w-0 items-center gap-2">
 						{hideBackButton && (
