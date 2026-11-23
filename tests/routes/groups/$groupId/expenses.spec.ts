@@ -19,7 +19,9 @@ test('shows the empty state for groups without expenses', async ({ page }) => {
 	});
 
 	await expect(
-		page.getByText('Nothing here yet, spending time!'),
+		page.getByText(
+			"No expenses yet. Add your first one whenever you're ready!",
+		),
 	).toBeVisible();
 });
 

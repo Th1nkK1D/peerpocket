@@ -85,7 +85,7 @@ export function ExpensesPanel({ user, group, groupId }: PanelProps) {
 			<div className="flex flex-1 flex-col">
 				{expenseByGroups.length === 0 ? (
 					<EmptyState icon={<ShoppingBasketTwoTone fontSize="large" />}>
-						Nothing here yet, spending time!
+						No expenses yet. Add your first one whenever you're ready!
 					</EmptyState>
 				) : (
 					<>
@@ -94,7 +94,7 @@ export function ExpensesPanel({ user, group, groupId }: PanelProps) {
 								(sum, [, expenses]) => sum + expenses.length,
 								0,
 							)}
-							label="records"
+							label={['record', 'records']}
 							groupBy={groupBy}
 							onGroupByChange={setGroupBy}
 							className="pt-1 pr-2 pl-4"
@@ -152,7 +152,7 @@ export function ExpensesPanel({ user, group, groupId }: PanelProps) {
 															className="flex-1 font-grandstander font-light"
 														>
 															{expense.paidByMemberId === currentUser.hashedId
-																? `${otherSplits.length} people owe you`
+																? `${otherSplits.length} ${otherSplits.length === 1 ? 'person owes' : 'people owe'} you`
 																: yourSplit
 																	? `You owe ${memberIdNameMap.get(expense.paidByMemberId)}`
 																	: ''}
@@ -241,7 +241,7 @@ export function ExpensesPanel({ user, group, groupId }: PanelProps) {
 				open={!!expensePendingDelete}
 				onClose={() => setExpensePendingDelete(null)}
 			>
-				<DialogTitle>Deleting expense</DialogTitle>
+				<DialogTitle>Delete expense?</DialogTitle>
 				<DialogContent>
 					<DialogContentText>
 						{expensePendingDelete ? (

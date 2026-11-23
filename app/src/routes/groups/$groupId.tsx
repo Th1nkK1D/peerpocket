@@ -94,6 +94,7 @@ function RouteComponent() {
 	const { user, group, userGroupInfo } = Route.useLoaderData();
 	const { onlinePeerCount, connectedPeerCount, isSyncing } =
 		group.usePeerSync();
+	const otherPeers = `${onlinePeerCount - 1} ${onlinePeerCount === 2 ? 'peer' : 'peers'}`;
 	const { groupId } = Route.useParams();
 	const { tab } = Route.useSearch();
 	const navigate = Route.useNavigate();
@@ -236,11 +237,11 @@ function RouteComponent() {
 								? 'Only you are online'
 								: isSyncing
 									? connectedPeerCount > 0
-										? `Syncing with ${connectedPeerCount} of ${onlinePeerCount - 1} peers`
-										: `Syncing via relay with ${onlinePeerCount - 1} peers`
+										? `Syncing with ${connectedPeerCount} of ${otherPeers}`
+										: `Syncing via relay with ${otherPeers}`
 									: connectedPeerCount > 0
-										? `Connected to ${connectedPeerCount} of ${onlinePeerCount - 1} peers`
-										: `${onlinePeerCount - 1} peers available`}
+										? `Connected to ${connectedPeerCount} of ${otherPeers}`
+										: `${otherPeers} available`}
 					</Typography>
 				</div>
 			</Paper>

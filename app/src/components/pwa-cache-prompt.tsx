@@ -24,7 +24,7 @@ export default function ReloadPrompt() {
 		<>
 			<Snackbar
 				open={offlineReady}
-				message="App is ready to work offline"
+				message="The app is ready to work offline"
 				autoHideDuration={2500}
 				onClose={() => setOfflineReady(false)}
 				anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
@@ -41,7 +41,7 @@ export default function ReloadPrompt() {
 			/>
 			<Snackbar
 				open={needRefresh}
-				message="New app version is available, reload to update."
+				message="A new version is available. Reload to update."
 				onClose={() => setNeedRefresh(false)}
 				anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
 				action={

@@ -147,8 +147,8 @@ function RouteComponent() {
 		<AuthenticatedLayout title="Export Data">
 			<div className="flex flex-1 flex-col gap-4 p-4">
 				<Typography variant="body1" color="textSecondary">
-					Export data for account recovery, changing device, or to log-in from
-					several places.
+					Export your data for account recovery, switching devices, or logging
+					in from several places.
 				</Typography>
 
 				<FormControl component="fieldset">
@@ -211,8 +211,8 @@ function RouteComponent() {
 
 				{mode ? (
 					<Alert severity="warning" className="mt-2">
-						Keep this as a secret! Anyone who get this file can get all your
-						PeerPocket's identity and data.
+						Keep this file secret! Anyone who has it can access your PeerPocket
+						identity and data.
 					</Alert>
 				) : null}
 

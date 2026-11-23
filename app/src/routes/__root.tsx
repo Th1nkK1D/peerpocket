@@ -97,7 +97,7 @@ export const Route = createRootRoute({
 		meta: [
 			{ charSet: 'UTF-8' },
 			{ name: 'viewport', content: 'initial-scale=1, width=device-width' },
-			{ title: 'PeerPocket - Your Peer-to-peer expense tracker' },
+			{ title: 'PeerPocket - Your peer-to-peer expense tracker' },
 			{ name: 'description', content: 'Peer-to-peer expense tracker' },
 			{ name: 'theme-color', content: '#000000' },
 		],

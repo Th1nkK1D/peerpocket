@@ -5,7 +5,7 @@ import { ActionMenu } from '../ui/action-menu';
 
 interface ExpenseGroupByBarProps {
 	count: number;
-	label: string;
+	label: [singular: string, plural: string];
 	groupBy: 'category' | 'date';
 	onGroupByChange: (groupBy: 'category' | 'date') => void;
 	className?: string;
@@ -21,7 +21,7 @@ export function ExpenseGroupByBar({
 	return (
 		<div className={`flex items-center justify-between ${className ?? ''}`}>
 			<Typography variant="overline" color="textSecondary">
-				{count} {label}
+				{count} {label[count === 1 ? 0 : 1]}
 			</Typography>
 			<ActionMenu
 				items={[

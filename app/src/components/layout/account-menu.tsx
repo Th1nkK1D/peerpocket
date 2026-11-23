@@ -147,8 +147,8 @@ export function AccountMenu({ userStore }: Props) {
 				<DialogTitle id={dialogTitleId}>Log out?</DialogTitle>
 				<DialogContent>
 					<DialogContentText>
-						Logging out will destroy all data stored in this device. If you will
-						recover your data later, consider{' '}
+						Logging out will erase all data stored on this device. If you might
+						need your data later, consider{' '}
 						<Link
 							href="/groups/export"
 							onClick={() => setLogoutDialogOpen(false)}

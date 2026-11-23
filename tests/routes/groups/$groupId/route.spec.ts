@@ -128,10 +128,14 @@ test('merges expenses from two peers via sync union', async ({ browser }) => {
 
 	// Verify sync UI states - peers are online via relay
 	await expect(
-		pageA.getByText(/peers available|Connected to|Syncing|Only you are online/),
+		pageA.getByText(
+			/peers? available|Connected to|Syncing|Only you are online/,
+		),
 	).toBeVisible({ timeout: 10000 });
 	await expect(
-		pageB.getByText(/peers available|Connected to|Syncing|Only you are online/),
+		pageB.getByText(
+			/peers? available|Connected to|Syncing|Only you are online/,
+		),
 	).toBeVisible({ timeout: 10000 });
 	// The local Chromium gathers no ICE candidates, so we can't wait for a connection, only the WebRTC handshake
 	await expect
@@ -164,10 +168,14 @@ test('merges expenses from two peers via sync union', async ({ browser }) => {
 
 	// Both peers should show online state after sync
 	await expect(
-		pageA.getByText(/peers available|Connected to|Syncing|Only you are online/),
+		pageA.getByText(
+			/peers? available|Connected to|Syncing|Only you are online/,
+		),
 	).toBeVisible();
 	await expect(
-		pageB.getByText(/peers available|Connected to|Syncing|Only you are online/),
+		pageB.getByText(
+			/peers? available|Connected to|Syncing|Only you are online/,
+		),
 	).toBeVisible();
 
 	// Both peers should have all 3 expenses
@@ -247,10 +255,14 @@ test('merges members from two peers joining independently', async ({
 
 	// Both peers should show online state after sync
 	await expect(
-		pageA.getByText(/peers available|Connected to|Syncing|Only you are online/),
+		pageA.getByText(
+			/peers? available|Connected to|Syncing|Only you are online/,
+		),
 	).toBeVisible();
 	await expect(
-		pageB.getByText(/peers available|Connected to|Syncing|Only you are online/),
+		pageB.getByText(
+			/peers? available|Connected to|Syncing|Only you are online/,
+		),
 	).toBeVisible();
 
 	// Both peers should see both members

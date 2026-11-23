@@ -133,7 +133,11 @@ export function SummaryPanel({ user, group }: PanelProps) {
 				<div className="flex flex-col">
 					<ExpenseGroupByBar
 						count={new Set(transactions.map(groupKeys[groupBy])).size}
-						label={groupBy === 'category' ? 'categories' : 'dates'}
+						label={
+							groupBy === 'category'
+								? ['category', 'categories']
+								: ['date', 'dates']
+						}
 						groupBy={groupBy}
 						onGroupByChange={setGroupBy}
 					/>
@@ -157,8 +161,8 @@ export function SummaryPanel({ user, group }: PanelProps) {
 			<SectionDivider
 				label={
 					isCurrentUser
-						? 'Who I need to pay to'
-						: `Who ${selectedMemberName} needs to pay to`
+						? 'Who I need to pay'
+						: `Who ${selectedMemberName} needs to pay`
 				}
 			/>
 			<BalanceTable items={mergeMemberBalances(summaries, 'toPayThem')} />

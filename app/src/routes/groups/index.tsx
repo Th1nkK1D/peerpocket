@@ -137,14 +137,14 @@ function RouteComponent() {
 					</div>
 				) : filter === 'active' ? (
 					<EmptyState icon={<TourTwoTone fontSize="large" />}>
-						No active group yet, create one or join one. <br />
+						No active group yet. Create one or join a friend's. <br />
 						<br />
-						No friend? sorry can't help.
+						No friends around? No worries, you can invite them later.
 					</EmptyState>
 				) : (
 					<EmptyState icon={<HourglassFullTwoTone fontSize="large" />}>
-						No archived groups, <br />
-						but just the matter of time.
+						No archived groups yet. <br />
+						Finished groups will rest here.
 					</EmptyState>
 				)}
 			</div>

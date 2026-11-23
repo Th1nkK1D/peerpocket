@@ -27,7 +27,7 @@ test('shows expense totals, category bars, and outstanding balances', async ({
 	await expect(page.getByText('Group expense')).toBeVisible();
 	await expect(page.getByText('Food')).toBeVisible();
 	await expect(page.getByText('Transport')).toBeVisible();
-	await expect(page.getByText('Who I need to pay to')).toBeVisible();
+	await expect(page.getByText('Who I need to pay')).toBeVisible();
 	await expect(page.getByText('Who needs to pay me')).toBeVisible();
 	await expect(page.getByRole('cell', { name: 'Bob' })).toBeVisible();
 });
@@ -68,7 +68,7 @@ test('shows summary for another selected member', async ({ page }) => {
 		'Bob',
 	);
 	await expect(page.getByText("Bob's expense")).toBeVisible();
-	await expect(page.getByText('Who Bob needs to pay to')).toBeVisible();
+	await expect(page.getByText('Who Bob needs to pay')).toBeVisible();
 	await expect(page.getByRole('cell', { name: 'Alice' })).toBeVisible();
 });
 
