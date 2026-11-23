@@ -319,6 +319,13 @@
 	background-image: --value(--overlay-\*);
 }
 
+/* Landing page only: app routes scroll inner panels and the router jumps the window on navigation */
+@media (prefers-reduced-motion: no-preference) {
+	html:has(#how-it-works) {
+		scroll-behavior: smooth;
+	}
+}
+
 /* Moves an element by --parallax-* while the --hero view timeline scrolls out; static where unsupported or motion is reduced */
 @keyframes parallax {
 	to {
@@ -334,6 +341,25 @@
 			animation: parallax linear both;
 			animation-timeline: --hero;
 			animation-range: exit;
+		}
+	}
+}
+
+/* Starts an element at --from-x and --from-rotate, then settles into its own translate/rotate/scale while the nearest --fan view timeline scrolls into view */
+@keyframes fan-in {
+	from {
+		translate: var(--from-x, 0) 0;
+		rotate: var(--from-rotate, 0deg);
+		scale: 1;
+	}
+}
+
+@utility fan-in {
+	@supports (animation-timeline: view()) {
+		@media (prefers-reduced-motion: no-preference) {
+			animation: fan-in ease-out both;
+			animation-timeline: --fan;
+			animation-range: entry 20% cover 50%;
 		}
 	}
 }
