@@ -10,8 +10,11 @@ function readJoinParams(url: URL): Record<string, unknown> | null {
 		return Object.fromEntries(url.searchParams);
 	}
 
-	// Signed-out invitees get redirected to the landing route, so this is the URL they can copy
-	if (url.pathname === '/' && url.searchParams.get('path') === JOIN_PATH) {
+	// Signed-out invitees get redirected to the get-started route (formerly "/"), so this is the URL they can copy
+	if (
+		['/', '/get-started'].includes(url.pathname) &&
+		url.searchParams.get('path') === JOIN_PATH
+	) {
 		return JSON.parse(url.searchParams.get('params') ?? 'null');
 	}
 

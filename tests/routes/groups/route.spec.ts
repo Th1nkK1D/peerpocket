@@ -6,13 +6,13 @@ import {
 	installAppMocks,
 } from '../../mocks/playwright';
 
-test('redirects unauthenticated access to the login route with return params', async ({
+test('redirects unauthenticated access to the get started route with return params', async ({
 	page,
 }) => {
 	await installAppMocks(page);
 	await page.goto('/groups/create');
 
-	await expect(page).toHaveURL(/\/\?path=%2Fgroups%2Fcreate/);
+	await expect(page).toHaveURL(/\/get-started\?path=%2Fgroups%2Fcreate/);
 	await expect(page.getByLabel('Enter your name')).toBeVisible();
 });
 

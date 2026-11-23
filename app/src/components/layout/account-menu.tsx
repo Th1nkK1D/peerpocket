@@ -55,7 +55,7 @@ export function AccountMenu({ userStore }: Props) {
 	function confirmLogout() {
 		setLogoutDialogOpen(false);
 		localStorage.clear();
-		navigate({ to: '/', replace: true });
+		navigate({ to: '/get-started', replace: true });
 	}
 
 	return (

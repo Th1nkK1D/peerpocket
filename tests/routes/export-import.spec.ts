@@ -74,7 +74,7 @@ test('import success flow: upload user-data JSON, confirm, see groups', async ({
 	page,
 }) => {
 	await installAppMocks(page);
-	await page.goto('/');
+	await page.goto('/get-started');
 
 	const exportJson = {
 		exportedAt: new Date().toISOString(),
@@ -112,7 +112,7 @@ test('import shows dialog for full export and confirms with replace warning', as
 	page,
 }) => {
 	await installAppMocks(page);
-	await page.goto('/');
+	await page.goto('/get-started');
 
 	const exportJson = {
 		exportedAt: new Date().toISOString(),
@@ -162,7 +162,7 @@ test('import shows dialog for full export and confirms with replace warning', as
 
 test('import cancel closes dialog without navigating', async ({ page }) => {
 	await installAppMocks(page);
-	await page.goto('/');
+	await page.goto('/get-started');
 
 	const exportJson = {
 		exportedAt: new Date().toISOString(),
@@ -185,7 +185,7 @@ test('import cancel closes dialog without navigating', async ({ page }) => {
 
 test('import invalid JSON shows error message', async ({ page }) => {
 	await installAppMocks(page);
-	await page.goto('/');
+	await page.goto('/get-started');
 
 	await page.setInputFiles('input[type="file"]', {
 		name: 'invalid.json',
@@ -200,7 +200,7 @@ test('import invalid JSON shows error message', async ({ page }) => {
 
 test('import JSON with wrong schema shows error', async ({ page }) => {
 	await installAppMocks(page);
-	await page.goto('/');
+	await page.goto('/get-started');
 
 	await page.setInputFiles('input[type="file"]', {
 		name: 'wrong-schema.json',
@@ -215,7 +215,7 @@ test('import JSON with wrong schema shows error', async ({ page }) => {
 
 test('import full data shows group on groups page', async ({ page }) => {
 	await installAppMocks(page);
-	await page.goto('/');
+	await page.goto('/get-started');
 
 	const now = Date.now();
 	const exportJson = {
@@ -290,7 +290,7 @@ test('full round-trip: export full, then import on fresh landing', async ({
 	const freshPage = await freshContext.newPage();
 
 	await installAppMocks(freshPage);
-	await freshPage.goto('/');
+	await freshPage.goto('/get-started');
 
 	await freshPage.setInputFiles('input[type="file"]', {
 		name: 'roundtrip.json',
@@ -357,7 +357,7 @@ test('import placeholder and claims ledger in consistent post-claim state', asyn
 	const freshPage = await freshContext.newPage();
 
 	await installAppMocks(freshPage);
-	await freshPage.goto('/');
+	await freshPage.goto('/get-started');
 
 	await freshPage.setInputFiles('input[type="file"]', {
 		name: 'placeholder-import.json',
@@ -459,7 +459,7 @@ test('full round-trip: claim, export, import on fresh device keeps claims and re
 	const freshPage = await freshContext.newPage();
 
 	await installAppMocks(freshPage);
-	await freshPage.goto('/');
+	await freshPage.goto('/get-started');
 	await freshPage.setInputFiles('input[type="file"]', {
 		name: 'round-trip.json',
 		mimeType: 'application/json',

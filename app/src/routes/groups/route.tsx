@@ -10,7 +10,7 @@ export const Route = createFileRoute('/groups')({
 
 		if (!userStoreId) {
 			throw redirect({
-				to: '/',
+				to: '/get-started',
 				replace: true,
 				search: {
 					path: location.pathname,

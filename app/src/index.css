@@ -319,6 +319,25 @@
 	background-image: --value(--overlay-\*);
 }
 
+/* Moves an element by --parallax-* while the --hero view timeline scrolls out; static where unsupported or motion is reduced */
+@keyframes parallax {
+	to {
+		translate: var(--parallax-x, 0) var(--parallax-y, 0);
+		rotate: var(--parallax-rotate, 0deg);
+		opacity: var(--parallax-opacity, 1);
+	}
+}
+
+@utility parallax {
+	@supports (animation-timeline: view()) {
+		@media (prefers-reduced-motion: no-preference) {
+			animation: parallax linear both;
+			animation-timeline: --hero;
+			animation-range: exit;
+		}
+	}
+}
+
 /* Material UI elevation utilities */
 @utility elevation-* {
 	background-image: --value(--overlay-\*);

@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as GetStartedRouteImport } from './routes/get-started'
 import { Route as GroupsRouteRouteImport } from './routes/groups/route'
 import { Route as GroupsIndexRouteImport } from './routes/groups/index'
 import { Route as GroupsGroupIdRouteImport } from './routes/groups/$groupId'
@@ -22,6 +23,11 @@ import { Route as GroupsScanRouteImport } from './routes/groups/scan'
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GetStartedRoute = GetStartedRouteImport.update({
+  id: '/get-started',
+  path: '/get-started',
   getParentRoute: () => rootRouteImport,
 } as any)
 const GroupsRouteRoute = GroupsRouteRouteImport.update({
@@ -68,6 +74,7 @@ const GroupsScanRoute = GroupsScanRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/groups': typeof GroupsRouteRouteWithChildren
+  '/get-started': typeof GetStartedRoute
   '/groups/$groupId': typeof GroupsGroupIdRoute
   '/groups/create': typeof GroupsCreateRoute
   '/groups/expense': typeof GroupsExpenseRoute
@@ -78,6 +85,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/get-started': typeof GetStartedRoute
   '/groups/$groupId': typeof GroupsGroupIdRoute
   '/groups/create': typeof GroupsCreateRoute
   '/groups/expense': typeof GroupsExpenseRoute
@@ -90,6 +98,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/groups': typeof GroupsRouteRouteWithChildren
+  '/get-started': typeof GetStartedRoute
   '/groups/$groupId': typeof GroupsGroupIdRoute
   '/groups/create': typeof GroupsCreateRoute
   '/groups/expense': typeof GroupsExpenseRoute
@@ -103,6 +112,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/groups'
+    | '/get-started'
     | '/groups/$groupId'
     | '/groups/create'
     | '/groups/expense'
@@ -113,6 +123,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/get-started'
     | '/groups/$groupId'
     | '/groups/create'
     | '/groups/expense'
@@ -124,6 +135,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/groups'
+    | '/get-started'
     | '/groups/$groupId'
     | '/groups/create'
     | '/groups/expense'
@@ -136,6 +148,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   GroupsRouteRoute: typeof GroupsRouteRouteWithChildren
+  GetStartedRoute: typeof GetStartedRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -145,6 +158,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/get-started': {
+      id: '/get-started'
+      path: '/get-started'
+      fullPath: '/get-started'
+      preLoaderRoute: typeof GetStartedRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/groups': {
@@ -233,6 +253,7 @@ const GroupsRouteRouteWithChildren = GroupsRouteRoute._addFileChildren(
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   GroupsRouteRoute: GroupsRouteRouteWithChildren,
+  GetStartedRoute: GetStartedRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

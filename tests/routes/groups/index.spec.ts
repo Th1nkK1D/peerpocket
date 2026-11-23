@@ -108,7 +108,7 @@ test('destroys local data from the menu', async ({ page }) => {
 	await page.getByText('Log out').click();
 	await expect(page.getByRole('dialog')).toContainText('Log out?');
 	await page.getByRole('button', { name: 'Log out' }).click();
-	await expect(page).toHaveURL(/\/$/);
+	await expect(page).toHaveURL(/\/get-started$/);
 	await expect
 		.poll(() =>
 			page.evaluate(() => ({

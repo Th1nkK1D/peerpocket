@@ -20,6 +20,7 @@ import {
 	HeadContent,
 	Outlet,
 	Scripts,
+	useLocation,
 } from '@tanstack/react-router';
 import { type ReactNode, useEffect } from 'react';
 import '@fontsource-variable/grandstander';
@@ -91,6 +92,7 @@ const theme = createTheme({
 });
 
 export const Route = createRootRoute({
+	ssr: true,
 	head: () => ({
 		meta: [
 			{ charSet: 'UTF-8' },
@@ -126,6 +128,10 @@ function RootDocument({ children }: { children: ReactNode }) {
 }
 
 function RootComponent() {
+	const isLanding = useLocation({ select: ({ pathname }) => pathname === '/' });
+
+	if (isLanding) return <Outlet />;
+
 	// Server-rendered emotion styles get reordered on hydration, which breaks the CSS layer order
 	return (
 		<ClientOnly>

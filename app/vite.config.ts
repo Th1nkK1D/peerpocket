@@ -16,7 +16,9 @@ const pwa = VitePWA({
 	],
 	workbox: {
 		cleanupOutdatedCaches: true,
-		globPatterns: ['**/*.{js,css,html,woff2}'],
+		globPatterns: ['**/*.{js,css,html,woff2,svg}'],
+		// index.html is the static landing page, so app routes fall back to the SPA shell
+		navigateFallback: '_shell.html',
 		runtimeCaching: [
 			{
 				urlPattern:
@@ -39,7 +41,7 @@ const pwa = VitePWA({
 		background_color: '#5c6bc0',
 		display: 'standalone',
 		scope: '/',
-		start_url: '/',
+		start_url: '/groups',
 		icons: [
 			{
 				src: 'favicon-192x192-20261110.png',
@@ -96,7 +98,12 @@ export default defineConfig({
 				routeFileIgnorePattern: '\\.spec\\.tsx?$',
 			},
 			dev: { ssrStyles: { enabled: false } },
-			spa: { enabled: true, prerender: { outputPath: '/index.html' } },
+			spa: {
+				enabled: true,
+				maskPath: '/groups',
+				prerender: { outputPath: '/_shell.html' },
+			},
+			pages: [{ path: '/', prerender: { enabled: true, crawlLinks: false } }],
 		}),
 		react(),
 		...pwa,

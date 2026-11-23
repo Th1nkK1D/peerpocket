@@ -1,0 +1,3 @@
+/get-started /_shell 200
+/groups /_shell 200
+/groups/* /_shell 200
