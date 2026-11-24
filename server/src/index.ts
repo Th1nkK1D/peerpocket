@@ -2,13 +2,22 @@ import { formatMessage, parsedMessage } from '@peerpocket/libs/message';
 import type { Message, Peer } from 'crossws';
 import { serve } from 'crossws/server';
 
+import { startUsage } from './usage';
+
+const usage = process.env.STATS_DB
+	? startUsage(process.env.STATS_DB)
+	: undefined;
+
 serve({
 	websocket: {
-		open() {},
+		open() {
+			usage?.connect();
+		},
 		async message(peer: Peer, { rawData }: Message) {
 			const raw = rawData as string | Buffer<ArrayBufferLike>;
+			usage?.received(raw.length);
 			if (raw.length === 4 && raw.toString() === 'ping') {
-				peer.send('pong');
+				send(peer, 'pong');
 				return;
 			}
 
@@ -16,8 +25,10 @@ serve({
 
 			switch (data.type) {
 				case 'SUBSCRIBE':
+					usage?.store(data.storeId);
 					peer.subscribe(data.storeId);
-					peer.publish(
+					publish(
+						peer,
 						data.storeId,
 						formatMessage({
 							type: 'PEER_JOIN',
@@ -26,7 +37,8 @@ serve({
 						}),
 					);
 					// Self-join so the new peer discovers its own id
-					peer.send(
+					send(
+						peer,
 						formatMessage({
 							type: 'PEER_JOIN',
 							storeId: data.storeId,
@@ -35,7 +47,8 @@ serve({
 					);
 					for (const p of peer.peers) {
 						if (p !== peer && p.topics.has(data.storeId)) {
-							peer.send(
+							send(
+								peer,
 								formatMessage({
 									type: 'PEER_JOIN',
 									storeId: data.storeId,
@@ -47,6 +60,8 @@ serve({
 					broadcastPeerChange(peer, data.storeId);
 					return;
 				case 'SYNC': {
+					usage?.sync();
+					usage?.store(data.storeId);
 					const toPeerId = data.payload[0];
 					const message = formatMessage({
 						type: 'SYNC',
@@ -56,22 +71,23 @@ serve({
 					});
 
 					if (toPeerId === null) {
-						peer.publish(data.storeId, message);
+						publish(peer, data.storeId, message);
 						return;
 					}
 
 					for (const p of peer.peers) {
 						if (p.id === toPeerId && p.topics.has(data.storeId)) {
-							p.send(message);
+							send(p, message);
 							break;
 						}
 					}
 					return;
 				}
 				case 'SIGNAL':
+					usage?.signal();
 					for (const p of peer.peers) {
 						if (p.id === data.toPeerId && p.topics.has(data.storeId)) {
-							p.send(rawData);
+							send(p, raw);
 							break;
 						}
 					}
@@ -80,8 +96,10 @@ serve({
 		},
 
 		close(peer: Peer) {
+			usage?.disconnect();
 			peer.topics.forEach((storeId) => {
-				peer.publish(
+				publish(
+					peer,
 					storeId,
 					formatMessage({
 						type: 'PEER_LEAVE',
@@ -96,12 +114,29 @@ serve({
 	fetch: () => new Response('PeerPocket relay server is running'),
 });
 
+function send(peer: Peer, data: string | Uint8Array) {
+	peer.send(data);
+	usage?.sent(data.length);
+}
+
+function publish(peer: Peer, storeId: string, data: Uint8Array) {
+	peer.publish(storeId, data);
+	usage?.sent(
+		data.length *
+			peer.peers
+				.values()
+				.filter((p) => p !== peer && p.topics.has(storeId))
+				.toArray().length,
+	);
+}
+
 function broadcastPeerChange(peer: Peer, storeId: string) {
 	const count = peer.peers
 		.values()
 		.reduce((sum, p) => sum + (p.topics.has(storeId) ? 1 : 0), 0);
 
-	peer.publish(
+	publish(
+		peer,
 		storeId,
 		formatMessage({
 			type: 'PEER_CHANGE',
@@ -111,7 +146,8 @@ function broadcastPeerChange(peer: Peer, storeId: string) {
 	);
 
 	if (peer.websocket.readyState === 1) {
-		peer.send(
+		send(
+			peer,
 			formatMessage({
 				type: 'PEER_CHANGE',
 				storeId,

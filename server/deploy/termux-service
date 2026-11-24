@@ -1,3 +1,4 @@
 #!/data/data/com.termux/files/usr/bin/sh
 # https://wiki.termux.com/wiki/Termux-services
+export STATS_DB=/data/data/com.termux/files/home/peerpocket/usage.db
 exec node /data/data/com.termux/files/home/peerpocket/server.js 2>&1

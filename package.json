@@ -13,7 +13,7 @@
 		"build": "bun run --filter=\"@peerpocket/*\" build",
 		"check": "bun run --filter=\"@peerpocket/*\" --elide-lines=0 check",
 		"lint": "oxlint --fix && oxfmt",
-		"test": "bun scripts/free-test-ports.ts && playwright test",
+		"test": "bun test ./server && bun scripts/free-test-ports.ts && playwright test",
 		"prepare": "husky"
 	},
 	"devDependencies": {

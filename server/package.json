@@ -2,10 +2,10 @@
 	"name": "@peerpocket/server",
 	"private": true,
 	"type": "module",
-	"module": "index.ts",
+	"module": "src/index.ts",
 	"scripts": {
-		"dev": "bun run --hot index.ts",
-		"build": "bun build --minify ./index.ts --outfile dist/server.js --target node",
+		"dev": "bun run --hot src/index.ts",
+		"build": "bun build --minify ./src/index.ts --outfile dist/server.js --target node && bun build --minify ./src/stats.ts --outfile dist/stats.js --target node",
 		"check": "tsc --noEmit"
 	},
 	"dependencies": {

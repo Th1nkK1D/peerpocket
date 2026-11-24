@@ -6,6 +6,7 @@ After=network.target
 
 [Service]
 User=droid
+Environment=STATS_DB=/home/droid/peerpocket/usage.db
 ExecStart=/home/droid/peerpocket/relay-server-linux-arm64
 Restart=always
 RestartSec=1

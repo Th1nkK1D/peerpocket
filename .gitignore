@@ -6,6 +6,8 @@ out
 dist
 *.tgz
 
+usage.db*
+
 # code coverage
 coverage
 *.lcov
