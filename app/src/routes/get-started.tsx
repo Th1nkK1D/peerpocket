@@ -1,4 +1,6 @@
-import { Divider } from '@mui/material';
+import { ChevronLeft, DarkMode, LightMode } from '@mui/icons-material';
+import { Divider, IconButton } from '@mui/material';
+import { useColorScheme } from '@mui/material/styles';
 import { createFileRoute, redirect, useNavigate } from '@tanstack/react-router';
 import { useState } from 'react';
 import * as z from 'zod';
@@ -31,6 +33,8 @@ export const Route = createFileRoute('/get-started')({
 function RouteComponent() {
 	const { path, params } = Route.useSearch();
 	const navigate = useNavigate();
+	const { colorScheme, setMode } = useColorScheme();
+	const isDark = colorScheme === 'dark';
 
 	const [showRecoveryModal, setShowRecoveryModal] = useState(false);
 	const [newUserData, setNewUserData] = useState<{
@@ -73,47 +77,60 @@ function RouteComponent() {
 	}
 
 	return (
-		<div className="flex h-full min-h-dvh flex-col items-center justify-center gap-6 px-3 py-8">
-			<img
-				src="/favicon-192x192-20261110.png"
-				alt=""
-				className="size-40 rounded-xl"
-			/>
-			<div>
-				<h3 className="font-grandstander font-medium">PeerPocket</h3>
-				<p>Your peer-to-peer expense tracker</p>
+		<div className="flex h-full min-h-dvh flex-col">
+			<div className="flex justify-between p-1.5 text-gray-500 dark:text-gray-600">
+				<IconButton aria-label="Home" href="/" color="inherit">
+					<ChevronLeft />
+				</IconButton>
+				<IconButton
+					aria-label={isDark ? 'Light mode' : 'Dark mode'}
+					onClick={() => setMode(isDark ? 'light' : 'dark')}
+					color="inherit"
+				>
+					{isDark ? <LightMode /> : <DarkMode />}
+				</IconButton>
 			</div>
-			<InstallNudge hasInvite={path === '/groups/join'} />
-			<form
-				className="flex flex-col gap-2"
-				onSubmit={(e) => {
-					e.preventDefault();
-					form.handleSubmit();
-				}}
-			>
-				<form.AppField name="name">
-					{(field) => <field.TextField label="Enter your name" />}
-				</form.AppField>
-				<form.AppForm>
-					<form.SubmitButton>Get started</form.SubmitButton>
-				</form.AppForm>
-			</form>
+			<div className="flex flex-1 flex-col items-center justify-center gap-6 px-3 pb-8">
+				<img
+					src="/favicon-192x192-20261110.png"
+					alt=""
+					className="size-40 rounded-2xl shadow-lg"
+				/>
+				<div className="flex flex-col items-center gap-2">
+					<h3 className="font-grandstander">PeerPocket</h3>
+					<InstallNudge hasInvite={path === '/groups/join'} />
+				</div>
+				<form
+					className="flex w-full max-w-64 flex-col gap-3"
+					onSubmit={(e) => {
+						e.preventDefault();
+						form.handleSubmit();
+					}}
+				>
+					<form.AppField name="name">
+						{(field) => <field.TextField label="What's your name?" />}
+					</form.AppField>
+					<form.AppForm>
+						<form.SubmitButton>Get started</form.SubmitButton>
+					</form.AppForm>
+				</form>
 
-			<Divider className="w-64">or</Divider>
+				<Divider className="w-64">or</Divider>
 
-			<ImportFlow
-				onImportSuccess={(userStoreId) => {
-					activeUserStoreId.set(userStoreId);
-					navigate({ to: '/groups', replace: true });
-				}}
-			/>
+				<ImportFlow
+					onImportSuccess={(userStoreId) => {
+						activeUserStoreId.set(userStoreId);
+						navigate({ to: '/groups', replace: true });
+					}}
+				/>
 
-			<SaveIdentityDialog
-				open={showRecoveryModal}
-				userData={newUserData}
-				onSave={goToGroups}
-				onSkip={goToGroups}
-			/>
+				<SaveIdentityDialog
+					open={showRecoveryModal}
+					userData={newUserData}
+					onSave={goToGroups}
+					onSkip={goToGroups}
+				/>
+			</div>
 		</div>
 	);
 }

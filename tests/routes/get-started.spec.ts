@@ -12,7 +12,7 @@ test('creates a user and redirect to groups page', async ({ page }) => {
 	await installAppMocks(page);
 	await page.goto('/get-started');
 
-	await page.getByLabel('Enter your name').fill(baseUser.name);
+	await page.getByLabel("What's your name?").fill(baseUser.name);
 	await page.getByRole('button', { name: 'Get started' }).click();
 
 	await expect(page.getByText('Save Your Identity')).toBeVisible();
@@ -26,7 +26,7 @@ test('creates a user and downloads identity file', async ({ page }) => {
 	await installAppMocks(page);
 	await page.goto('/get-started');
 
-	await page.getByLabel('Enter your name').fill(baseUser.name);
+	await page.getByLabel("What's your name?").fill(baseUser.name);
 	await page.getByRole('button', { name: 'Get started' }).click();
 
 	await expect(page.getByText('Save Your Identity')).toBeVisible();
@@ -61,7 +61,7 @@ test('nudges to install with the reason without blocking sign up', async ({
 	await expect(nudge).toContainText('Look in your browser menu');
 	await expect(nudge).toContainText('Already installed?');
 	await expect(nudge).not.toContainText('invitation');
-	await expect(page.getByLabel('Enter your name')).toBeVisible();
+	await expect(page.getByLabel("What's your name?")).toBeVisible();
 });
 
 test('shows the install button when the browser offers a prompt', async ({
@@ -137,7 +137,7 @@ test('hides the install nudge when running as installed app', async ({
 	});
 	await page.goto('/get-started');
 
-	await expect(page.getByLabel('Enter your name')).toBeVisible();
+	await expect(page.getByLabel("What's your name?")).toBeVisible();
 	await expect(page.getByTestId('install-nudge')).toBeHidden();
 });
 

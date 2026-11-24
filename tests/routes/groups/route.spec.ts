@@ -13,7 +13,7 @@ test('redirects unauthenticated access to the get started route with return para
 	await page.goto('/groups/create');
 
 	await expect(page).toHaveURL(/\/get-started\?path=%2Fgroups%2Fcreate/);
-	await expect(page.getByLabel('Enter your name')).toBeVisible();
+	await expect(page.getByLabel("What's your name?")).toBeVisible();
 });
 
 test('loads authenticated child routes when an active user exists', async ({

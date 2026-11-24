@@ -180,7 +180,7 @@ test('import cancel closes dialog without navigating', async ({ page }) => {
 	await page.getByRole('button', { name: 'Cancel' }).click();
 
 	await expect(page.getByText('Import Data')).not.toBeVisible();
-	await expect(page.getByLabel('Enter your name')).toBeVisible();
+	await expect(page.getByLabel("What's your name?")).toBeVisible();
 });
 
 test('import invalid JSON shows error message', async ({ page }) => {
