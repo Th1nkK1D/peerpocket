@@ -36,7 +36,7 @@ const pwa = VitePWA({
 		id: '/',
 		name: 'PeerPocket',
 		short_name: 'PeerPocket',
-		description: 'Peer-to-peer expense tracker',
+		description: 'A peer-to-peer expense tracker where your data stays yours',
 		theme_color: '#000000',
 		background_color: '#5c6bc0',
 		display: 'standalone',

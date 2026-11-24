@@ -67,8 +67,8 @@ const heroLayers = [
 const steps = [
 	{
 		emoji: '👋',
-		title: 'Install the app, pick a name',
-		body: 'Add it to your home screen. No sign-up, email, or password needed.',
+		title: 'Open the app, or add it to your home screen',
+		body: 'No sign-up, email, or password needed. Just your name.',
 	},
 	{
 		emoji: '🤝',
@@ -78,7 +78,7 @@ const steps = [
 	{
 		emoji: '🧾',
 		title: 'Log what you spend',
-		body: 'Record who paid and how to split it. Changes sync when you’re online together.',
+		body: 'Record who paid and how to split it, in any currency.',
 	},
 	{
 		emoji: '🪙',
@@ -109,7 +109,7 @@ const screens = [
 const promises = [
 	{
 		title: 'Your data stays on your devices',
-		body: "There's no database, no account, and no copy of your expenses on our side.",
+		body: "There's no account and no copy of your expenses on our side, only anonymous usage counts.",
 	},
 	{
 		title: 'It syncs straight between friends',
@@ -122,6 +122,36 @@ const promises = [
 	{
 		title: 'Free and open source',
 		body: 'Licensed under MIT. Code reviews and contributions are always welcome.',
+	},
+];
+
+const plans = [
+	{
+		name: 'Free',
+		price: '$0',
+		period: 'forever',
+		perks: ['Unlimited groups and friends', 'Any currency', 'Works offline'],
+	},
+	{
+		name: 'Pro',
+		price: '€0',
+		period: 'per month',
+		badge: 'Most popular',
+		perks: [
+			'Everything in Free',
+			'A fancier name',
+			'The same app, more confidence',
+		],
+	},
+	{
+		name: 'Enterprise',
+		price: '¥0',
+		period: 'contact sales',
+		perks: [
+			'Everything in Pro',
+			'There is no sales team',
+			"Uptime backed by your friends' phones",
+		],
 	},
 ];
 
@@ -153,13 +183,13 @@ function RouteComponent() {
 				<div className="pointer-events-none absolute inset-0 parallax bg-[radial-gradient(72.5%_69.5%_at_50%_50%,rgb(255_255_255/0.8),transparent)] mask-b-from-70% [--parallax-opacity:0]" />
 
 				<div className="relative flex parallax flex-col items-center text-center [--parallax-opacity:0] [--parallax-y:15dvh]">
-					<h1 className="font-grandstander text-[clamp(3.5rem,9vw,8rem)] leading-tight">
+					<h1 className="font-grandstander text-6xl leading-tight md:text-8xl">
 						PeerPocket
 					</h1>
-					<p className="text-[clamp(1.125rem,2.5vw,2.25rem)] font-light">
-						Your peer-to-peer expense tracker
+					<p className="text-lg font-light text-balance md:text-2xl">
+						A peer-to-peer expense tracker where your data stays yours
 					</p>
-					<div className="mt-[clamp(2rem,4vw,3rem)] flex flex-wrap justify-center gap-3 text-[clamp(1.125rem,1.7vw,1.5rem)] *:w-[clamp(12rem,19.5vw,17.5rem)] *:rounded-full *:border-2 *:border-[#3F51B5] *:py-[clamp(0.5rem,1.25vw,1.25rem)] *:transition-colors">
+					<div className="mt-8 flex flex-wrap justify-center gap-3 text-lg *:w-48 *:rounded-full *:border-2 *:border-[#3F51B5] *:py-2 *:transition-colors md:mt-12 md:text-xl md:*:w-64 md:*:py-3">
 						<Link
 							to="/get-started"
 							className="bg-[#3F51B5] text-white hover:border-[#303F9F] hover:bg-[#303F9F]"
@@ -176,7 +206,7 @@ function RouteComponent() {
 				</div>
 			</section>
 
-			<div className="mx-auto flex max-w-6xl flex-col gap-24 px-4 py-24">
+			<div className="mx-auto flex max-w-6xl flex-col gap-20 px-4 py-24 md:gap-42 md:pb-42">
 				<section
 					id="how-it-works"
 					className="flex scroll-mt-12 flex-col gap-10"
@@ -204,6 +234,9 @@ function RouteComponent() {
 							</li>
 						))}
 					</ol>
+				</section>
+
+				<section>
 					<ul className="-mx-4 flex snap-x snap-mandatory gap-6 overflow-x-auto px-[calc(50%-8rem)] py-6 [view-timeline:--fan] sm:mx-0 sm:justify-center sm:gap-0 sm:overflow-visible sm:px-0">
 						{screens.map(({ src, caption, fan }) => (
 							<li
@@ -242,6 +275,44 @@ function RouteComponent() {
 					>
 						Read how sync works
 					</a>
+				</section>
+
+				<section className="flex flex-col gap-10">
+					<SectionHeading>Generous pricing</SectionHeading>
+					<ul className="grid gap-4 md:grid-cols-3">
+						{plans.map(({ name, price, period, badge, perks }) => (
+							<li
+								key={name}
+								className="relative flex flex-col gap-4 rounded-3xl bg-white/90 p-6"
+							>
+								{badge && (
+									<span className="absolute -top-3 left-6 rounded-full bg-[#3F51B5] px-3 py-1 text-sm text-white">
+										{badge}
+									</span>
+								)}
+								<h3 className="text-xl font-medium">{name}</h3>
+								<p className="text-black/70">
+									<span className="text-5xl font-medium text-black">
+										{price}
+									</span>{' '}
+									{period}
+								</p>
+								<ul className="flex flex-col gap-2 text-black/70">
+									{perks.map((perk) => (
+										<li key={perk}>
+											<span aria-hidden className="text-[#3F51B5]">
+												✓
+											</span>{' '}
+											{perk}
+										</li>
+									))}
+								</ul>
+							</li>
+						))}
+					</ul>
+					<p className="text-center text-white/80">
+						*Prices don't include the dinner you're splitting.
+					</p>
 				</section>
 
 				<section className="flex flex-col items-center gap-6 text-center">
@@ -290,7 +361,7 @@ function FooterLink({ href, children }: { href: string; children: ReactNode }) {
 
 function SectionHeading({ children }: { children: ReactNode }) {
 	return (
-		<h2 className="text-center font-grandstander text-[clamp(2rem,5vw,3.5rem)] leading-tight text-white">
+		<h2 className="text-center font-grandstander text-3xl leading-tight text-white md:text-5xl">
 			{children}
 		</h2>
 	);
